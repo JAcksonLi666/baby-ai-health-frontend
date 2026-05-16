@@ -1,0 +1,176 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: white;
+  padding: 20px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header h1 {
+  color: #2c3e50;
+  font-size: 24px;
+  margin: 0;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: #f8f9fa;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.online {
+  background: #4caf50;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+}
+
+.status-dot.error {
+  background: #f44336;
+  box-shadow: 0 0 6px rgba(244, 67, 54, 0.5);
+}
+
+.status-checking {
+  color: #999;
+}
+
+.record-count {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.tab-navigation {
+  max-width: 800px;
+  margin: 24px auto;
+  display: flex;
+  gap: 12px;
+  background: white;
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.tab-button:hover {
+  background: #f0f4ff;
+  color: #667eea;
+}
+
+.tab-button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.app-content {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px 24px;
+}
+
+.app-footer {
+  background: white;
+  padding: 24px;
+  margin-top: auto;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.app-footer p {
+  text-align: center;
+  color: #666;
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.tech-stack {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tech-stack span {
+  background: #f1f3f5;
+  color: #666;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .app-header h1 {
+    font-size: 20px;
+  }
+
+  .tab-navigation {
+    margin: 16px;
+  }
+
+  .tab-button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .app-content {
+    padding: 0 16px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-navigation {
+    flex-direction: column;
+  }
+
+  .tech-stack {
+    gap: 8px;
+  }
+}
