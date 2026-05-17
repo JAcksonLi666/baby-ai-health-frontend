@@ -32,18 +32,25 @@ export const uploadService = {
 };
 
 export const chatService = {
-  async askQuestion(question, useCloud = false, topK = 3) {
+  async askQuestion(question, useCloud = false, topK = 3, model = "auto") {
     try {
       const response = await apiClient.post('/ask', {
         question,
         use_cloud: useCloud,
         top_k: topK,
+        model: model,
       });
       return response.data;
     } catch (error) {
       console.error('问答失败:', error);
       throw error.response?.data || error;
     }
+  },
+
+  askQuestionStream(question, useCloud = false, topK = 3, model = "auto") {
+    return new EventSource(
+      `${API_BASE_URL}/ask/stream?question=${encodeURIComponent(question)}&use_cloud=${useCloud}&top_k=${topK}&model=${encodeURIComponent(model)}`
+    );
   },
 };
 
