@@ -11,17 +11,36 @@ const apiClient = axios.create({
 });
 
 export const uploadService = {
-  async uploadFile(file, recordDate, recordType = 'general') {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('record_date', recordDate);
-    formData.append('record_type', recordType);
-
+  async previewFile(file) {
     try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await apiClient.post('/upload/preview', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('预识别文件失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+
+  async uploadFile(file, recordDate, recordType) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      if (recordDate) {
+        formData.append('record_date', recordDate);
+      }
+      if (recordType) {
+        formData.append('record_type', recordType);
+      }
       const response = await apiClient.post('/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+          'Content-Type': 'multipart/form-data'
+        }
       });
       return response.data;
     } catch (error) {
@@ -83,6 +102,43 @@ export const recordService = {
       return response.data;
     } catch (error) {
       console.error('删除记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+
+  async updateRecord(recordId, recordDate, recordType) {
+    try {
+      const response = await apiClient.put(`/record/${recordId}`, null, {
+        params: {
+          record_date: recordDate,
+          record_type: recordType,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('更新记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+
+  async filterRecords(filters) {
+    try {
+      const response = await apiClient.get('/records/filter', {
+        params: filters,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('筛选记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+
+  async getRecordTypes() {
+    try {
+      const response = await apiClient.get('/records/types');
+      return response.data;
+    } catch (error) {
+      console.error('获取记录类型失败:', error);
       throw error.response?.data || error;
     }
   },

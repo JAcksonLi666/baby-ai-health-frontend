@@ -1,95 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import Upload from './components/Upload';
+import React, { useState } from 'react';
+import { Layout, Menu, Typography, Row, Col } from 'antd';
+import { UploadOutlined, MessageOutlined, FileTextOutlined, UserOutlined } from '@ant-design/icons';
+import UploadComponent from './components/Upload';
 import Chat from './components/Chat';
-import { modelService } from './services/apiService';
+import RecordManagement from './components/RecordManagement';
 import './App.css';
+
+const { Header, Content, Footer } = Layout;
+const { Title } = Typography;
 
 function App() {
   const [activeTab, setActiveTab] = useState('upload');
-  const [systemStatus, setSystemStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkSystemHealth();
-  }, []);
+  const menuItems = [
+    {
+      key: 'upload',
+      icon: <UploadOutlined />,
+      label: '上传化验单',
+    },
+    {
+      key: 'chat',
+      icon: <MessageOutlined />,
+      label: '智能问答',
+    },
+    {
+      key: 'records',
+      icon: <FileTextOutlined />,
+      label: '档案管理',
+    },
+  ];
 
-  const checkSystemHealth = async () => {
-    try {
-      const status = await modelService.healthCheck();
-      setSystemStatus(status);
-    } catch (error) {
-      console.error('健康检查失败:', error);
-      setSystemStatus({
-        status: 'error',
-        message: '无法连接到后端服务'
-      });
-    } finally {
-      setLoading(false);
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'upload':
+        return <UploadComponent />;
+      case 'chat':
+        return <Chat />;
+      case 'records':
+        return <RecordManagement />;
+      default:
+        return <UploadComponent />;
     }
   };
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <div className="header-content">
-          <h1>👶 宝宝健康档案 AI 助手</h1>
-          <div className="status-badge">
-            {loading ? (
-              <span className="status-checking">检查中...</span>
-            ) : systemStatus?.status === 'healthy' ? (
-              <>
-                <span className="status-dot online"></span>
-                <span>系统正常</span>
-                <span className="record-count">
-                  档案数量: {systemStatus.services.chroma_db.total_records}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="status-dot error"></span>
-                <span>服务异常</span>
-              </>
-            )}
+    <Layout className="app-layout">
+      <Header className="app-header">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <div className="logo">
+            <UserOutlined className="logo-icon" />
+            <Title level={3} className="logo-title">宝宝健康助手</Title>
           </div>
+          <Menu
+            mode="horizontal"
+            items={menuItems}
+            selectedKeys={[activeTab]}
+            onClick={(e) => setActiveTab(e.key)}
+            className="nav-menu"
+          />
         </div>
-      </header>
-
-      <div className="disclaimer">
-        ⚠️ <strong>免责声明：</strong>本系统提供的健康建议仅供参考，不能替代执业医师的诊断和治疗。
-        如有健康疑虑，请及时咨询专业医生。
-      </div>
-
-      <nav className="tab-navigation">
-        <button
-          className={`tab-button ${activeTab === 'upload' ? 'active' : ''}`}
-          onClick={() => setActiveTab('upload')}
-        >
-          📤 上传化验单
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'chat' ? 'active' : ''}`}
-          onClick={() => setActiveTab('chat')}
-        >
-          💬 智能问答
-        </button>
-      </nav>
-
-      <main className="app-content">
-        {activeTab === 'upload' && <Upload />}
-        {activeTab === 'chat' && <Chat />}
-      </main>
-
-      <footer className="app-footer">
-        <p>宝宝健康档案 AI 系统 v1.0 | 本地部署 · 隐私保护</p>
-        <div className="tech-stack">
-          <span>React</span>
-          <span>FastAPI</span>
-          <span>PaddleOCR</span>
-          <span>ChromaDB</span>
-          <span>Ollama</span>
-        </div>
-      </footer>
-    </div>
+      </Header>
+      <Content className="app-content">
+        {renderContent()}
+      </Content>
+      <Footer className="app-footer">
+        <p>宝宝健康助手 ©2026 - 让健康管理更简单</p>
+      </Footer>
+    </Layout>
   );
 }
 

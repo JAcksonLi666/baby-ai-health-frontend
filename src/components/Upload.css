@@ -192,3 +192,123 @@
   max-height: 300px;
   overflow-y: auto;
 }
+
+/* 识别结果区域 */
+.recognition-result {
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.recognition-result h3 {
+  color: #92400e;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+/* 日期选择区域 */
+.date-section {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #fcd34d;
+}
+
+.date-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #34495e;
+  font-size: 14px;
+}
+
+.date-detected {
+  color: #16a34a;
+  font-weight: normal;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.date-default {
+  color: #f59e0b;
+  font-weight: normal;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.date-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #fcd34d;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fffbeb;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+}
+
+.date-display {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #fef3c7;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.date-label {
+  font-size: 13px;
+  color: #92400e;
+  margin-right: 8px;
+}
+
+.date-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #78350f;
+}
+
+/* 识别内容容器 */
+.extracted-text-container {
+  margin-bottom: 16px;
+}
+
+/* OCR内容排版样式 */
+.ocr-section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ddd, transparent);
+}
+
+.ocr-content-wrapper {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.ocr-text {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Courier New', monospace;
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* 结果日期显示 */
+.result-date {
+  display: block;
+  font-size: 14px;
+  font-weight: normal;
+  margin-top: 8px;
+  color: #16a34a;
+}

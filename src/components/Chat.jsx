@@ -1,6 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Card, Input, Button, Select, Switch, message, Spin,
+  Avatar, Tag, Divider
+} from 'antd';
+import {
+  SendOutlined, SyncOutlined, RobotOutlined, UserOutlined, LikeOutlined, DislikeOutlined, MessageOutlined
+} from '@ant-design/icons';
+import moment from 'moment';
 import { chatService, modelService } from '../services/apiService';
 import './Chat.css';
+
+const { TextArea } = Input;
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -13,10 +23,15 @@ const Chat = () => {
   const [selectedModel, setSelectedModel] = useState('auto');
   const [autoModelDesc, setAutoModelDesc] = useState('');
   const [modelsLoading, setModelsLoading] = useState(true);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     fetchModels();
   }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const fetchModels = async () => {
     try {
@@ -39,7 +54,7 @@ const Chat = () => {
       id: Date.now(),
       role: 'user',
       content: inputMessage,
-      timestamp: new Date().toISOString(),
+      timestamp: moment().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -59,7 +74,7 @@ const Chat = () => {
       id: Date.now(),
       role: 'user',
       content: question,
-      timestamp: new Date().toISOString(),
+      timestamp: moment().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -81,7 +96,7 @@ const Chat = () => {
       id: assistantMessageId,
       role: 'assistant',
       content: '',
-      timestamp: new Date().toISOString(),
+      timestamp: moment().toISOString(),
       sources: [],
       modelUsed: selectedModel === 'auto' ? autoModelDesc : selectedModel,
       cloudUsed: useCloud,
@@ -160,7 +175,7 @@ const Chat = () => {
           id: Date.now() + 1,
           role: 'assistant',
           content: response.answer,
-          timestamp: new Date().toISOString(),
+          timestamp: moment().toISOString(),
           sources: response.sources,
           modelUsed: response.model_used,
           cloudUsed: response.cloud_used,
@@ -187,7 +202,7 @@ const Chat = () => {
       id: assistantMessageId,
       role: 'assistant',
       content: '',
-      timestamp: new Date().toISOString(),
+      timestamp: moment().toISOString(),
       sources: [],
       modelUsed: selectedModel === 'auto' ? autoModelDesc : selectedModel,
       cloudUsed: useCloud,
@@ -266,7 +281,7 @@ const Chat = () => {
           id: Date.now() + 1,
           role: 'assistant',
           content: response.answer,
-          timestamp: new Date().toISOString(),
+          timestamp: moment().toISOString(),
           sources: response.sources,
           modelUsed: response.model_used,
           cloudUsed: response.cloud_used,
@@ -295,6 +310,7 @@ const Chat = () => {
   const handleClearChat = () => {
     setMessages([]);
     setError(null);
+    message.info('聊天已清空');
   };
 
   const handleFeedback = (messageId, feedback) => {
@@ -306,7 +322,11 @@ const Chat = () => {
       )
     );
     
-    console.log('反馈记录:', { messageId, feedback, timestamp: new Date().toISOString() });
+    if (feedback === 'helpful') {
+      message.success('感谢您的反馈！');
+    } else {
+      message.info('感谢您的反馈，我们会继续改进');
+    }
   };
 
   const generateFollowUpQuestions = (question) => {
@@ -336,50 +356,50 @@ const Chat = () => {
   };
 
   return (
-    <div className="chat-container">
+    <Card className="chat-card" bordered={false}>
+      {/* 头部 */}
       <div className="chat-header">
-        <h2>💬 智能问答</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <MessageOutlined style={{ fontSize: 24 }} />
+          <h2>智能问答</h2>
+        </div>
         <div className="chat-options">
-          <label className="model-selector">
-            <span>模型:</span>
-            {modelsLoading ? (
-              <span>加载中...</span>
-            ) : (
-              <select
-                value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                disabled={loading}
-              >
-                {availableModels.map((model) => (
-                  <option key={model} value={model}>
-                    {model === 'auto' ? `Auto (${autoModelDesc || '加载中...'})` : model}
-                  </option>
-                ))}
-              </select>
-            )}
-          </label>
-          <label className="cloud-toggle">
-            <input
-              type="checkbox"
-              checked={useCloud}
-              onChange={(e) => setUseCloud(e.target.checked)}
-            />
-            <span>云端</span>
-          </label>
-          <label className="stream-toggle">
-            <input
-              type="checkbox"
-              checked={useStream}
-              onChange={(e) => setUseStream(e.target.checked)}
-            />
-            <span>流式</span>
-          </label>
-          <button onClick={handleClearChat} className="clear-btn">
+          <Select
+            value={selectedModel}
+            onChange={(value) => setSelectedModel(value)}
+            disabled={loading || modelsLoading}
+            placeholder="选择模型"
+            style={{ width: 200 }}
+          >
+            {availableModels.map((model) => (
+              <Select.Option key={model} value={model}>
+                {model === 'auto' ? `Auto (${autoModelDesc || '加载中...'})` : model}
+              </Select.Option>
+            ))}
+          </Select>
+          <Switch
+            checked={useCloud}
+            onChange={(checked) => setUseCloud(checked)}
+            checkedChildren="云端"
+            unCheckedChildren="本地"
+          />
+          <Switch
+            checked={useStream}
+            onChange={(checked) => setUseStream(checked)}
+            checkedChildren="流式"
+            unCheckedChildren="普通"
+          />
+          <Button
+            icon={<SyncOutlined />}
+            onClick={handleClearChat}
+            disabled={loading}
+          >
             清空
-          </button>
+          </Button>
         </div>
       </div>
 
+      {/* 消息区域 */}
       <div className="chat-messages">
         {messages.length === 0 && !loading && (
           <div className="welcome-message">
@@ -391,12 +411,27 @@ const Chat = () => {
               系统会根据您上传的历史档案提供个性化建议。
             </p>
             <div className="example-questions">
-              <p>快速提问：</p>
-              <ul>
-                <li onClick={() => handleQuickQuestion('宝宝的血红蛋白指标正常吗？')}>宝宝的血红蛋白指标正常吗？</li>
-                <li onClick={() => handleQuickQuestion('最近几个月的体重变化趋势如何？')}>最近几个月的体重变化趋势如何？</li>
-                <li onClick={() => handleQuickQuestion('白细胞偏高可能是什么原因？')}>白细胞偏高可能是什么原因？</li>
-              </ul>
+              <p style={{ fontWeight: 600 }}>快速提问：</p>
+              <div className="quick-questions">
+                <Button
+                  onClick={() => handleQuickQuestion('宝宝的血红蛋白指标正常吗？')}
+                  className="quick-question-btn"
+                >
+                  宝宝的血红蛋白指标正常吗？
+                </Button>
+                <Button
+                  onClick={() => handleQuickQuestion('最近几个月的体重变化趋势如何？')}
+                  className="quick-question-btn"
+                >
+                  最近几个月的体重变化趋势如何？
+                </Button>
+                <Button
+                  onClick={() => handleQuickQuestion('白细胞偏高可能是什么原因？')}
+                  className="quick-question-btn"
+                >
+                  白细胞偏高可能是什么原因？
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -406,15 +441,14 @@ const Chat = () => {
             key={message.id}
             className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
           >
-            <div className="message-avatar">
-              {message.role === 'user' ? '👤' : '🤖'}
-            </div>
+            <Avatar
+              icon={message.role === 'user' ? <UserOutlined /> : <RobotOutlined />}
+              className="message-avatar"
+            />
             <div className="message-content">
               {message.role === 'assistant' && message.isStreaming && !message.content ? (
                 <div className="message-text loading">
-                  <span className="loading-dot">.</span>
-                  <span className="loading-dot">.</span>
-                  <span className="loading-dot">.</span>
+                  <Spin size="small" />
                   AI 正在思考中...
                 </div>
               ) : (
@@ -422,30 +456,30 @@ const Chat = () => {
               )}
               {message.role === 'assistant' && message.sources && message.sources.length > 0 && !message.isStreaming && (
                 <div className="message-sources">
-                  <h4>📚 参考档案：</h4>
-                  <ul>
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>📚 参考档案：</div>
+                  <div className="sources-list">
                     {message.sources.map((source, index) => (
-                      <li key={index}>
+                      <Tag key={index} color="blue">
                         {source.date} - {source.type} (相关度: {(source.similarity * 100).toFixed(1)}%)
-                      </li>
+                      </Tag>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
               {message.role === 'assistant' && !message.isStreaming && (
                 <>
                   {message.followUpQuestions && message.followUpQuestions.length > 0 && (
                     <div className="follow-up-questions">
-                      <h4>💡 拓展问答：</h4>
+                      <div style={{ fontWeight: 600, marginBottom: 8 }}>💡 拓展问答：</div>
                       <div className="follow-up-list">
                         {message.followUpQuestions.map((question, index) => (
-                          <button
+                          <Button
                             key={index}
                             className="follow-up-btn"
                             onClick={() => handleQuickQuestion(question)}
                           >
                             {question}
-                          </button>
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -453,36 +487,37 @@ const Chat = () => {
                   <div className="feedback-section">
                     <span className="feedback-label">本次回答是否有帮助？</span>
                     <div className="feedback-buttons">
-                      <button
-                        className={`feedback-btn helpful-btn ${message.feedback === 'helpful' ? 'active' : ''}`}
+                      <Button
+                        icon={<LikeOutlined />}
+                        className={`feedback-btn ${message.feedback === 'helpful' ? 'helpful' : ''}`}
                         onClick={() => handleFeedback(message.id, 'helpful')}
                         disabled={message.feedback !== undefined}
+                        size="small"
                       >
-                        👍 有用
-                      </button>
-                      <button
-                        className={`feedback-btn unhelpful-btn ${message.feedback === 'unhelpful' ? 'active' : ''}`}
+                        有用
+                      </Button>
+                      <Button
+                        icon={<DislikeOutlined />}
+                        className={`feedback-btn ${message.feedback === 'unhelpful' ? 'unhelpful' : ''}`}
                         onClick={() => handleFeedback(message.id, 'unhelpful')}
                         disabled={message.feedback !== undefined}
+                        size="small"
                       >
-                        👎 无用
-                      </button>
+                        无用
+                      </Button>
                     </div>
-                    {message.feedback && (
-                      <span className="feedback-thanks">感谢您的反馈！</span>
-                    )}
                   </div>
                 </>
               )}
               {message.role === 'assistant' && (
                 <div className="message-meta">
-                  <span className="model-badge">
+                  <Tag color="gray" size="small">
                     模型: {message.modelUsed}
                     {message.cloudUsed && ' ☁️'}
                     {message.isStreaming && ' 🔄'}
-                  </span>
+                  </Tag>
                   <span className="timestamp">
-                    {new Date(message.timestamp).toLocaleTimeString()}
+                    {moment(message.timestamp).format('HH:mm:ss')}
                   </span>
                 </div>
               )}
@@ -492,30 +527,35 @@ const Chat = () => {
 
         {error && (
           <div className="error-message">
-            ❌ {error}
+            {error}
           </div>
         )}
+
+        <div ref={messagesEndRef} />
       </div>
 
+      {/* 输入区域 */}
       <div className="chat-input-container">
-        <textarea
+        <TextArea
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="输入您的问题..."
-          className="chat-input"
           disabled={loading}
           rows={3}
+          className="chat-input"
         />
-        <button
+        <Button
+          type="primary"
+          icon={<SendOutlined />}
           onClick={handleSendMessage}
           disabled={!inputMessage.trim() || loading}
           className="send-btn"
         >
           {loading ? '发送中...' : '发送'}
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 };
 
