@@ -6,19 +6,15 @@ import {
 import {
   EyeOutlined, EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined, SearchOutlined, SyncOutlined, FilterOutlined
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { recordService } from '../services/apiService';
 import './RecordManagement.css';
 
 const { Option } = Select;
 
-const TYPE_MAP = {
-  'blood_test': { label: '血液检测', color: 'red' },
-  'urine_test': { label: '尿液检测', color: 'blue' },
-  'general': { label: '常规记录', color: 'gray' }
-};
-
 function RecordManagement() {
+  const { t } = useTranslation();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -46,7 +42,7 @@ function RecordManagement() {
       }
     } catch (error) {
       console.error('加载记录失败:', error);
-      message.error('加载记录失败');
+      message.error(t('records.error.load'));
     } finally {
       setLoading(false);
     }
@@ -78,7 +74,7 @@ function RecordManagement() {
       }
     } catch (error) {
       console.error('筛选记录失败:', error);
-      message.error('筛选失败');
+      message.error(t('records.error.filter'));
     } finally {
       setLoading(false);
     }
@@ -117,47 +113,53 @@ function RecordManagement() {
         editingRecord.editType
       );
       if (result.success) {
-        message.success('更新成功');
+        message.success(t('records.success.update'));
         setEditingRecord(null);
         loadRecords();
         loadRecordTypes();
       }
     } catch (error) {
       console.error('更新失败:', error);
-      message.error('更新失败');
+      message.error(t('records.error.update'));
     }
   };
 
   const handleDelete = async (recordId) => {
     Modal.confirm({
-      title: '确认删除',
-      content: '确定要删除这条记录吗？',
-      okText: '删除',
+      title: t('records.confirmDelete'),
+      content: t('records.deleteConfirm'),
+      okText: t('records.delete'),
       okType: 'danger',
-      cancelText: '取消',
+      cancelText: t('common.cancel'),
       onOk: async () => {
         try {
           const result = await recordService.deleteRecord(recordId);
           if (result.success) {
-            message.success('删除成功');
+            message.success(t('records.success.delete'));
             loadRecords();
             loadRecordTypes();
           }
         } catch (error) {
           console.error('删除失败:', error);
-          message.error('删除失败');
+          message.error(t('records.error.delete'));
         }
       }
     });
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return '未知';
+    if (!dateStr) return t('records.unknown');
     return moment(dateStr).format('YYYY-MM-DD');
   };
 
   const getTypeInfo = (type) => {
-    return TYPE_MAP[type] || { label: type, color: 'gray' };
+    const typeMap = {
+      'blood_test': { label: t('records.bloodTest'), color: 'red' },
+      'urine_test': { label: t('records.urineTest'), color: 'blue' },
+      'general': { label: t('records.general'), color: 'gray' },
+      'other': { label: t('records.other'), color: 'purple' }
+    };
+    return typeMap[type] || { label: type, color: 'gray' };
   };
 
   const truncateText = (text, maxLength = 100) => {
@@ -167,21 +169,21 @@ function RecordManagement() {
 
   const columns = [
     {
-      title: '记录ID',
+      title: t('records.recordId'),
       dataIndex: 'id',
       key: 'id',
       render: (text) => <span className="record-id">{text.substring(0, 12)}...</span>,
       width: 120
     },
     {
-      title: '日期',
+      title: t('records.date'),
       dataIndex: 'metadata',
       key: 'date',
       render: (meta) => formatDate(meta?.record_date),
       width: 120
     },
     {
-      title: '类型',
+      title: t('records.type'),
       dataIndex: 'metadata',
       key: 'type',
       render: (meta) => {
@@ -191,32 +193,29 @@ function RecordManagement() {
       width: 120
     },
     {
-      title: '内容摘要',
+      title: t('records.content'),
       dataIndex: 'text',
       key: 'text',
       render: (text) => <span className="record-text">{truncateText(text)}</span>
     },
     {
-      title: '操作',
+      title: t('records.actions'),
       key: 'actions',
-      width: 260,
+      width: 110,
+      fixed: 'right',
       render: (_, record) => (
         <div className="actions">
           <Button
             icon={<EyeOutlined />}
             size="small"
             onClick={() => handleViewDetail(record)}
-          >
-            查看
-          </Button>
+          />
           {!editingRecord || editingRecord.id !== record.id ? (
             <Button
               icon={<EditOutlined />}
               size="small"
               onClick={() => handleEdit(record)}
-            >
-              编辑
-            </Button>
+            />
           ) : (
             <>
               <Button
@@ -224,16 +223,12 @@ function RecordManagement() {
                 type="primary"
                 size="small"
                 onClick={handleSaveEdit}
-              >
-                保存
-              </Button>
+              />
               <Button
                 icon={<CloseOutlined />}
                 size="small"
                 onClick={() => setEditingRecord(null)}
-              >
-                取消
-              </Button>
+              />
             </>
           )}
           <Button
@@ -241,9 +236,7 @@ function RecordManagement() {
             danger
             size="small"
             onClick={() => handleDelete(record.id)}
-          >
-            删除
-          </Button>
+          />
         </div>
       )
     }
@@ -279,27 +272,27 @@ function RecordManagement() {
       <Card className="filter-card">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
           <FilterOutlined style={{ fontSize: 18 }} />
-          <span style={{ fontWeight: 600 }}>筛选条件</span>
+          <span style={{ fontWeight: 600 }}>{t('records.filter')}</span>
         </div>
         <Row gutter={16}>
           <Col span={5}>
             <Select
               value={filters.record_type}
               onChange={(value) => setFilters({ ...filters, record_type: value })}
-              placeholder="全部类型"
+              placeholder={t('records.allTypes')}
               className="filter-select"
             >
-              <Option value="">全部类型</Option>
-              <Option value="blood_test">血液检测</Option>
-              <Option value="urine_test">尿液检测</Option>
-              <Option value="general">常规记录</Option>
+              <Option value="">{t('records.allTypes')}</Option>
+              <Option value="blood_test">{t('records.bloodTest')}</Option>
+              <Option value="urine_test">{t('records.urineTest')}</Option>
+              <Option value="general">{t('records.general')}</Option>
             </Select>
           </Col>
           <Col span={5}>
             <DatePicker
               value={filters.start_date}
               onChange={(date) => setFilters({ ...filters, start_date: date })}
-              placeholder="开始日期"
+              placeholder={t('records.startDate')}
               className="filter-date"
             />
           </Col>
@@ -307,13 +300,13 @@ function RecordManagement() {
             <DatePicker
               value={filters.end_date}
               onChange={(date) => setFilters({ ...filters, end_date: date })}
-              placeholder="结束日期"
+              placeholder={t('records.endDate')}
               className="filter-date"
             />
           </Col>
           <Col span={5}>
             <Input
-              placeholder="搜索关键词..."
+              placeholder={t('records.keyword')}
               value={filters.keyword}
               onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
               onPressEnter={handleFilter}
@@ -329,13 +322,13 @@ function RecordManagement() {
                 onClick={handleFilter}
                 style={{ marginRight: 8 }}
               >
-                筛选
+                {t('records.search')}
               </Button>
               <Button
                 icon={<SyncOutlined />}
                 onClick={handleResetFilters}
               >
-                重置
+                {t('records.reset')}
               </Button>
             </div>
           </Col>
@@ -344,13 +337,13 @@ function RecordManagement() {
 
       {/* 编辑表单 */}
       {editingRecord && (
-        <Card className="edit-card" title="编辑记录">
+        <Card className="edit-card" title={t('records.editRecord')}>
           <Row gutter={16}>
             <Col span={12}>
               <DatePicker
                 value={editingRecord.editDate}
                 onChange={(date) => setEditingRecord({ ...editingRecord, editDate: date })}
-                placeholder="选择日期"
+                placeholder={t('records.selectDate')}
                 style={{ width: '100%' }}
               />
             </Col>
@@ -358,12 +351,12 @@ function RecordManagement() {
               <Select
                 value={editingRecord.editType}
                 onChange={(value) => setEditingRecord({ ...editingRecord, editType: value })}
-                placeholder="选择类型"
+                placeholder={t('records.selectType')}
                 style={{ width: '100%' }}
               >
-                <Option value="blood_test">血液检测</Option>
-                <Option value="urine_test">尿液检测</Option>
-                <Option value="general">常规记录</Option>
+                <Option value="blood_test">{t('records.bloodTest')}</Option>
+                <Option value="urine_test">{t('records.urineTest')}</Option>
+                <Option value="general">{t('records.general')}</Option>
               </Select>
             </Col>
           </Row>
@@ -371,13 +364,13 @@ function RecordManagement() {
       )}
 
       {/* 记录列表 */}
-      <Card className="record-card" title="档案列表">
+      <Card className="record-card" title={t('records.recordList')}>
         {loading ? (
           <div className="loading-container">
-            <Spin size="large" tip="加载中..." />
+            <Spin size="large" tip={t('records.loading')} />
           </div>
         ) : records.length === 0 ? (
-          <Empty description="暂无记录" />
+          <Empty description={t('records.noRecords')} />
         ) : (
           <Table
             dataSource={records}
@@ -386,48 +379,49 @@ function RecordManagement() {
             pagination={{ pageSize: 10 }}
             bordered={false}
             className="record-table"
+            scroll={{ x: 1200 }}
           />
         )}
       </Card>
 
       {/* 详情弹窗 */}
       <Modal
-        title="记录详情"
-        visible={showModal}
+        title={t('records.detail')}
+        open={showModal}
         onCancel={() => setShowModal(false)}
         footer={null}
-        width={700}
+        width={800}
       >
         {selectedRecord && (
           <div className="modal-content">
             <div className="detail-section">
-              <h4>基本信息</h4>
+              <h4>{t('records.basicInfo')}</h4>
               <div className="detail-row">
-                <span className="detail-label">记录ID:</span>
+                <span className="detail-label">{t('records.recordId')}:</span>
                 <span>{selectedRecord.id}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">日期:</span>
+                <span className="detail-label">{t('records.date')}:</span>
                 <span>{formatDate(selectedRecord.metadata?.record_date)}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">类型:</span>
+                <span className="detail-label">{t('records.type')}:</span>
                 {(() => {
                   const typeInfo = getTypeInfo(selectedRecord.metadata?.type);
                   return <Tag color={typeInfo.color}>{typeInfo.label}</Tag>;
                 })()}
               </div>
               <div className="detail-row">
-                <span className="detail-label">文件名:</span>
-                <span>{selectedRecord.metadata?.original_filename || '未知'}</span>
+                <span className="detail-label">{t('records.filename')}:</span>
+                <span>{selectedRecord.metadata?.original_filename || t('records.unknown')}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">上传时间:</span>
-                <span>{selectedRecord.metadata?.upload_time ? moment(selectedRecord.metadata.upload_time).format('YYYY-MM-DD HH:mm:ss') : '未知'}</span>
+                <span className="detail-label">{t('records.uploadTime')}:</span>
+                <span>{selectedRecord.metadata?.upload_time ? moment(selectedRecord.metadata.upload_time).format('YYYY-MM-DD HH:mm:ss') : t('records.unknown')}</span>
               </div>
             </div>
             <div className="detail-section">
-              <h4>识别内容</h4>
+              <h4>{t('upload.recognizedContent')}</h4>
               <pre className="content-pre">{selectedRecord.text}</pre>
             </div>
           </div>

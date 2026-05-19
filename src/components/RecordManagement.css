@@ -233,7 +233,9 @@
 
 .actions {
   display: flex;
-  gap: 6px;
+  gap: 4px;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 /* 类型标签 */

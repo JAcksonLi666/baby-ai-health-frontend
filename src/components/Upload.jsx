@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, DatePicker, Select, Button, Card, message, Spin, Alert, Tag, Divider } from 'antd';
 import { UploadOutlined, EyeOutlined, CheckCircleOutlined, AlertOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { uploadService } from '../services/apiService';
 import './Upload.css';
@@ -8,6 +9,7 @@ import './Upload.css';
 const { Option } = Select;
 
 const UploadComponent = () => {
+  const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [recordDate, setRecordDate] = useState(moment());
@@ -43,7 +45,7 @@ const UploadComponent = () => {
 
   const handlePreview = async () => {
     if (!selectedFile) {
-      message.error('请选择文件');
+      message.error(t('upload.selectFile'));
       return;
     }
 
@@ -60,12 +62,12 @@ const UploadComponent = () => {
           : moment();
         setDetectedDate(response.detected_date);
         setRecordDate(dateToUse);
-        message.success('识别成功');
+        message.success(t('upload.startRecognition'));
       } else {
-        setError(response.message || '识别失败');
+        setError(response.message || t('upload.error'));
       }
     } catch (err) {
-      setError(err.detail || '识别失败，请重试');
+      setError(err.detail || t('upload.error'));
     } finally {
       setPreviewing(false);
     }
@@ -73,12 +75,12 @@ const UploadComponent = () => {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      message.error('请选择文件');
+      message.error(t('upload.selectFile'));
       return;
     }
 
     if (!recordDate) {
-      message.error('请选择记录日期');
+      message.error(t('upload.recordDate'));
       return;
     }
 
@@ -98,9 +100,9 @@ const UploadComponent = () => {
       setPreview(null);
       setExtractedText('');
       setDetectedDate(null);
-      message.success('上传成功');
+      message.success(t('upload.uploadSuccess'));
     } catch (err) {
-      message.error(err.detail || '上传失败，请重试');
+      message.error(err.detail || t('upload.error'));
     } finally {
       setUploading(false);
     }
@@ -130,41 +132,41 @@ const UploadComponent = () => {
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <UploadOutlined style={{ fontSize: 24 }} />
-            <span>上传化验单</span>
+            <span>{t('upload.title')}</span>
           </div>
         }
         bordered={false}
         className="upload-card"
       >
         <p className="upload-description">
-          上传宝宝的化验单图片或 PDF，系统将自动识别并提取健康指标
+          {t('upload.description')}
         </p>
 
         <div className="form-section">
           <Select
             value={recordType}
             onChange={(value) => setRecordType(value)}
-            placeholder="选择记录类型"
+            placeholder={t('upload.selectType')}
             className="form-select"
           >
-            <Option value="general">一般记录</Option>
-            <Option value="blood_test">血液检测</Option>
-            <Option value="urine_test">尿液检测</Option>
-            <Option value="other">其他检测</Option>
+            <Option value="general">{t('records.general')}</Option>
+            <Option value="blood_test">{t('records.bloodTest')}</Option>
+            <Option value="urine_test">{t('records.urineTest')}</Option>
+            <Option value="other">{t('records.other')}</Option>
           </Select>
         </div>
 
         <div className="form-section">
           <Upload {...uploadProps}>
             <Button icon={<UploadOutlined />} size="large" block>
-              {selectedFile ? `已选择: ${selectedFile.name}` : '点击选择文件'}
+              {selectedFile ? `${t('upload.selectedFile')} ${selectedFile.name}` : t('upload.selectFile')}
             </Button>
           </Upload>
         </div>
 
         {preview && (
           <div className="preview-container">
-            <img src={preview} alt="预览" className="preview-image" />
+            <img src={preview} alt={t('upload.preview')} className="preview-image" />
           </div>
         )}
 
@@ -178,10 +180,10 @@ const UploadComponent = () => {
               block
               size="large"
             >
-              {previewing ? '识别中...' : '开始识别'}
+              {previewing ? t('upload.recognizing') : t('upload.startRecognition')}
             </Button>
             <Button onClick={handleReset} block size="large">
-              取消
+              {t('upload.cancel')}
             </Button>
           </div>
         )}
@@ -191,22 +193,22 @@ const UploadComponent = () => {
             title={
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <EyeOutlined style={{ fontSize: 18 }} />
-                <span>识别结果</span>
+                <span>{t('upload.recognized')}</span>
               </div>
             }
             className="recognition-card"
           >
             <div className="date-section">
               <div style={{ marginBottom: 8 }}>
-                <span style={{ fontWeight: 600 }}>记录日期</span>
+                <span style={{ fontWeight: 600 }}>{t('upload.recordDate')}</span>
                 {detectedDate && (
                   <Tag color="green" style={{ marginLeft: 8 }}>
-                    从化验单识别: {detectedDate}
+                    {t('upload.detectedDate')} {detectedDate}
                   </Tag>
                 )}
                 {!detectedDate && (
                   <Tag color="gold" style={{ marginLeft: 8 }}>
-                    未识别到日期，使用今日日期
+                    {t('upload.defaultDate')}
                   </Tag>
                 )}
               </div>
@@ -215,12 +217,12 @@ const UploadComponent = () => {
                 onChange={(date) => setRecordDate(date)}
                 className="date-picker"
                 style={{ width: '100%' }}
-                placeholder="选择日期"
+                placeholder={t('upload.selectDate')}
               />
               <div className="date-display" style={{ marginTop: 12 }}>
-                <span className="date-label">当前选择:</span>
+                <span className="date-label">{t('upload.currentSelection')}</span>
                 <span className="date-value">
-                  {recordDate.isSame(moment(), 'day') ? '今天' : recordDate.format('YYYY年MM月DD日')}
+                  {recordDate.isSame(moment(), 'day') ? t('upload.today') : recordDate.format('YYYY年MM月DD日')}
                 </span>
               </div>
             </div>
@@ -230,7 +232,7 @@ const UploadComponent = () => {
             <div className="extracted-text-container">
               <div style={{ fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div className="ocr-section-line"></div>
-                <span>识别内容</span>
+                <span>{t('upload.recognizedContent')}</span>
                 <div className="ocr-section-line"></div>
               </div>
               <div className="ocr-content-wrapper">
@@ -248,10 +250,10 @@ const UploadComponent = () => {
                 block
                 size="large"
               >
-                {uploading ? '上传中...' : '确认上传'}
+                {uploading ? t('upload.uploading') : t('upload.confirmUpload')}
               </Button>
               <Button onClick={handleReset} block size="large">
-                重新选择
+                {t('upload.reSelect')}
               </Button>
             </div>
           </Card>
@@ -262,7 +264,7 @@ const UploadComponent = () => {
             title={
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <CheckCircleOutlined style={{ fontSize: 18, color: '#52c41a' }} />
-                <span>上传成功</span>
+                <span>{t('upload.uploadSuccess')}</span>
               </div>
             }
             className="result-card"
@@ -274,14 +276,14 @@ const UploadComponent = () => {
             />
             {result.record_date && (
               <div style={{ marginTop: 12 }}>
-                <Tag color="blue">记录日期: {result.record_date}</Tag>
+                <Tag color="blue">{t('upload.recordDate')}: {result.record_date}</Tag>
               </div>
             )}
             <Divider style={{ margin: '16px 0' }} />
             <div className="extracted-text-container">
               <div style={{ fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div className="ocr-section-line"></div>
-                <span>识别内容</span>
+                <span>{t('upload.recognizedContent')}</span>
                 <div className="ocr-section-line"></div>
               </div>
               <div className="ocr-content-wrapper">
@@ -289,7 +291,7 @@ const UploadComponent = () => {
               </div>
             </div>
             <Button onClick={handleReset} block size="large" style={{ marginTop: 16 }}>
-              继续上传
+              {t('upload.continue')}
             </Button>
           </Card>
         )}
@@ -305,7 +307,7 @@ const UploadComponent = () => {
 
         {previewing && (
           <div className="loading-container">
-            <Spin size="large" tip="正在识别..." />
+            <Spin size="large" tip={t('upload.recognizing')} />
           </div>
         )}
       </Card>

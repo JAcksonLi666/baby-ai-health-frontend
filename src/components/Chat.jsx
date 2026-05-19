@@ -6,6 +6,7 @@ import {
 import {
   SendOutlined, SyncOutlined, RobotOutlined, UserOutlined, LikeOutlined, DislikeOutlined, MessageOutlined
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { chatService, modelService } from '../services/apiService';
 import './Chat.css';
@@ -13,6 +14,7 @@ import './Chat.css';
 const { TextArea } = Input;
 
 const Chat = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -150,7 +152,7 @@ const Chat = () => {
       eventSource.onerror = (err) => {
         console.error('SSE 连接错误:', err);
         eventSource.close();
-        setError('连接中断，请稍后重试');
+        setError(t('chat.connectionError'));
         setLoading(false);
         setMessages((prev) =>
           prev.map((msg) =>
@@ -161,7 +163,7 @@ const Chat = () => {
         );
       };
     } catch (err) {
-      setError(err.detail || '发送消息失败');
+      setError(err.detail || t('chat.sendError'));
       setLoading(false);
     }
   };
@@ -185,10 +187,10 @@ const Chat = () => {
 
         setMessages((prev) => [...prev, assistantMessage]);
       } else {
-        setError('AI 回答失败，请稍后重试');
+        setError(t('chat.aiError'));
       }
     } catch (err) {
-      setError(err.detail || '发送消息失败');
+      setError(err.detail || t('chat.sendError'));
     } finally {
       setLoading(false);
     }
@@ -256,7 +258,7 @@ const Chat = () => {
       eventSource.onerror = (err) => {
         console.error('SSE 连接错误:', err);
         eventSource.close();
-        setError('连接中断，请稍后重试');
+        setError(t('chat.connectionError'));
         setLoading(false);
         setMessages((prev) =>
           prev.map((msg) =>
@@ -267,7 +269,7 @@ const Chat = () => {
         );
       };
     } catch (err) {
-      setError(err.detail || '发送消息失败');
+      setError(err.detail || t('chat.sendError'));
       setLoading(false);
     }
   };
@@ -291,10 +293,10 @@ const Chat = () => {
 
         setMessages((prev) => [...prev, assistantMessage]);
       } else {
-        setError('AI 回答失败，请稍后重试');
+        setError(t('chat.aiError'));
       }
     } catch (err) {
-      setError(err.detail || '发送消息失败');
+      setError(err.detail || t('chat.sendError'));
     } finally {
       setLoading(false);
     }
@@ -310,7 +312,7 @@ const Chat = () => {
   const handleClearChat = () => {
     setMessages([]);
     setError(null);
-    message.info('聊天已清空');
+    message.info(t('chat.clear'));
   };
 
   const handleFeedback = (messageId, feedback) => {
@@ -323,9 +325,9 @@ const Chat = () => {
     );
     
     if (feedback === 'helpful') {
-      message.success('感谢您的反馈！');
+      message.success(t('chat.feedbackHelpful'));
     } else {
-      message.info('感谢您的反馈，我们会继续改进');
+      message.info(t('chat.feedbackUnhelpful'));
     }
   };
 
@@ -346,12 +348,27 @@ const Chat = () => {
         '白细胞偏高需要治疗吗？',
         '如何预防白细胞异常？'
       ],
+      'Is my baby\'s hemoglobin level normal?': [
+        'What is the normal hemoglobin range?',
+        'What to do if hemoglobin is low?',
+        'How to improve hemoglobin through diet?'
+      ],
+      'What is the weight change trend in recent months?': [
+        'Is my baby\'s weight gain normal?',
+        'How to help my baby gain weight healthily?',
+        'What to do if weight gain is too fast?'
+      ],
+      'What might cause high white blood cell count?': [
+        'What is the normal white blood cell range?',
+        'Does high white blood cell count need treatment?',
+        'How to prevent abnormal white blood cell count?'
+      ],
     };
     
     return followUpMap[question] || [
-      '这个问题还有其他方面需要了解吗？',
-      '您还有其他相关问题吗？',
-      '需要我解释更多细节吗？'
+      t('chat.followUp1'),
+      t('chat.followUp2'),
+      t('chat.followUp3')
     ];
   };
 
@@ -361,40 +378,40 @@ const Chat = () => {
       <div className="chat-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <MessageOutlined style={{ fontSize: 24 }} />
-          <h2>智能问答</h2>
+          <h2>{t('chat.title')}</h2>
         </div>
         <div className="chat-options">
           <Select
             value={selectedModel}
             onChange={(value) => setSelectedModel(value)}
             disabled={loading || modelsLoading}
-            placeholder="选择模型"
+            placeholder={t('chat.selectModel')}
             style={{ width: 200 }}
           >
             {availableModels.map((model) => (
               <Select.Option key={model} value={model}>
-                {model === 'auto' ? `Auto (${autoModelDesc || '加载中...'})` : model}
+                {model === 'auto' ? `Auto (${autoModelDesc || t('chat.loading')})` : model}
               </Select.Option>
             ))}
           </Select>
           <Switch
             checked={useCloud}
             onChange={(checked) => setUseCloud(checked)}
-            checkedChildren="云端"
-            unCheckedChildren="本地"
+            checkedChildren={t('chat.cloud')}
+            unCheckedChildren={t('chat.local')}
           />
           <Switch
             checked={useStream}
             onChange={(checked) => setUseStream(checked)}
-            checkedChildren="流式"
-            unCheckedChildren="普通"
+            checkedChildren={t('chat.stream')}
+            unCheckedChildren={t('chat.normal')}
           />
           <Button
             icon={<SyncOutlined />}
             onClick={handleClearChat}
             disabled={loading}
           >
-            清空
+            {t('chat.clear')}
           </Button>
         </div>
       </div>
@@ -404,32 +421,28 @@ const Chat = () => {
         {messages.length === 0 && !loading && (
           <div className="welcome-message">
             <div className="welcome-icon">👶</div>
-            <h3>欢迎使用宝宝健康档案问答助手</h3>
-            <p>
-              您可以询问关于宝宝健康指标、发育情况等问题。
-              <br />
-              系统会根据您上传的历史档案提供个性化建议。
-            </p>
+            <h3>{t('chat.welcome')}</h3>
+            <p>{t('chat.welcomeDescription')}</p>
             <div className="example-questions">
-              <p style={{ fontWeight: 600 }}>快速提问：</p>
+              <p style={{ fontWeight: 600 }}>{t('chat.quickQuestions')}</p>
               <div className="quick-questions">
                 <Button
-                  onClick={() => handleQuickQuestion('宝宝的血红蛋白指标正常吗？')}
+                  onClick={() => handleQuickQuestion(t('chat.quickQ1'))}
                   className="quick-question-btn"
                 >
-                  宝宝的血红蛋白指标正常吗？
+                  {t('chat.quickQ1')}
                 </Button>
                 <Button
-                  onClick={() => handleQuickQuestion('最近几个月的体重变化趋势如何？')}
+                  onClick={() => handleQuickQuestion(t('chat.quickQ2'))}
                   className="quick-question-btn"
                 >
-                  最近几个月的体重变化趋势如何？
+                  {t('chat.quickQ2')}
                 </Button>
                 <Button
-                  onClick={() => handleQuickQuestion('白细胞偏高可能是什么原因？')}
+                  onClick={() => handleQuickQuestion(t('chat.quickQ3'))}
                   className="quick-question-btn"
                 >
-                  白细胞偏高可能是什么原因？
+                  {t('chat.quickQ3')}
                 </Button>
               </div>
             </div>
@@ -449,18 +462,18 @@ const Chat = () => {
               {message.role === 'assistant' && message.isStreaming && !message.content ? (
                 <div className="message-text loading">
                   <Spin size="small" />
-                  AI 正在思考中...
+                  {t('chat.thinking')}
                 </div>
               ) : (
                 <div className="message-text">{message.content}</div>
               )}
               {message.role === 'assistant' && message.sources && message.sources.length > 0 && !message.isStreaming && (
                 <div className="message-sources">
-                  <div style={{ fontWeight: 600, marginBottom: 8 }}>📚 参考档案：</div>
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>📚 {t('chat.sources')}：</div>
                   <div className="sources-list">
                     {message.sources.map((source, index) => (
                       <Tag key={index} color="blue">
-                        {source.date} - {source.type} (相关度: {(source.similarity * 100).toFixed(1)}%)
+                        {source.date} - {source.type} ({t('chat.relevance')}: {(source.similarity * 100).toFixed(1)}%)
                       </Tag>
                     ))}
                   </div>
@@ -470,7 +483,7 @@ const Chat = () => {
                 <>
                   {message.followUpQuestions && message.followUpQuestions.length > 0 && (
                     <div className="follow-up-questions">
-                      <div style={{ fontWeight: 600, marginBottom: 8 }}>💡 拓展问答：</div>
+                      <div style={{ fontWeight: 600, marginBottom: 8 }}>💡 {t('chat.followUp')}：</div>
                       <div className="follow-up-list">
                         {message.followUpQuestions.map((question, index) => (
                           <Button
@@ -485,7 +498,7 @@ const Chat = () => {
                     </div>
                   )}
                   <div className="feedback-section">
-                    <span className="feedback-label">本次回答是否有帮助？</span>
+                    <span className="feedback-label">{t('chat.feedback')}</span>
                     <div className="feedback-buttons">
                       <Button
                         icon={<LikeOutlined />}
@@ -494,7 +507,7 @@ const Chat = () => {
                         disabled={message.feedback !== undefined}
                         size="small"
                       >
-                        有用
+                        {t('chat.helpful')}
                       </Button>
                       <Button
                         icon={<DislikeOutlined />}
@@ -503,19 +516,19 @@ const Chat = () => {
                         disabled={message.feedback !== undefined}
                         size="small"
                       >
-                        无用
+                        {t('chat.unhelpful')}
                       </Button>
                     </div>
                   </div>
                 </>
               )}
-              {message.role === 'assistant' && (
+              {message.timestamp && (
                 <div className="message-meta">
-                  <Tag color="gray" size="small">
-                    模型: {message.modelUsed}
-                    {message.cloudUsed && ' ☁️'}
-                    {message.isStreaming && ' 🔄'}
-                  </Tag>
+                  {message.modelUsed && (
+                    <span className="model-badge">
+                      {t('chat.model')}: {message.modelUsed}
+                    </span>
+                  )}
                   <span className="timestamp">
                     {moment(message.timestamp).format('HH:mm:ss')}
                   </span>
@@ -525,34 +538,34 @@ const Chat = () => {
           </div>
         ))}
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-
         <div ref={messagesEndRef} />
       </div>
 
       {/* 输入区域 */}
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
       <div className="chat-input-container">
         <TextArea
+          className="chat-input"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="输入您的问题..."
-          disabled={loading}
+          placeholder={t('chat.placeholder')}
           rows={3}
-          className="chat-input"
+          disabled={loading}
         />
         <Button
-          type="primary"
           icon={<SendOutlined />}
           onClick={handleSendMessage}
-          disabled={!inputMessage.trim() || loading}
-          className="send-btn"
+          disabled={loading || !inputMessage.trim()}
+          type="primary"
+          size="large"
         >
-          {loading ? '发送中...' : '发送'}
+          {loading ? t('chat.sending') : t('chat.send')}
         </Button>
       </div>
     </Card>
