@@ -107,6 +107,13 @@ const Chat = () => {
 
     setMessages((prev) => [...prev, assistantMessage]);
 
+    console.log('===== AI 流式响应详情 =====');
+    console.log('请求参数 - useCloud:', useCloud);
+    console.log('请求参数 - selectedModel:', selectedModel);
+    console.log('请求参数 - question:', question);
+    console.log('预期响应来源:', useCloud ? '🟢 远程大模型 (蚂蚁百灵)' : '🔵 本地模型 (Ollama)');
+    console.log('========================');
+
     try {
       const eventSource = chatService.askQuestionStream(question, useCloud, 3, selectedModel);
 
@@ -171,6 +178,20 @@ const Chat = () => {
   const handleNormalMessageDirect = async (question) => {
     try {
       const response = await chatService.askQuestion(question, useCloud, 3, selectedModel);
+
+      console.log('===== AI 响应详情 =====');
+      console.log('是否使用云端大模型:', response.cloud_used);
+      console.log('使用的模型:', response.model_used);
+      console.log('请求参数 - useCloud:', useCloud);
+      console.log('请求参数 - selectedModel:', selectedModel);
+      console.log('请求参数 - question:', question);
+      console.log('响应成功:', response.success);
+      console.log('响应来源:', response.cloud_used ? '🟢 远程大模型 (蚂蚁百灵)' : '🔵 本地模型 (Ollama)');
+      if (response.sources && response.sources.length > 0) {
+        console.log('参考来源数量:', response.sources.length);
+        console.log('参考来源:', response.sources);
+      }
+      console.log('========================');
 
       if (response.success) {
         const assistantMessage = {
@@ -373,7 +394,7 @@ const Chat = () => {
   };
 
   return (
-    <Card className="chat-card" bordered={false}>
+    <Card className="chat-card" variant="outlined">
       {/* 头部 */}
       <div className="chat-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

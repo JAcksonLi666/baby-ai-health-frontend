@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Typography, Select } from 'antd';
-import { UploadOutlined, MessageOutlined, FileTextOutlined, UserOutlined, GlobalOutlined } from '@ant-design/icons';
+import { 
+  UploadOutlined, 
+  MessageOutlined, 
+  FileTextOutlined, 
+  UserOutlined, 
+  GlobalOutlined,
+  HomeOutlined,
+  ClockCircleOutlined,
+  FilterOutlined,
+  AlertOutlined,
+} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import UploadComponent from './components/Upload';
 import Chat from './components/Chat';
 import RecordManagement from './components/RecordManagement';
+import Dashboard from './components/Dashboard';
+import SleepRecords from './components/SleepRecords';
+import DiaperRecords from './components/DiaperRecords';
+import CryRecords from './components/CryRecords';
 import './App.css';
 
 const { Header, Content, Footer } = Layout;
@@ -21,6 +35,11 @@ function App() {
 
   const menuItems = [
     {
+      key: 'dashboard',
+      icon: <HomeOutlined />,
+      label: t('nav.dashboard') || '仪表盘',
+    },
+    {
       key: 'upload',
       icon: <UploadOutlined />,
       label: t('nav.upload'),
@@ -31,6 +50,21 @@ function App() {
       label: t('nav.chat'),
     },
     {
+      key: 'sleep',
+      icon: <ClockCircleOutlined />,
+      label: t('nav.sleep') || '睡眠记录',
+    },
+    {
+      key: 'diaper',
+      icon: <FilterOutlined />,
+      label: t('nav.diaper') || '排泄记录',
+    },
+    {
+      key: 'cry',
+      icon: <AlertOutlined />,
+      label: t('nav.cry') || '哭声记录',
+    },
+    {
       key: 'records',
       icon: <FileTextOutlined />,
       label: t('nav.records'),
@@ -39,14 +73,22 @@ function App() {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard />;
       case 'upload':
         return <UploadComponent />;
       case 'chat':
         return <Chat />;
+      case 'sleep':
+        return <SleepRecords />;
+      case 'diaper':
+        return <DiaperRecords />;
+      case 'cry':
+        return <CryRecords />;
       case 'records':
         return <RecordManagement />;
       default:
-        return <UploadComponent />;
+        return <Dashboard />;
     }
   };
 
@@ -70,7 +112,7 @@ function App() {
               value={i18n.language}
               onChange={changeLanguage}
               style={{ width: 120 }}
-              bordered={false}
+              variant="outlined"
               prefix={<GlobalOutlined />}
             >
               <Option value="zh">中文</Option>

@@ -1,0 +1,7 @@
+.sleep-row-ongoing {
+  background-color: #fffbe6 !important;
+}
+
+.sleep-row-ongoing:hover > td {
+  background-color: #fff1b8 !important;
+}

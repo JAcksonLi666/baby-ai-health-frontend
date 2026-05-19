@@ -377,7 +377,7 @@ function RecordManagement() {
             columns={columns}
             rowKey="id"
             pagination={{ pageSize: 10 }}
-            bordered={false}
+            variant="outlined"
             className="record-table"
             scroll={{ x: 1200 }}
           />

@@ -135,7 +135,7 @@ const UploadComponent = () => {
             <span>{t('upload.title')}</span>
           </div>
         }
-        bordered={false}
+        variant="outlined"
         className="upload-card"
       >
         <p className="upload-description">
