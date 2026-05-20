@@ -1,95 +1,136 @@
-# 群晖 DS218 部署指南
+# 群晖 DS218 部署指南 (镜像方式)
 
 本指南专门针对 **群晖 DS218** (Intel Celeron J3355, x86_64架构) 编写。
 
----
-
-## 前置条件
-
-### 1. 安装套件
-在群晖 **套件中心** 安装以下套件：
-- ✅ **Docker** (必装)
-- ✅ **Git Server** (可选，用于拉取代码)
-- ✅ **文本编辑器** (可选，用于编辑配置)
-
-### 2. 确认架构
-DS218 是 **x86_64** 架构，支持标准 Docker 镜像。
+使用**镜像方式**部署，无需在群晖上编译代码，启动更快。
 
 ---
 
-## 部署步骤
+## 部署流程概览
 
-### 步骤 1: 创建项目目录
-
-通过 **SSH** 连接群晖，或使用 **File Station**：
-
-```bash
-# SSH 连接群晖
-ssh admin@你的群晖IP
-
-# 创建项目目录
-mkdir -p /volume1/docker/baby-health
-cd /volume1/docker/baby-health
+```
+本地电脑                    群晖 DS218
+   │                           │
+   ├─1. 构建镜像               │
+   ├─2. 导出镜像文件           │
+   ├─────────────────────────→ │
+   │                           ├─3. 导入镜像
+   │                           ├─4. 配置环境变量
+   │                           └─5. 启动服务
 ```
 
-### 步骤 2: 克隆代码仓库
+---
+
+## 第一步：本地构建镜像
+
+### 1.1 准备环境
+
+确保本地电脑已安装：
+- Docker Desktop
+- Git
+
+### 1.2 克隆代码
 
 ```bash
-# 克隆后端
+# 克隆仓库
 git clone https://github.com/JAcksonLi666/baby-ai-health-backend.git
-
-# 克隆前端
 git clone https://github.com/JAcksonLi666/baby-ai-health-frontend.git
 ```
 
-### 步骤 3: 配置环境变量
+### 1.3 运行构建脚本
+
+```bash
+# 下载构建脚本
+curl -O https://raw.githubusercontent.com/JAcksonLi666/baby-ai-health-frontend/main/build-images.sh
+chmod +x build-images.sh
+
+# 执行构建
+./build-images.sh
+```
+
+构建完成后，会在 `docker-images/` 目录生成：
+- `baby-health-backend.tar.gz` (约 500MB)
+- `baby-health-frontend.tar.gz` (约 50MB)
+
+---
+
+## 第二步：上传到群晖
+
+### 方式一：通过 File Station
+
+1. 打开群晖 **File Station**
+2. 创建文件夹 `/docker/baby-health`
+3. 上传以下文件：
+   - `baby-health-backend.tar.gz`
+   - `baby-health-frontend.tar.gz`
+   - `docker-compose-synology.yml`
+
+### 方式二：通过 SCP
+
+```bash
+# 上传文件到群晖
+scp docker-images/*.tar.gz admin@群晖IP:/volume1/docker/baby-health/
+scp docker-compose-synology.yml admin@群晖IP:/volume1/docker/baby-health/
+```
+
+---
+
+## 第三步：群晖导入镜像
+
+通过 **SSH** 连接群晖：
+
+```bash
+# SSH 连接
+ssh admin@群晖IP
+
+# 进入项目目录
+cd /volume1/docker/baby-health
+
+# 导入镜像
+docker load < baby-health-backend.tar.gz
+docker load < baby-health-frontend.tar.gz
+
+# 验证镜像
+docker images | grep baby-health
+```
+
+---
+
+## 第四步：配置环境变量
 
 ```bash
 # 创建环境变量文件
 cat > .env << 'EOF'
 OPENAI_API_KEY=你的OpenAI_API_Key
 EOF
+
+# 创建数据目录
+mkdir -p data
+chmod 777 data
 ```
 
-### 步骤 4: 创建数据目录
+---
+
+## 第五步：启动服务
 
 ```bash
-# 创建数据存储目录
-mkdir -p backend-data
-chmod 777 backend-data
-```
-
-### 步骤 5: 下载群晖专用配置
-
-```bash
-# 下载群晖专用 docker-compose
-curl -o docker-compose.yml https://raw.githubusercontent.com/JAcksonLi666/baby-ai-health-frontend/main/docker-compose-synology.yml
-```
-
-或者手动创建 `docker-compose.yml` 文件。
-
-### 步骤 6: 启动服务
-
-```bash
-# 启动所有服务
-docker-compose up -d
+# 使用群晖专用配置启动
+docker-compose -f docker-compose-synology.yml up -d
 
 # 查看服务状态
-docker-compose ps
+docker-compose -f docker-compose-synology.yml ps
 
 # 查看日志
-docker-compose logs -f
+docker-compose -f docker-compose-synology.yml logs -f
 ```
 
 ---
 
 ## 访问应用
 
-部署成功后，通过以下地址访问：
-
 | 服务 | 地址 | 说明 |
 |------|------|------|
-| **前端** | http://群晖IP:3010 | Web 界面 |
+| **前端** | http://群晖IP:3010 | 宝宝健康档案系统 |
 | **后端 API** | http://群晖IP:8100 | API 服务 |
 | **API 文档** | http://群晖IP:8100/docs | Swagger UI |
 
@@ -99,10 +140,9 @@ docker-compose logs -f
 
 | 端口 | 服务 | 备注 |
 |------|------|------|
-| 3010 | 前端 | 可修改为其他端口 |
-| 8100 | 后端 | 可修改为其他端口 |
-
-如需修改端口，编辑 `docker-compose.yml` 中的 `ports` 配置。
+| 5000 | 群晖 DSM | 群晖管理界面（已占用）|
+| 3010 | 宝宝健康前端 | 可修改 |
+| 8100 | 宝宝健康后端 | 可修改 |
 
 ---
 
@@ -110,115 +150,112 @@ docker-compose logs -f
 
 ```bash
 # 停止服务
-docker-compose down
+docker-compose -f docker-compose-synology.yml down
 
 # 重启服务
-docker-compose restart
+docker-compose -f docker-compose-synology.yml restart
 
-# 更新代码后重启
-cd baby-ai-health-backend && git pull
-cd ../baby-ai-health-frontend && git pull
-cd .. && docker-compose restart
+# 查看日志
+docker-compose -f docker-compose-synology.yml logs -f backend
+docker-compose -f docker-compose-synology.yml logs -f frontend
 
-# 查看后端日志
-docker-compose logs -f backend
-
-# 查看前端日志
-docker-compose logs -f frontend
-
-# 进入后端容器
+# 进入容器
 docker exec -it baby-health-backend bash
 ```
 
 ---
 
+## 更新应用
+
+当有新版本时：
+
+1. **本地**：拉取最新代码，重新构建镜像
+   ```bash
+   cd baby-ai-health-backend && git pull
+   cd ../baby-ai-health-frontend && git pull
+   cd .. && ./build-images.sh
+   ```
+
+2. **上传**：将新镜像上传到群晖
+
+3. **群晖**：导入新镜像并重启
+   ```bash
+   docker-compose -f docker-compose-synology.yml down
+   docker load < baby-health-backend.tar.gz
+   docker load < baby-health-frontend.tar.gz
+   docker-compose -f docker-compose-synology.yml up -d
+   ```
+
+---
+
 ## 数据备份
 
-数据存储在 `/volume1/docker/baby-health/backend-data` 目录：
+数据存储在 `/volume1/docker/baby-health/data` 目录：
 
 ```bash
-# 备份数据
-tar -czvf baby-health-backup-$(date +%Y%m%d).tar.gz backend-data/
+# 备份
+tar -czvf backup-$(date +%Y%m%d).tar.gz data/
 
-# 恢复数据
-tar -xzvf baby-health-backup-20260520.tar.gz
+# 恢复
+tar -xzvf backup-20260520.tar.gz
 ```
 
 ---
 
 ## 故障排除
 
-### 问题 1: 端口被占用
+### 问题 1: 镜像导入失败
+```bash
+# 检查文件是否完整
+ls -lh *.tar.gz
+
+# 重新下载/上传文件
+```
+
+### 问题 2: 端口冲突
 ```bash
 # 查看端口占用
 netstat -tlnp | grep 3010
 netstat -tlnp | grep 8100
 
-# 修改 docker-compose.yml 中的端口
-```
-
-### 问题 2: 权限问题
-```bash
-# 给予数据目录权限
-chmod -R 777 backend-data/
+# 修改 docker-compose-synology.yml 中的端口
 ```
 
 ### 问题 3: 容器无法启动
 ```bash
 # 查看详细日志
-docker-compose logs backend
-docker-compose logs frontend
+docker logs baby-health-backend
+docker logs baby-health-frontend
 
-# 重新构建
-docker-compose down
-docker-compose up -d --build
+# 检查环境变量
+cat .env
 ```
 
 ### 问题 4: API 连接失败
-前端需要配置后端 API 地址，编辑前端环境变量：
+检查前端是否正确连接后端：
 ```bash
-# 在 docker-compose.yml 中添加
-environment:
-  - VITE_API_BASE_URL=http://你的群晖IP:8100
+# 测试后端 API
+curl http://localhost:8100/health
 ```
 
 ---
 
-## 群晖 Docker 界面操作
+## 文件清单
 
-如果不使用 SSH，也可以通过群晖 Docker 套件界面操作：
+部署完成后，群晖上的文件结构：
 
-1. 打开 **Docker** 套件
-2. 点击 **项目** → **新增**
-3. 选择 `docker-compose.yml` 文件
-4. 点击 **创建**
-
----
-
-## 更新应用
-
-```bash
-# 拉取最新代码
-cd baby-ai-health-backend && git pull origin main
-cd ../baby-ai-health-frontend && git pull origin main
-
-# 重启服务
-cd .. && docker-compose restart
 ```
-
----
-
-## 卸载
-
-```bash
-# 停止并删除容器
-docker-compose down
-
-# 删除镜像（可选）
-docker rmi python:3.11-slim node:18-alpine
-
-# 删除数据（谨慎！）
-rm -rf backend-data/
+/volume1/docker/baby-health/
+├── baby-health-backend.tar.gz   # 后端镜像文件（可删除）
+├── baby-health-frontend.tar.gz  # 前端镜像文件（可删除）
+├── docker-compose-synology.yml  # Docker Compose 配置
+├── .env                         # 环境变量
+└── data/                        # 数据存储目录
+    ├── sleep_records.json
+    ├── diaper_records.json
+    ├── cry_records.json
+    ├── feeding_records.json
+    └── growth_records.json
 ```
 
 ---

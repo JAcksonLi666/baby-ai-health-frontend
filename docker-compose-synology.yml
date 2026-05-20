@@ -1,25 +1,23 @@
-# 群晖 DS218 专用 Docker Compose 配置
+# 群晖 DS218 专用 Docker Compose 配置 (镜像方式)
 # DS218: Intel Celeron J3355 (x86_64架构)
+# 使用预构建镜像，无需源码
 
 version: '3.8'
 
 services:
   # 后端服务
   backend:
-    image: python:3.11-slim
+    image: baby-health-backend:latest
     container_name: baby-health-backend
-    working_dir: /app
     ports:
-      - "8100:8000"  # 群晖端口映射，避免与其他服务冲突
+      - "8100:8000"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - TESSERACT_CMD=/usr/bin/tesseract
       - PYTHONUNBUFFERED=1
     volumes:
-      # 数据持久化 - 映射到群晖共享文件夹
-      - ./backend-data:/app/data
-      # 后端代码
-      - ./baby-ai-health-backend:/app
+      # 只挂载数据目录，不需要源码
+      - ./data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -28,24 +26,13 @@ services:
       retries: 3
     networks:
       - baby-health-network
-    command: >
-      bash -c "
-        apt-get update &&
-        apt-get install -y tesseract-ocr tesseract-ocr-chi-sim libgl1-mesa-glx libglib2.0-0 curl &&
-        pip install --no-cache-dir -r requirements.txt &&
-        uvicorn main:app --host 0.0.0.0 --port 8000
-      "
 
   # 前端服务
   frontend:
-    image: node:18-alpine
+    image: baby-health-frontend:latest
     container_name: baby-health-frontend
-    working_dir: /app
     ports:
-      - "3010:80"  # 群晖端口映射
-    volumes:
-      # 前端代码
-      - ./baby-ai-health-frontend:/app
+      - "3010:80"
     depends_on:
       - backend
     restart: unless-stopped
@@ -56,17 +43,10 @@ services:
       retries: 3
     networks:
       - baby-health-network
-    command: >
-      sh -c "
-        npm install &&
-        npm run build &&
-        npm install -g serve &&
-        serve -s dist -l 80
-      "
 
 networks:
   baby-health-network:
     driver: bridge
 
-# 注意：数据存储在 ./backend-data 目录
-# 请确保该目录有写入权限
+# 数据存储在 ./data 目录
+# 部署前需要先构建镜像
