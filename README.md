@@ -11,7 +11,14 @@
 - 📊 **档案管理**：完整的 CRUD 操作，支持筛选和编辑
 - 🎨 **美观界面**：基于 Ant Design 的现代化 UI
 
-### 新增功能 (v1.2.0)
+### 新增功能 (v1.3.0)
+- 🍼 **喂养记录管理**：母乳、配方奶、辅食、喝水记录组件
+- 📏 **生长发育记录**：体重、身高、头围、体温记录组件
+- 📊 **儿童生长发育曲线**：0-12岁 WHO/中国标准曲线可视化
+- 🐳 **Docker 部署支持**：一键部署到群晖 NAS
+- 📱 **PWA 支持**：可添加到手机主屏幕，离线访问
+
+### v1.2.0 功能
 - 📈 **今日汇总仪表盘**：睡眠、排泄、哭声数据概览
 - 😴 **睡眠记录管理**：记录宝宝的入睡、醒来时间、睡眠质量
 - 💩 **排泄记录管理**：记录尿布类型、颜色、便便状态
@@ -44,6 +51,9 @@ fontend/
 │   │   ├── DiaperRecords.css      # 排泄记录样式
 │   │   ├── CryRecords.jsx         # 哭声记录管理
 │   │   ├── CryRecords.css         # 哭声记录样式
+│   │   ├── FeedingRecords.jsx     # 喂养记录管理 (v1.3.0)
+│   │   ├── GrowthRecords.jsx      # 生长发育记录 (v1.3.0)
+│   │   ├── GrowthChart.jsx        # 生长发育曲线 (v1.3.0)
 │   │   ├── Upload.jsx             # 化验单上传组件
 │   │   ├── Upload.css             # 上传组件样式
 │   │   ├── Chat.jsx               # 智能问答组件
@@ -230,6 +240,16 @@ export default defineConfig({
 | POST | /api/cry | 创建哭声记录 |
 | PUT | /api/cry/{id} | 更新哭声记录 |
 | DELETE | /api/cry/{id} | 删除哭声记录 |
+| GET | /api/feeding | 获取喂养记录列表 (v1.3.0) |
+| POST | /api/feeding | 创建喂养记录 (v1.3.0) |
+| PUT | /api/feeding/{id} | 更新喂养记录 (v1.3.0) |
+| DELETE | /api/feeding/{id} | 删除喂养记录 (v1.3.0) |
+| GET | /api/growth | 获取生长发育记录列表 (v1.3.0) |
+| POST | /api/growth | 创建生长发育记录 (v1.3.0) |
+| PUT | /api/growth/{id} | 更新生长发育记录 (v1.3.0) |
+| DELETE | /api/growth/{id} | 删除生长发育记录 (v1.3.0) |
+| GET | /api/growth/standards | 获取生长标准值 (v1.3.0) |
+| GET | /api/growth/percentile | 计算百分位 (v1.3.0) |
 
 ### 仪表盘与知识库
 | 方法 | 路径 | 描述 |
@@ -245,6 +265,15 @@ export default defineConfig({
 3. **图标导入**：使用 Ant Design 图标时需使用 Outlined 后缀形式（如 `UploadOutlined`）
 
 ## 🔄 版本历史
+
+- **v1.3.0 (2026-05-20)** - 数据收集增强版本
+  - ✅ 添加喂养记录管理组件（母乳/配方奶/辅食/喝水）
+  - ✅ 添加生长发育记录组件（体重/身高/头围/体温）
+  - ✅ 添加儿童生长发育曲线组件（0-12岁 WHO/中国标准）
+  - ✅ 添加 Docker 部署配置
+  - ✅ 添加群晖 NAS 部署指南
+  - ✅ 添加 PWA 支持（manifest.json + Service Worker）
+  - ✅ 添加喂养/生长发育 API 服务
 
 - **v1.2.0 (2026-05-19)** - 完整功能版本
   - ✅ 添加今日汇总仪表盘（Dashboard）
