@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./baby-ai-health-backend
+      dockerfile: Dockerfile
+    container_name: baby-health-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TESSERACT_CMD=/usr/bin/tesseract
+    volumes:
+      - backend-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - baby-health-network
+
+  frontend:
+    build:
+      context: ./baby-ai-health-frontend
+      dockerfile: Dockerfile
+    container_name: baby-health-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    networks:
+      - baby-health-network
+
+volumes:
+  backend-data:
+    driver: local
+
+networks:
+  baby-health-network:
+    driver: bridge
