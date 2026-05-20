@@ -1,0 +1,52 @@
+# 群晖 DS218 专用 Docker Compose 配置 (镜像方式)
+# DS218: Intel Celeron J3355 (x86_64架构)
+# 使用预构建镜像，无需源码
+
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    image: baby-health-backend:latest
+    container_name: baby-health-backend
+    ports:
+      - "8100:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TESSERACT_CMD=/usr/bin/tesseract
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # 只挂载数据目录，不需要源码
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - baby-health-network
+
+  # 前端服务
+  frontend:
+    image: baby-health-frontend:latest
+    container_name: baby-health-frontend
+    ports:
+      - "3010:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    networks:
+      - baby-health-network
+
+networks:
+  baby-health-network:
+    driver: bridge
+
+# 数据存储在 ./data 目录
+# 部署前需要先构建镜像

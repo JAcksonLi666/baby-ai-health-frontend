@@ -363,6 +363,111 @@ export const dashboardService = {
   },
 };
 
+export const feedingService = {
+  async createRecord(data) {
+    try {
+      const response = await apiClient.post('/api/feeding', data);
+      return response.data;
+    } catch (error) {
+      console.error('创建喂养记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async listRecords(params = {}) {
+    try {
+      const response = await apiClient.get('/api/feeding', { params });
+      return response.data;
+    } catch (error) {
+      console.error('获取喂养记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getRecord(id) {
+    try {
+      const response = await apiClient.get(`/api/feeding/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('获取喂养记录详情失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async updateRecord(id, data) {
+    try {
+      const response = await apiClient.put(`/api/feeding/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('更新喂养记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async deleteRecord(id) {
+    try {
+      const response = await apiClient.delete(`/api/feeding/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('删除喂养记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
+export const growthService = {
+  async createRecord(data) {
+    try {
+      const response = await apiClient.post('/api/growth', data);
+      return response.data;
+    } catch (error) {
+      console.error('创建生长发育记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async listRecords(params = {}) {
+    try {
+      const response = await apiClient.get('/api/growth', { params });
+      return response.data;
+    } catch (error) {
+      console.error('获取生长发育记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getRecord(id) {
+    try {
+      const response = await apiClient.get(`/api/growth/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('获取生长发育记录详情失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async updateRecord(id, data) {
+    try {
+      const response = await apiClient.put(`/api/growth/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('更新生长发育记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async deleteRecord(id) {
+    try {
+      const response = await apiClient.delete(`/api/growth/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('删除生长发育记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getLatest() {
+    try {
+      const response = await apiClient.get('/api/growth/latest');
+      return response.data;
+    } catch (error) {
+      console.error('获取最新生长发育记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
 export const knowledgeService = {
   async search(query, nResults = 3) {
     try {
