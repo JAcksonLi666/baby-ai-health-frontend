@@ -1,0 +1,26 @@
+{
+  "name": "宝宝健康档案AI助手",
+  "short_name": "宝宝健康",
+  "description": "智能宝宝健康记录与管理助手",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1890ff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/vite.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "baby", "medical"],
+  "lang": "zh-CN"
+}
