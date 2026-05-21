@@ -7,7 +7,7 @@ import {
   EyeOutlined, EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined, SearchOutlined, SyncOutlined, FilterOutlined
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { recordService } from '../services/apiService';
 import './RecordManagement.css';
 
@@ -98,7 +98,7 @@ function RecordManagement() {
   const handleEdit = (record) => {
     setEditingRecord({
       ...record,
-      editDate: record.metadata?.record_date ? moment(record.metadata.record_date) : moment(),
+      editDate: record.metadata?.record_date ? dayjs(record.metadata.record_date) : dayjs(),
       editType: record.metadata?.type || 'general'
     });
   };
@@ -149,7 +149,7 @@ function RecordManagement() {
 
   const formatDate = (dateStr) => {
     if (!dateStr) return t('records.unknown');
-    return moment(dateStr).format('YYYY-MM-DD');
+    return dayjs(dateStr).format('YYYY-MM-DD');
   };
 
   const getTypeInfo = (type) => {
@@ -417,7 +417,7 @@ function RecordManagement() {
               </div>
               <div className="detail-row">
                 <span className="detail-label">{t('records.uploadTime')}:</span>
-                <span>{selectedRecord.metadata?.upload_time ? moment(selectedRecord.metadata.upload_time).format('YYYY-MM-DD HH:mm:ss') : t('records.unknown')}</span>
+                <span>{selectedRecord.metadata?.upload_time ? dayjs(selectedRecord.metadata.upload_time).format('YYYY-MM-DD HH:mm:ss') : t('records.unknown')}</span>
               </div>
             </div>
             <div className="detail-section">

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Upload, DatePicker, Select, Button, Card, message, Spin, Alert, Tag, Divider } from 'antd';
 import { UploadOutlined, EyeOutlined, CheckCircleOutlined, AlertOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { uploadService } from '../services/apiService';
 import './Upload.css';
 
@@ -12,7 +12,7 @@ const UploadComponent = () => {
   const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [recordDate, setRecordDate] = useState(moment());
+  const [recordDate, setRecordDate] = useState(dayjs());
   const [recordType, setRecordType] = useState('general');
   const [uploading, setUploading] = useState(false);
   const [previewing, setPreviewing] = useState(false);
@@ -58,8 +58,8 @@ const UploadComponent = () => {
       if (response.success) {
         setExtractedText(response.extracted_text);
         const dateToUse = response.detected_date 
-          ? moment(response.detected_date) 
-          : moment();
+          ? dayjs(response.detected_date) 
+          : dayjs();
         setDetectedDate(response.detected_date);
         setRecordDate(dateToUse);
         message.success(t('upload.startRecognition'));
@@ -115,7 +115,7 @@ const UploadComponent = () => {
     setError(null);
     setExtractedText('');
     setDetectedDate(null);
-    setRecordDate(moment());
+    setRecordDate(dayjs());
     setRecordType('general');
   };
 
@@ -222,7 +222,7 @@ const UploadComponent = () => {
               <div className="date-display" style={{ marginTop: 12 }}>
                 <span className="date-label">{t('upload.currentSelection')}</span>
                 <span className="date-value">
-                  {recordDate.isSame(moment(), 'day') ? t('upload.today') : recordDate.format('YYYY年MM月DD日')}
+                  {recordDate.isSame(dayjs(), 'day') ? t('upload.today') : recordDate.format('YYYY年MM月DD日')}
                 </span>
               </div>
             </div>

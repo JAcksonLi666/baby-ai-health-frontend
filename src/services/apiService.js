@@ -468,6 +468,72 @@ export const growthService = {
   },
 };
 
+export const reminderService = {
+  async createRecord(data) {
+    try {
+      const response = await apiClient.post('/api/reminder', data);
+      return response.data;
+    } catch (error) {
+      console.error('创建提醒记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async listRecords(params = {}) {
+    try {
+      const response = await apiClient.get('/api/reminder', { params });
+      return response.data;
+    } catch (error) {
+      console.error('获取提醒记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getRecord(id) {
+    try {
+      const response = await apiClient.get(`/api/reminder/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('获取提醒记录详情失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async updateRecord(id, data) {
+    try {
+      const response = await apiClient.put(`/api/reminder/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('更新提醒记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async deleteRecord(id) {
+    try {
+      const response = await apiClient.delete(`/api/reminder/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('删除提醒记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getPending() {
+    try {
+      const response = await apiClient.get('/api/reminder/pending');
+      return response.data;
+    } catch (error) {
+      console.error('获取待处理提醒失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getToday() {
+    try {
+      const response = await apiClient.get('/api/reminder/today');
+      return response.data;
+    } catch (error) {
+      console.error('获取今日提醒失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
 export const knowledgeService = {
   async search(query, nResults = 3) {
     try {

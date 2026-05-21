@@ -7,7 +7,7 @@ import {
   SendOutlined, SyncOutlined, RobotOutlined, UserOutlined, LikeOutlined, DislikeOutlined, MessageOutlined
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { chatService, modelService } from '../services/apiService';
 import './Chat.css';
 
@@ -56,7 +56,7 @@ const Chat = () => {
       id: Date.now(),
       role: 'user',
       content: inputMessage,
-      timestamp: moment().toISOString(),
+      timestamp: dayjs().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -76,7 +76,7 @@ const Chat = () => {
       id: Date.now(),
       role: 'user',
       content: question,
-      timestamp: moment().toISOString(),
+      timestamp: dayjs().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -98,7 +98,7 @@ const Chat = () => {
       id: assistantMessageId,
       role: 'assistant',
       content: '',
-      timestamp: moment().toISOString(),
+      timestamp: dayjs().toISOString(),
       sources: [],
       modelUsed: selectedModel === 'auto' ? autoModelDesc : selectedModel,
       cloudUsed: useCloud,
@@ -198,7 +198,7 @@ const Chat = () => {
           id: Date.now() + 1,
           role: 'assistant',
           content: response.answer,
-          timestamp: moment().toISOString(),
+          timestamp: dayjs().toISOString(),
           sources: response.sources,
           modelUsed: response.model_used,
           cloudUsed: response.cloud_used,
@@ -225,7 +225,7 @@ const Chat = () => {
       id: assistantMessageId,
       role: 'assistant',
       content: '',
-      timestamp: moment().toISOString(),
+      timestamp: dayjs().toISOString(),
       sources: [],
       modelUsed: selectedModel === 'auto' ? autoModelDesc : selectedModel,
       cloudUsed: useCloud,
@@ -304,7 +304,7 @@ const Chat = () => {
           id: Date.now() + 1,
           role: 'assistant',
           content: response.answer,
-          timestamp: moment().toISOString(),
+          timestamp: dayjs().toISOString(),
           sources: response.sources,
           modelUsed: response.model_used,
           cloudUsed: response.cloud_used,
@@ -551,7 +551,7 @@ const Chat = () => {
                     </span>
                   )}
                   <span className="timestamp">
-                    {moment(message.timestamp).format('HH:mm:ss')}
+                    {dayjs(message.timestamp).format('HH:mm:ss')}
                   </span>
                 </div>
               )}
