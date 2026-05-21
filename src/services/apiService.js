@@ -557,4 +557,85 @@ export const knowledgeService = {
   },
 };
 
+export const labReportService = {
+  async parse(data) {
+    try {
+      const response = await apiClient.post('/api/lab-report/parse', data);
+      return response.data;
+    } catch (error) {
+      console.error('化验单解析失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async evaluate(data) {
+    try {
+      const response = await apiClient.post('/api/lab-report/evaluate', data);
+      return response.data;
+    } catch (error) {
+      console.error('化验单评估失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
+export const symptomService = {
+  async analyze(data) {
+    try {
+      const response = await apiClient.post('/api/symptom/analyze', data);
+      return response.data;
+    } catch (error) {
+      console.error('症状分析失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getCategories() {
+    try {
+      const response = await apiClient.get('/api/symptom/categories');
+      return response.data;
+    } catch (error) {
+      console.error('获取症状分类失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
+export const chatHistoryService = {
+  async createSession(data) {
+    try {
+      const response = await apiClient.post('/api/chat/sessions', data);
+      return response.data;
+    } catch (error) {
+      console.error('创建对话会话失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async listSessions() {
+    try {
+      const response = await apiClient.get('/api/chat/sessions');
+      return response.data;
+    } catch (error) {
+      console.error('获取对话列表失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getSessionMessages(sessionId) {
+    try {
+      const response = await apiClient.get(`/api/chat/sessions/${sessionId}/messages`);
+      return response.data;
+    } catch (error) {
+      console.error('获取对话消息失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async deleteSession(sessionId) {
+    try {
+      const response = await apiClient.delete(`/api/chat/sessions/${sessionId}`);
+      return response.data;
+    } catch (error) {
+      console.error('删除对话会话失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
 export default apiClient;

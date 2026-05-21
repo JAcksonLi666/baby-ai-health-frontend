@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Typography, Select } from 'antd';
-import { 
-  UploadOutlined, 
-  MessageOutlined, 
-  FileTextOutlined, 
-  UserOutlined, 
+import {
+  UploadOutlined,
+  MessageOutlined,
+  FileTextOutlined,
+  UserOutlined,
   GlobalOutlined,
   HomeOutlined,
   ClockCircleOutlined,
@@ -14,6 +14,9 @@ import {
   MedicineBoxOutlined,
   LineChartOutlined,
   BellOutlined,
+  FileSearchOutlined,
+  HeartOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import UploadComponent from './components/Upload';
@@ -27,6 +30,9 @@ import FeedingRecords from './components/FeedingRecords';
 import GrowthRecords from './components/GrowthRecords';
 import GrowthChart from './components/GrowthChart';
 import ReminderCenter from './components/ReminderCenter';
+import LabReportParser from './components/LabReportParser';
+import SymptomChecker from './components/SymptomChecker';
+import ChatHistory from './components/ChatHistory';
 import './App.css';
 
 const { Header, Content, Footer } = Layout;
@@ -97,6 +103,21 @@ function App() {
       icon: <FileTextOutlined />,
       label: t('nav.records'),
     },
+    {
+      key: 'lab-report',
+      icon: <FileSearchOutlined />,
+      label: '化验单解析',
+    },
+    {
+      key: 'symptom',
+      icon: <HeartOutlined />,
+      label: '症状自查',
+    },
+    {
+      key: 'chat-history',
+      icon: <HistoryOutlined />,
+      label: '对话历史',
+    },
   ];
 
   const renderContent = () => {
@@ -123,6 +144,12 @@ function App() {
         return <ReminderCenter />;
       case 'records':
         return <RecordManagement />;
+      case 'lab-report':
+        return <LabReportParser />;
+      case 'symptom':
+        return <SymptomChecker />;
+      case 'chat-history':
+        return <ChatHistory />;
       default:
         return <Dashboard />;
     }
