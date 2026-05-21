@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   Table,
@@ -21,70 +22,78 @@ import {
   WarningOutlined,
 } from '@ant-design/icons';
 import { labReportService } from '../services/apiService';
-
-// Report type options for the selector
-const REPORT_TYPES = [
-  { value: 'blood_routine', label: '血液常规' },
-  { value: 'urine_routine', label: '尿液常规' },
-  { value: 'liver_function', label: '肝功能' },
-  { value: 'kidney_function', label: '肾功能' },
-];
-
-// Status color mapping for indicator tags
-const STATUS_CONFIG = {
-  normal: { color: 'green', text: '正常' },
-  low: { color: 'blue', text: '偏低' },
-  high: { color: 'orange', text: '偏高' },
-  critical: { color: 'red', text: '危急' },
-};
-
-// Table column definitions for lab report indicators
-const getColumns = () => [
-  {
-    title: '指标名称',
-    dataIndex: 'name',
-    key: 'name',
-    width: 160,
-  },
-  {
-    title: '测量值',
-    dataIndex: 'value',
-    key: 'value',
-    width: 100,
-    render: (val) => (val != null ? val : '-'),
-  },
-  {
-    title: '单位',
-    dataIndex: 'unit',
-    key: 'unit',
-    width: 80,
-    render: (val) => val || '-',
-  },
-  {
-    title: '参考范围',
-    dataIndex: 'reference_range',
-    key: 'reference_range',
-    width: 140,
-    render: (val) => val || '-',
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    key: 'status',
-    width: 80,
-    render: (status) => {
-      const config = STATUS_CONFIG[status] || STATUS_CONFIG.normal;
-      return <Tag color={config.color}>{config.text}</Tag>;
-    },
-  },
-];
+import './LabReportParser.css';
 
 const LabReportParser = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [reportType, setReportType] = useState(null);
   const [monthAge, setMonthAge] = useState(null);
   const [reportData, setReportData] = useState(null);
   const [form] = Form.useForm();
+
+  // Report type options for the selector
+  const REPORT_TYPES = useMemo(
+    () => [
+      { value: 'blood_routine', label: t('labReport.reportTypes.blood_routine') },
+      { value: 'urine_routine', label: t('labReport.reportTypes.urine_routine') },
+      { value: 'liver_function', label: t('labReport.reportTypes.liver_function') },
+      { value: 'kidney_function', label: t('labReport.reportTypes.kidney_function') },
+    ],
+    [t]
+  );
+
+  // Status color mapping for indicator tags
+  const STATUS_CONFIG = useMemo(
+    () => ({
+      normal: { color: 'green', text: t('labReport.statusOptions.normal') },
+      low: { color: 'blue', text: t('labReport.statusOptions.low') },
+      high: { color: 'orange', text: t('labReport.statusOptions.high') },
+      critical: { color: 'red', text: t('labReport.statusOptions.critical') },
+    }),
+    [t]
+  );
+
+  // Table column definitions for lab report indicators
+  const getColumns = () => [
+    {
+      title: t('labReport.indicatorName'),
+      dataIndex: 'name',
+      key: 'name',
+      width: 160,
+    },
+    {
+      title: t('labReport.value'),
+      dataIndex: 'value',
+      key: 'value',
+      width: 100,
+      render: (val) => (val != null ? val : '-'),
+    },
+    {
+      title: t('labReport.unit'),
+      dataIndex: 'unit',
+      key: 'unit',
+      width: 80,
+      render: (val) => val || '-',
+    },
+    {
+      title: t('labReport.referenceRange'),
+      dataIndex: 'reference_range',
+      key: 'reference_range',
+      width: 140,
+      render: (val) => val || '-',
+    },
+    {
+      title: t('labReport.status'),
+      dataIndex: 'status',
+      key: 'status',
+      width: 80,
+      render: (status) => {
+        const config = STATUS_CONFIG[status] || STATUS_CONFIG.normal;
+        return <Tag color={config.color}>{config.text}</Tag>;
+      },
+    },
+  ];
 
   // Handle lab report evaluation
   const handleEvaluate = useCallback(async () => {
@@ -113,17 +122,17 @@ const LabReportParser = () => {
       const res = await labReportService.evaluate(payload);
       if (res.success) {
         setReportData(res.data);
-        message.success('化验单解析完成');
+        message.success(t('labReport.success'));
       } else {
-        message.error(res.message || '解析失败');
+        message.error(res.message || t('labReport.parseError'));
       }
     } catch (error) {
       if (error.errorFields) return; // form validation error
-      message.error('化验单解析失败');
+      message.error(t('labReport.error'));
     } finally {
       setLoading(false);
     }
-  }, [form]);
+  }, [form, t]);
 
   // Reset form and results
   const handleReset = () => {
@@ -156,21 +165,21 @@ const LabReportParser = () => {
         title={
           <Space>
             <FileSearchOutlined />
-            <span>化验单解析</span>
+            <span>{t('labReport.title')}</span>
           </Space>
         }
-        className="mb-4"
+        style={{ marginBottom: 16 }}
       >
         <Form form={form} layout="vertical">
           <Row gutter={16}>
             <Col xs={24} sm={8}>
               <Form.Item
-                label="报告类型"
+                label={t('labReport.reportType')}
                 name="report_type"
-                rules={[{ required: true, message: '请选择报告类型' }]}
+                rules={[{ required: true, message: t('labReport.selectReportType') }]}
               >
                 <Select
-                  placeholder="请选择报告类型"
+                  placeholder={t('labReport.selectReportType')}
                   options={REPORT_TYPES}
                   onChange={(val) => setReportType(val)}
                   allowClear
@@ -179,19 +188,19 @@ const LabReportParser = () => {
             </Col>
             <Col xs={24} sm={8}>
               <Form.Item
-                label="宝宝月龄"
+                label={t('labReport.monthAge')}
                 name="month_age"
-                rules={[{ required: true, message: '请输入宝宝月龄' }]}
+                rules={[{ required: true, message: t('labReport.selectMonthAge') }]}
               >
                 <Select
-                  placeholder="请选择月龄"
+                  placeholder={t('labReport.selectMonthAge')}
                   onChange={(val) => setMonthAge(val)}
                   allowClear
                   showSearch
                 >
                   {Array.from({ length: 36 }, (_, i) => i + 1).map((m) => (
                     <Select.Option key={m} value={m}>
-                      {m} 个月
+                      {m} {t('labReport.months')}
                     </Select.Option>
                   ))}
                 </Select>
@@ -206,21 +215,21 @@ const LabReportParser = () => {
                     loading={loading}
                     icon={<FileSearchOutlined />}
                   >
-                    解析化验单
+                    {t('labReport.parseButton')}
                   </Button>
-                  <Button onClick={handleReset}>重置</Button>
+                  <Button onClick={handleReset}>{t('labReport.reset')}</Button>
                 </Space>
               </Form.Item>
             </Col>
           </Row>
           <Form.Item
-            label="化验指标数据"
+            label={t('labReport.indicators')}
             name="indicators"
-            extra="每行一个指标，格式：指标名称,测量值,单位（例如：白细胞,8.5,10^9/L）"
+            extra={t('labReport.indicatorsHint')}
           >
             <Input.TextArea
               rows={6}
-              placeholder="白细胞,8.5,10^9/L&#10;红细胞,4.5,10^12/L&#10;血红蛋白,120,g/L"
+              placeholder={t('labReport.indicatorsPlaceholder')}
             />
           </Form.Item>
         </Form>
@@ -231,7 +240,7 @@ const LabReportParser = () => {
         <Spin spinning={loading}>
           {/* Report type tag */}
           <Card
-            title="解析结果"
+            title={t('labReport.result')}
             extra={
               reportType && (
                 <Tag color="blue">
@@ -242,32 +251,32 @@ const LabReportParser = () => {
             }
           >
             {/* Summary statistics */}
-            <Row gutter={16} className="mb-4">
-              <Col span={6}>
+            <Row gutter={16} style={{ marginBottom: 16 }}>
+              <Col xs={24} sm={12} md={6}>
                 <Statistic
-                  title="总指标数"
+                  title={t('labReport.totalIndicators')}
                   value={reportData.indicators?.length || 0}
                 />
               </Col>
-              <Col span={6}>
+              <Col xs={24} sm={12} md={6}>
                 <Statistic
-                  title="正常"
+                  title={t('labReport.normal')}
                   value={statusCounts.normal || 0}
                   valueStyle={{ color: '#52c41a' }}
                   prefix={<CheckCircleOutlined />}
                 />
               </Col>
-              <Col span={6}>
+              <Col xs={24} sm={12} md={6}>
                 <Statistic
-                  title="异常"
+                  title={t('labReport.abnormal')}
                   value={abnormalCount}
                   valueStyle={{ color: abnormalCount > 0 ? '#faad14' : '#52c41a' }}
                   prefix={<WarningOutlined />}
                 />
               </Col>
-              <Col span={6}>
+              <Col xs={24} sm={12} md={6}>
                 <Statistic
-                  title="危急"
+                  title={t('labReport.critical')}
                   value={statusCounts.critical || 0}
                   valueStyle={{
                     color: statusCounts.critical > 0 ? '#ff4d4f' : '#52c41a',
@@ -280,14 +289,14 @@ const LabReportParser = () => {
             <Table
               columns={getColumns()}
               dataSource={reportData.indicators || []}
-              rowKey={(record) => record.name || Math.random()}
+              rowKey={(record, index) => record.name || `indicator-${index}`}
               pagination={false}
               size="small"
               bordered
               rowClassName={(record) => {
-                if (record.status === 'critical') return 'row-critical';
-                if (record.status === 'high') return 'row-high';
-                if (record.status === 'low') return 'row-low';
+                if (record.status === 'critical') return 'lab-row-critical';
+                if (record.status === 'high') return 'lab-row-high';
+                if (record.status === 'low') return 'lab-row-low';
                 return '';
               }}
             />
@@ -295,17 +304,17 @@ const LabReportParser = () => {
             {/* Summary section */}
             {reportData.summary && (
               <Descriptions
-                title="总结摘要"
+                title={t('labReport.summary')}
                 bordered
                 size="small"
-                className="mt-4"
+                style={{ marginTop: 16 }}
               >
-                <Descriptions.Item label="总结" span={3}>
+                <Descriptions.Item label={t('labReport.summary')} span={3}>
                   {reportData.summary}
                 </Descriptions.Item>
-                <Descriptions.Item label="异常指标数量" span={3}>
+                <Descriptions.Item label={t('labReport.abnormalCount')} span={3}>
                   <Tag color={abnormalCount > 0 ? 'orange' : 'green'}>
-                    {abnormalCount} 项
+                    {abnormalCount} {t('labReport.items')}
                   </Tag>
                 </Descriptions.Item>
               </Descriptions>

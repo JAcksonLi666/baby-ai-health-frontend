@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   List,
@@ -24,112 +25,125 @@ import { symptomService } from '../services/apiService';
 
 const { Title, Text, Paragraph } = Typography;
 
-// Default symptom categories with their specific symptoms
-const DEFAULT_CATEGORIES = [
-  {
-    key: 'fever',
-    name: '发热',
-    symptoms: [
-      { key: 'high_fever', label: '高热（>39°C）' },
-      { key: 'low_fever', label: '低热（37.3-38°C）' },
-      { key: 'persistent_fever', label: '持续发热超过3天' },
-      { key: 'fever_with_rash', label: '发热伴皮疹' },
-      { key: 'fever_with_seizure', label: '发热伴惊厥' },
-    ],
-  },
-  {
-    key: 'respiratory',
-    name: '呼吸系统',
-    symptoms: [
-      { key: 'cough', label: '咳嗽' },
-      { key: 'nasal_congestion', label: '鼻塞' },
-      { key: 'runny_nose', label: '流鼻涕' },
-      { key: 'wheezing', label: '喘息' },
-      { key: 'difficulty_breathing', label: '呼吸困难' },
-      { key: 'sneezing', label: '打喷嚏' },
-    ],
-  },
-  {
-    key: 'digestive',
-    name: '消化系统',
-    symptoms: [
-      { key: 'vomiting', label: '呕吐' },
-      { key: 'diarrhea', label: '腹泻' },
-      { key: 'constipation', label: '便秘' },
-      { key: 'abdominal_distension', label: '腹胀' },
-      { key: 'poor_appetite', label: '食欲不振' },
-      { key: 'blood_in_stool', label: '便血' },
-    ],
-  },
-  {
-    key: 'skin',
-    name: '皮肤',
-    symptoms: [
-      { key: 'rash', label: '皮疹' },
-      { key: 'eczema', label: '湿疹' },
-      { key: 'dry_skin', label: '皮肤干燥' },
-      { key: 'jaundice', label: '黄疸' },
-      { key: 'diaper_rash', label: '尿布疹' },
-      { key: 'excessive_sweating', label: '多汗' },
-    ],
-  },
-  {
-    key: 'sleep',
-    name: '睡眠',
-    symptoms: [
-      { key: 'difficulty_falling_asleep', label: '入睡困难' },
-      { key: 'frequent_waking', label: '频繁夜醒' },
-      { key: 'night_terrors', label: '夜惊' },
-      { key: 'excessive_sleepiness', label: '嗜睡' },
-      { key: 'irregular_sleep', label: '睡眠不规律' },
-    ],
-  },
-  {
-    key: 'oral',
-    name: '口腔',
-    symptoms: [
-      { key: 'thrush', label: '鹅口疮' },
-      { key: 'teething_discomfort', label: '出牙不适' },
-      { key: 'drooling', label: '流口水过多' },
-      { key: 'mouth_ulcer', label: '口腔溃疡' },
-      { key: 'bad_breath', label: '口臭' },
-    ],
-  },
-  {
-    key: 'eye',
-    name: '眼部',
-    symptoms: [
-      { key: 'red_eye', label: '眼红' },
-      { key: 'excessive_tearing', label: '流泪过多' },
-      { key: 'eye_discharge', label: '眼部分泌物' },
-      { key: 'eye_rubbing', label: '频繁揉眼' },
-    ],
-  },
-  {
-    key: 'ear',
-    name: '耳部',
-    symptoms: [
-      { key: 'ear_pulling', label: '频繁抓耳' },
-      { key: 'ear_discharge', label: '耳部分泌物' },
-      { key: 'ear_infection', label: '耳部感染' },
-      { key: 'hearing_concern', label: '听力异常' },
-    ],
-  },
-];
-
-// Severity level color mapping
-const SEVERITY_CONFIG = {
-  mild: { color: 'green', text: '轻微' },
-  moderate: { color: 'orange', text: '中等' },
-  severe: { color: 'red', text: '严重' },
-};
-
 const SymptomChecker = () => {
+  const { t } = useTranslation();
+
+  // Default symptom categories with their specific symptoms
+  const DEFAULT_CATEGORIES = useMemo(
+    () => [
+      {
+        key: 'fever',
+        name: t('symptom.categories.fever'),
+        symptoms: [
+          { key: 'high_fever', label: t('symptom.symptoms.high_fever') },
+          { key: 'low_fever', label: t('symptom.symptoms.low_fever') },
+          { key: 'persistent_fever', label: t('symptom.symptoms.persistent_fever') },
+          { key: 'fever_with_rash', label: t('symptom.symptoms.fever_with_rash') },
+          { key: 'fever_with_seizure', label: t('symptom.symptoms.fever_with_seizure') },
+        ],
+      },
+      {
+        key: 'respiratory',
+        name: t('symptom.categories.respiratory'),
+        symptoms: [
+          { key: 'cough', label: t('symptom.symptoms.cough') },
+          { key: 'nasal_congestion', label: t('symptom.symptoms.nasal_congestion') },
+          { key: 'runny_nose', label: t('symptom.symptoms.runny_nose') },
+          { key: 'wheezing', label: t('symptom.symptoms.wheezing') },
+          { key: 'difficulty_breathing', label: t('symptom.symptoms.difficulty_breathing') },
+          { key: 'sneezing', label: t('symptom.symptoms.sneezing') },
+        ],
+      },
+      {
+        key: 'digestive',
+        name: t('symptom.categories.digestive'),
+        symptoms: [
+          { key: 'vomiting', label: t('symptom.symptoms.vomiting') },
+          { key: 'diarrhea', label: t('symptom.symptoms.diarrhea') },
+          { key: 'constipation', label: t('symptom.symptoms.constipation') },
+          { key: 'abdominal_distension', label: t('symptom.symptoms.abdominal_distension') },
+          { key: 'poor_appetite', label: t('symptom.symptoms.poor_appetite') },
+          { key: 'blood_in_stool', label: t('symptom.symptoms.blood_in_stool') },
+        ],
+      },
+      {
+        key: 'skin',
+        name: t('symptom.categories.skin'),
+        symptoms: [
+          { key: 'rash', label: t('symptom.symptoms.rash') },
+          { key: 'eczema', label: t('symptom.symptoms.eczema') },
+          { key: 'dry_skin', label: t('symptom.symptoms.dry_skin') },
+          { key: 'jaundice', label: t('symptom.symptoms.jaundice') },
+          { key: 'diaper_rash', label: t('symptom.symptoms.diaper_rash') },
+          { key: 'excessive_sweating', label: t('symptom.symptoms.excessive_sweating') },
+        ],
+      },
+      {
+        key: 'sleep',
+        name: t('symptom.categories.sleep'),
+        symptoms: [
+          { key: 'difficulty_falling_asleep', label: t('symptom.symptoms.difficulty_falling_asleep') },
+          { key: 'frequent_waking', label: t('symptom.symptoms.frequent_waking') },
+          { key: 'night_terrors', label: t('symptom.symptoms.night_terrors') },
+          { key: 'excessive_sleepiness', label: t('symptom.symptoms.excessive_sleepiness') },
+          { key: 'irregular_sleep', label: t('symptom.symptoms.irregular_sleep') },
+        ],
+      },
+      {
+        key: 'oral',
+        name: t('symptom.categories.oral'),
+        symptoms: [
+          { key: 'thrush', label: t('symptom.symptoms.thrush') },
+          { key: 'teething_discomfort', label: t('symptom.symptoms.teething_discomfort') },
+          { key: 'drooling', label: t('symptom.symptoms.drooling') },
+          { key: 'mouth_ulcer', label: t('symptom.symptoms.mouth_ulcer') },
+          { key: 'bad_breath', label: t('symptom.symptoms.bad_breath') },
+        ],
+      },
+      {
+        key: 'eye',
+        name: t('symptom.categories.eye'),
+        symptoms: [
+          { key: 'red_eye', label: t('symptom.symptoms.red_eye') },
+          { key: 'excessive_tearing', label: t('symptom.symptoms.excessive_tearing') },
+          { key: 'eye_discharge', label: t('symptom.symptoms.eye_discharge') },
+          { key: 'eye_rubbing', label: t('symptom.symptoms.eye_rubbing') },
+        ],
+      },
+      {
+        key: 'ear',
+        name: t('symptom.categories.ear'),
+        symptoms: [
+          { key: 'ear_pulling', label: t('symptom.symptoms.ear_pulling') },
+          { key: 'ear_discharge', label: t('symptom.symptoms.ear_discharge') },
+          { key: 'ear_infection', label: t('symptom.symptoms.ear_infection') },
+          { key: 'hearing_concern', label: t('symptom.symptoms.hearing_concern') },
+        ],
+      },
+    ],
+    [t]
+  );
+
+  // Severity level color mapping
+  const SEVERITY_CONFIG = useMemo(
+    () => ({
+      mild: { color: 'green', text: t('symptom.severity.mild') },
+      moderate: { color: 'orange', text: t('symptom.severity.moderate') },
+      severe: { color: 'red', text: t('symptom.severity.severe') },
+    }),
+    [t]
+  );
+
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [monthAge, setMonthAge] = useState(null);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
+
+  // Update categories when translation changes
+  useEffect(() => {
+    setCategories(DEFAULT_CATEGORIES);
+  }, [DEFAULT_CATEGORIES]);
 
   // Fetch symptom categories from API on mount
   const fetchCategories = useCallback(async () => {
@@ -174,11 +188,11 @@ const SymptomChecker = () => {
   // Analyze selected symptoms
   const handleAnalyze = useCallback(async () => {
     if (selectedSymptoms.length === 0) {
-      message.warning('请至少选择一个症状');
+      message.warning(t('symptom.noSymptoms'));
       return;
     }
     if (!monthAge) {
-      message.warning('请输入宝宝月龄');
+      message.warning(t('symptom.noMonthAge'));
       return;
     }
 
@@ -198,14 +212,14 @@ const SymptomChecker = () => {
       if (res.success) {
         setResults(res.data);
       } else {
-        message.error(res.message || '分析失败');
+        message.error(res.message || t('symptom.analyzeError'));
       }
     } catch {
-      message.error('症状分析失败，请稍后重试');
+      message.error(t('symptom.analyzeError'));
     } finally {
       setLoading(false);
     }
-  }, [selectedSymptoms, monthAge]);
+  }, [selectedSymptoms, monthAge, t, getSelectedSymptomLabels]);
 
   // Reset all selections and results
   const handleReset = () => {
@@ -223,28 +237,28 @@ const SymptomChecker = () => {
             title={
               <Space>
                 <HeartOutlined />
-                <span>症状自查</span>
+                <span>{t('symptom.title')}</span>
               </Space>
             }
             extra={
               <Space>
                 <Text type="secondary">
-                  已选 {selectedSymptoms.length} 项
+                  {t('symptom.selectedCount', { count: selectedSymptoms.length })}
                 </Text>
               </Space>
             }
           >
             {/* Month age input */}
-            <div className="mb-4">
+            <div style={{ marginBottom: 16 }}>
               <Space>
-                <Text strong>宝宝月龄：</Text>
+                <Text strong>{t('symptom.monthAge')}：</Text>
                 <InputNumber
                   min={0}
                   max={72}
                   value={monthAge}
                   onChange={(val) => setMonthAge(val)}
-                  placeholder="月龄"
-                  addonAfter="个月"
+                  placeholder={t('symptom.monthAgePlaceholder')}
+                  addonAfter={t('symptom.months')}
                   style={{ width: 160 }}
                 />
               </Space>
@@ -290,17 +304,19 @@ const SymptomChecker = () => {
             />
 
             {/* Action buttons */}
-            <div className="mt-4 flex justify-end gap-2">
-              <Button onClick={handleReset}>重置</Button>
-              <Button
-                type="primary"
-                icon={<SearchOutlined />}
-                onClick={handleAnalyze}
-                loading={loading}
-                disabled={selectedSymptoms.length === 0}
-              >
-                分析症状
-              </Button>
+            <div style={{ marginTop: 16, textAlign: 'right' }}>
+              <Space>
+                <Button onClick={handleReset}>{t('symptom.reset')}</Button>
+                <Button
+                  type="primary"
+                  icon={<SearchOutlined />}
+                  onClick={handleAnalyze}
+                  loading={loading}
+                  disabled={selectedSymptoms.length === 0}
+                >
+                  {t('symptom.analyzeButton')}
+                </Button>
+              </Space>
             </div>
           </Card>
         </Col>
@@ -308,23 +324,23 @@ const SymptomChecker = () => {
         {/* Right panel: analysis results */}
         <Col xs={24} lg={12}>
           <Card
-            title="分析结果"
+            title={t('symptom.result')}
             extra={
               results && (
                 <Tag color="blue">
-                  {results.matched_categories?.length || 0} 个分类匹配
+                  {t('symptom.matchedCategories', { count: results.matched_categories?.length || 0 })}
                 </Tag>
               )
             }
           >
             <Spin spinning={loading}>
               {!results && !loading && (
-                <div className="text-center py-8">
+                <div style={{ textAlign: 'center', padding: '32px 0' }}>
                   <ExclamationCircleOutlined
                     style={{ fontSize: 48, color: '#d9d9d9' }}
                   />
-                  <Paragraph type="secondary" className="mt-4">
-                    请在左侧选择症状后点击"分析症状"按钮
+                  <Paragraph type="secondary" style={{ marginTop: 16 }}>
+                    {t('symptom.selectHint')}
                   </Paragraph>
                 </div>
               )}
@@ -336,7 +352,7 @@ const SymptomChecker = () => {
                     <Card
                       key={index}
                       size="small"
-                      className="mb-3"
+                      style={{ marginBottom: 12 }}
                       title={
                         <Space>
                           <Text strong>{category.name}</Text>
@@ -356,11 +372,11 @@ const SymptomChecker = () => {
                     >
                       {/* Common causes */}
                       {category.common_causes?.length > 0 && (
-                        <div className="mb-2">
-                          <Text type="secondary">常见原因：</Text>
-                          <div className="mt-1">
+                        <div style={{ marginBottom: 8 }}>
+                          <Text type="secondary">{t('symptom.commonCauses')}</Text>
+                          <div style={{ marginTop: 4 }}>
                             {category.common_causes.map((cause, i) => (
-                              <Tag key={i} className="mb-1">
+                              <Tag key={i} style={{ marginBottom: 4 }}>
                                 {cause}
                               </Tag>
                             ))}
@@ -371,7 +387,7 @@ const SymptomChecker = () => {
                       {/* Precautions */}
                       {category.precautions?.length > 0 && (
                         <div>
-                          <Text type="secondary">注意事项：</Text>
+                          <Text type="secondary">{t('symptom.precautions')}</Text>
                           <List
                             size="small"
                             dataSource={category.precautions}
@@ -391,9 +407,9 @@ const SymptomChecker = () => {
                     <Alert
                       type="info"
                       showIcon
-                      message="综合建议"
+                      message={t('symptom.generalAdvice')}
                       description={results.general_advice}
-                      className="mt-3"
+                      style={{ marginTop: 12 }}
                     />
                   )}
 
@@ -401,9 +417,9 @@ const SymptomChecker = () => {
                   <Alert
                     type="warning"
                     showIcon
-                    message="免责声明"
-                    description="本工具仅提供症状分类参考，不构成就医建议。如有疑虑，请及时就医咨询专业医生。"
-                    className="mt-3"
+                    message={t('symptom.disclaimer')}
+                    description={t('symptom.disclaimerText')}
+                    style={{ marginTop: 12 }}
                   />
                 </div>
               )}

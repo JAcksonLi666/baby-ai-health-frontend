@@ -1,0 +1,25 @@
+/* Lab Report Parser - Table row highlighting for abnormal indicators */
+
+.lab-row-critical {
+  background-color: #fff1f0 !important;
+}
+
+.lab-row-critical:hover {
+  background-color: #ffccc7 !important;
+}
+
+.lab-row-high {
+  background-color: #fff7e6 !important;
+}
+
+.lab-row-high:hover {
+  background-color: #ffe7ba !important;
+}
+
+.lab-row-low {
+  background-color: #e6f7ff !important;
+}
+
+.lab-row-low:hover {
+  background-color: #bae7ff !important;
+}

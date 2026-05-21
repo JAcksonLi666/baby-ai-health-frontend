@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   List,
@@ -32,6 +33,7 @@ dayjs.locale('zh-cn');
 const { Title, Text } = Typography;
 
 const ChatHistory = () => {
+  const { t } = useTranslation();
   const [sessions, setSessions] = useState([]);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -46,14 +48,14 @@ const ChatHistory = () => {
       if (res.success) {
         setSessions(res.data?.sessions || res.sessions || []);
       } else {
-        message.error(res.message || '获取会话列表失败');
+        message.error(res.message || t('chatHistory.loadError'));
       }
     } catch {
-      message.error('获取会话列表失败');
+      message.error(t('chatHistory.loadError'));
     } finally {
       setSessionsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   // Fetch messages for a specific session
   const fetchMessages = useCallback(async (sessionId) => {
@@ -64,14 +66,14 @@ const ChatHistory = () => {
       if (res.success) {
         setMessages(res.data?.messages || res.messages || []);
       } else {
-        message.error(res.message || '获取消息失败');
+        message.error(res.message || t('chatHistory.loadMessagesError'));
       }
     } catch {
-      message.error('获取消息失败');
+      message.error(t('chatHistory.loadMessagesError'));
     } finally {
       setMessagesLoading(false);
     }
-  }, []);
+  }, [t]);
 
   // Load sessions on mount
   useEffect(() => {
@@ -91,22 +93,22 @@ const ChatHistory = () => {
   const handleCreateSession = useCallback(async () => {
     try {
       const res = await chatHistoryService.createSession({
-        title: `对话 ${dayjs().format('MM-DD HH:mm')}`,
+        title: `${t('chatHistory.title')} ${dayjs().format('MM-DD HH:mm')}`,
       });
       if (res.success) {
-        message.success('新对话已创建');
+        message.success(t('chatHistory.createSuccess'));
         await fetchSessions();
         const newSession = res.data?.session || res.session;
         if (newSession?.id) {
           setSelectedSessionId(newSession.id);
         }
       } else {
-        message.error(res.message || '创建会话失败');
+        message.error(res.message || t('chatHistory.createError'));
       }
     } catch {
-      message.error('创建会话失败');
+      message.error(t('chatHistory.createError'));
     }
-  }, [fetchSessions]);
+  }, [fetchSessions, t]);
 
   // Delete a chat session
   const handleDeleteSession = useCallback(
@@ -114,20 +116,20 @@ const ChatHistory = () => {
       try {
         const res = await chatHistoryService.deleteSession(sessionId);
         if (res.success) {
-          message.success('会话已删除');
+          message.success(t('chatHistory.deleteSuccess'));
           if (selectedSessionId === sessionId) {
             setSelectedSessionId(null);
             setMessages([]);
           }
           await fetchSessions();
         } else {
-          message.error(res.message || '删除会话失败');
+          message.error(res.message || t('chatHistory.deleteError'));
         }
       } catch {
-        message.error('删除会话失败');
+        message.error(t('chatHistory.deleteError'));
       }
     },
-    [selectedSessionId, fetchSessions]
+    [selectedSessionId, fetchSessions, t]
   );
 
   // Get the selected session object
@@ -142,7 +144,7 @@ const ChatHistory = () => {
             title={
               <Space>
                 <HistoryOutlined />
-                <span>对话历史</span>
+                <span>{t('chatHistory.title')}</span>
               </Space>
             }
             extra={
@@ -152,14 +154,14 @@ const ChatHistory = () => {
                 icon={<PlusOutlined />}
                 onClick={handleCreateSession}
               >
-                新建对话
+                {t('chatHistory.newChat')}
               </Button>
             }
           >
             <Spin spinning={sessionsLoading}>
               {sessions.length === 0 ? (
                 <Empty
-                  description="暂无对话记录"
+                  description={t('chatHistory.noSessions')}
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
               ) : (
@@ -186,8 +188,8 @@ const ChatHistory = () => {
                       actions={[
                         <Popconfirm
                           key="delete"
-                          title="确定删除该对话？"
-                          description="删除后无法恢复"
+                          title={t('chatHistory.deleteConfirm')}
+                          description={t('chatHistory.deleteWarning')}
                           onConfirm={(e) => {
                             e?.stopPropagation();
                             handleDeleteSession(session.id);
@@ -223,7 +225,7 @@ const ChatHistory = () => {
                             style={{ maxWidth: 150 }}
                             strong={selectedSessionId === session.id}
                           >
-                            {session.title || '未命名对话'}
+                            {session.title || t('chatHistory.unnamed')}
                           </Text>
                         }
                         description={
@@ -249,8 +251,8 @@ const ChatHistory = () => {
           <Card
             title={
               selectedSession
-                ? selectedSession.title || '未命名对话'
-                : '选择一个对话'
+                ? selectedSession.title || t('chatHistory.unnamed')
+                : t('chatHistory.selectHint')
             }
             extra={
               selectedSession && (
@@ -267,12 +269,12 @@ const ChatHistory = () => {
             <Spin spinning={messagesLoading}>
               {!selectedSession ? (
                 <Empty
-                  description="请在左侧选择一个对话查看历史消息"
+                  description={t('chatHistory.selectHint')}
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
               ) : messages.length === 0 ? (
                 <Empty
-                  description="该对话暂无消息记录"
+                  description={t('chatHistory.noMessages')}
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
               ) : (
@@ -283,11 +285,11 @@ const ChatHistory = () => {
                     padding: '8px 0',
                   }}
                 >
-                  {messages.map((msg) => {
+                  {messages.map((msg, index) => {
                     const isUser = msg.role === 'user';
                     return (
                       <div
-                        key={msg.id || Math.random()}
+                        key={msg.id || `msg-${index}`}
                         style={{
                           display: 'flex',
                           justifyContent: isUser ? 'flex-end' : 'flex-start',
