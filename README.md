@@ -11,7 +11,7 @@
 - 📊 **档案管理**：完整的 CRUD 操作，支持筛选和编辑
 - 🎨 **美观界面**：基于 Ant Design 的现代化 UI
 
-### 新增功能 (v1.2.0)
+### v1.2.0 新增
 - 📈 **今日汇总仪表盘**：睡眠、排泄、哭声数据概览
 - 😴 **睡眠记录管理**：记录宝宝的入睡、醒来时间、睡眠质量
 - 💩 **排泄记录管理**：记录尿布类型、颜色、便便状态
@@ -21,51 +21,77 @@
 - 🔧 **控制台调试日志**：实时显示 AI 调用详情（本地/云端模型）
 - 🌍 **国际化支持**：中英文双语界面
 
+### v1.3.0 新增
+- 🍼 **喂养记录管理**：母乳/配方奶/辅食/喝水，支持哺乳侧和奶量记录
+- 📏 **生长发育记录**：体重、身高、头围、体温记录
+- 📈 **WHO 生长曲线图表**：基于 Recharts 绘制的生长曲线对比图
+- 📊 **仪表盘增强**：集成喂养和生长发育数据概览
+- ⏰ **dayjs 替换 moment.js**：减少约 300KB 包体积
+
+### v1.4.0 新增
+- 🧪 **化验单 AI 解析**：输入化验指标数据，AI 自动解析并评估
+- 📋 **指标状态高亮**：正常/偏低/偏高/危急行级颜色标识
+- 🩺 **症状自查**：8 大类 40+ 症状选择，AI 分析可能原因
+- 💬 **对话历史管理**：查看历史 AI 对话记录，支持新建和删除
+- 📱 **响应式设计**：移动端自适应布局
+- 🌍 **国际化完善**：新组件全面支持中英文切换
+
 ## 🛠️ 技术栈
 
 - **框架**: React 18
 - **构建工具**: Vite 6.5.0
 - **UI 组件**: Ant Design 5.x
-- **日期处理**: Moment.js
+- **日期处理**: dayjs
+- **图表**: Recharts
 - **HTTP 客户端**: Axios
+- **国际化**: react-i18next
 - **图标**: @ant-design/icons
 
 ## 📁 项目结构
 
 ```
-fontend/
+frontend/
 ├── src/
-│   ├── components/         # React 组件
-│   │   ├── Dashboard.jsx           # 今日汇总仪表盘
-│   │   ├── Dashboard.css          # 仪表盘样式
-│   │   ├── SleepRecords.jsx       # 睡眠记录管理
-│   │   ├── SleepRecords.css       # 睡眠记录样式
-│   │   ├── DiaperRecords.jsx      # 排泄记录管理
-│   │   ├── DiaperRecords.css      # 排泄记录样式
-│   │   ├── CryRecords.jsx         # 哭声记录管理
-│   │   ├── CryRecords.css         # 哭声记录样式
-│   │   ├── Upload.jsx             # 化验单上传组件
-│   │   ├── Upload.css             # 上传组件样式
-│   │   ├── Chat.jsx               # 智能问答组件
-│   │   ├── Chat.css               # 问答组件样式
-│   │   ├── RecordManagement.jsx   # 档案管理组件
-│   │   └── RecordManagement.css   # 档案管理样式
-│   ├── constants/          # 常量配置
-│   │   └── cryConstants.js        # 哭声常量定义
-│   ├── services/           # API 服务
-│   │   └── apiService.js          # 后端 API 封装
-│   ├── i18n.js             # 国际化配置
-│   ├── App.jsx             # 主应用组件
-│   ├── App.css             # 应用全局样式
-│   ├── main.jsx            # 入口文件
-│   └── index.css           # 全局基础样式
-├── public/                 # 静态资源
+│   ├── components/              # React 组件
+│   │   ├── Dashboard.jsx            # 今日汇总仪表盘
+│   │   ├── Dashboard.css            # 仪表盘样式
+│   │   ├── SleepRecords.jsx         # 睡眠记录管理
+│   │   ├── SleepRecords.css         # 睡眠记录样式
+│   │   ├── DiaperRecords.jsx        # 排泄记录管理
+│   │   ├── DiaperRecords.css        # 排泄记录样式
+│   │   ├── CryRecords.jsx           # 哭声记录管理
+│   │   ├── CryRecords.css           # 哭声记录样式
+│   │   ├── FeedingRecords.jsx       # 喂养记录管理 (v1.3.0)
+│   │   ├── FeedingRecords.css       # 喂养记录样式
+│   │   ├── GrowthRecords.jsx        # 生长发育记录 (v1.3.0)
+│   │   ├── GrowthRecords.css        # 生长发育记录样式
+│   │   ├── GrowthChart.jsx          # WHO 生长曲线图表 (v1.3.0)
+│   │   ├── LabReportParser.jsx      # 化验单 AI 解析 (v1.4.0)
+│   │   ├── LabReportParser.css      # 化验单解析样式 (v1.4.0)
+│   │   ├── SymptomChecker.jsx       # 症状自查 (v1.4.0)
+│   │   ├── ChatHistory.jsx          # 对话历史 (v1.4.0)
+│   │   ├── Upload.jsx               # 化验单上传组件
+│   │   ├── Upload.css               # 上传组件样式
+│   │   ├── Chat.jsx                 # 智能问答组件
+│   │   ├── Chat.css                 # 问答组件样式
+│   │   ├── RecordManagement.jsx     # 档案管理组件
+│   │   └── RecordManagement.css     # 档案管理样式
+│   ├── constants/              # 常量配置
+│   │   └── cryConstants.js          # 哭声常量定义
+│   ├── services/               # API 服务
+│   │   └── apiService.js            # 后端 API 封装
+│   ├── i18n.js                 # 国际化配置（中英文）
+│   ├── App.jsx                 # 主应用组件（导航 + 路由）
+│   ├── App.css                 # 应用全局样式
+│   ├── main.jsx                # 入口文件
+│   └── index.css               # 全局基础样式
+├── public/                     # 静态资源
 │   └── vite.svg
-├── index.html              # HTML 模板
-├── package.json            # 项目依赖
-├── vite.config.js          # Vite 配置
-├── .env.example            # 环境变量示例
-└── .gitignore              # Git 忽略规则
+├── index.html                  # HTML 模板
+├── package.json                # 项目依赖
+├── vite.config.js              # Vite 配置
+├── .env.example                # 环境变量示例
+└── .gitignore                  # Git 忽略规则
 ```
 
 ## 🚀 快速开始
@@ -78,7 +104,7 @@ fontend/
 ### 安装依赖
 
 ```bash
-cd fontend
+cd frontend
 
 # 安装依赖
 npm install
@@ -115,7 +141,14 @@ npm run build
 
 ## 🧩 核心组件
 
-### 1. Upload.jsx - 化验单上传组件
+### 1. Dashboard.jsx - 今日汇总仪表盘
+
+功能：
+- 睡眠/排泄/哭声/喂养/生长发育数据概览
+- AI 智能洞察建议
+- 快速导航到各记录页面
+
+### 2. Upload.jsx - 化验单上传组件
 
 功能：
 - 文件选择与预览
@@ -124,15 +157,66 @@ npm run build
 - 记录类型选择
 - 确认上传到数据库
 
-### 2. Chat.jsx - 智能问答组件
+### 3. Chat.jsx - 智能问答组件
 
 功能：
 - 问题输入
 - 基于历史档案的回答
 - 对话历史展示
 - 支持本地/云端模型切换
+- 流式输出显示
 
-### 3. RecordManagement.jsx - 档案管理组件
+### 4. LabReportParser.jsx - 化验单 AI 解析 (v1.4.0)
+
+功能：
+- 选择报告类型（血液常规/尿液常规/肝功能/肾功能）
+- 输入宝宝月龄
+- 粘贴或输入化验指标数据
+- AI 自动解析并评估指标状态
+- 行级颜色高亮（正常/偏低/偏高/危急）
+- 统计摘要（总指标数/正常/异常/危急）
+
+### 5. SymptomChecker.jsx - 症状自查 (v1.4.0)
+
+功能：
+- 8 大症状分类（发热/呼吸/消化/皮肤/睡眠/口腔/眼部/耳部）
+- 40+ 症状复选框
+- 输入宝宝月龄
+- AI 分析可能原因和严重程度
+- 常见原因标签和注意事项列表
+- 免责声明提示
+
+### 6. ChatHistory.jsx - 对话历史 (v1.4.0)
+
+功能：
+- 对话会话列表（按更新时间排序）
+- 新建对话会话
+- 查看会话消息历史（气泡式聊天界面）
+- 删除对话会话（带确认弹窗）
+- 相对时间显示
+
+### 7. FeedingRecords.jsx - 喂养记录 (v1.3.0)
+
+功能：
+- 记录母乳/配方奶/辅食/喝水
+- 支持哺乳侧选择和奶量/时长记录
+- 完整的增删改查操作
+
+### 8. GrowthRecords.jsx - 生长发育记录 (v1.3.0)
+
+功能：
+- 记录体重、身高、头围、体温
+- 完整的增删改查操作
+- 支持查看最新记录
+
+### 9. GrowthChart.jsx - 生长曲线图表 (v1.3.0)
+
+功能：
+- 基于 Recharts 绘制折线图
+- 对比 WHO 标准生长曲线
+- 支持体重/身高/头围多指标切换
+
+### 10. RecordManagement.jsx - 档案管理组件
 
 功能：
 - 档案列表展示（分页）
@@ -140,64 +224,27 @@ npm run build
 - 日期范围筛选
 - 查看详情、编辑、删除操作
 
-### 4. apiService.js - API 服务封装
+### 11. apiService.js - API 服务封装
 
 提供统一的后端 API 调用：
-- `uploadFile()` - 上传化验单
-- `previewFile()` - 预识别文件
-- `askQuestion()` - 智能问答
-- `getRecords()` - 获取档案列表
-- `getRecord()` - 获取单条档案
-- `updateRecord()` - 更新档案
-- `deleteRecord()` - 删除档案
 
-## 🎨 组件样式说明
-
-### Upload.css
-
-- `.upload-container` - 上传组件容器
-- `.preview-container` - 图片预览区域
-- `.date-section` - 日期选择区域
-- `.ocr-content-wrapper` - OCR 识别内容展示
-- `.ocr-section-line` - 分隔线样式
-
-### Chat.css
-
-- `.chat-container` - 聊天容器
-- `.chat-messages` - 消息列表
-- `.chat-input` - 输入框区域
-- `.message-bot` - 机器人消息
-- `.message-user` - 用户消息
-
-### RecordManagement.css
-
-- `.record-container` - 档案管理容器
-- `.filter-section` - 筛选区域
-- `.record-table` - 档案列表表格
-- `.actions` - 操作按钮组
-
-## 🔧 配置说明
-
-### vite.config.js
-
-```javascript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
-  }
-})
-```
+| 服务对象 | 方法 | 对应后端 API |
+|----------|------|-------------|
+| `uploadService` | `previewFile()` | POST /upload/preview |
+| `uploadService` | `uploadFile()` | POST /upload |
+| `chatService` | `askQuestion()` | POST /ask |
+| `chatService` | `askQuestionStream()` | GET /ask/stream |
+| `recordService` | `getRecords()` / `getRecord()` / `updateRecord()` / `deleteRecord()` | /records CRUD |
+| `sleepService` | `createRecord()` / `listRecords()` / `updateRecord()` / `deleteRecord()` | /api/sleep CRUD |
+| `diaperService` | `createRecord()` / `listRecords()` / `updateRecord()` / `deleteRecord()` | /api/diaper CRUD |
+| `cryService` | `createRecord()` / `listRecords()` / `analyzeReason()` | /api/cry CRUD + analyze |
+| `feedingService` | `createRecord()` / `listRecords()` / `updateRecord()` / `deleteRecord()` | /api/feeding CRUD |
+| `growthService` | `createRecord()` / `listRecords()` / `getLatest()` | /api/growth CRUD |
+| `dashboardService` | `getTodaySummary()` | GET /api/today/summary |
+| `knowledgeService` | `search()` / `getStatus()` | /api/knowledge |
+| `labReportService` | `parse()` / `evaluate()` | /api/lab-report |
+| `symptomService` | `analyze()` / `getCategories()` | /api/symptom |
+| `chatHistoryService` | `createSession()` / `listSessions()` / `getSessionMessages()` / `deleteSession()` | /api/chat/sessions |
 
 ## 📡 API 接口
 
@@ -218,18 +265,11 @@ export default defineConfig({
 ### 日常记录管理
 | 方法 | 路径 | 描述 |
 |------|------|------|
-| GET | /api/sleep | 获取睡眠记录列表 |
-| POST | /api/sleep | 创建睡眠记录 |
-| PUT | /api/sleep/{id} | 更新睡眠记录 |
-| DELETE | /api/sleep/{id} | 删除睡眠记录 |
-| GET | /api/diaper | 获取排泄记录列表 |
-| POST | /api/diaper | 创建排泄记录 |
-| PUT | /api/diaper/{id} | 更新排泄记录 |
-| DELETE | /api/diaper/{id} | 删除排泄记录 |
-| GET | /api/cry | 获取哭声记录列表 |
-| POST | /api/cry | 创建哭声记录 |
-| PUT | /api/cry/{id} | 更新哭声记录 |
-| DELETE | /api/cry/{id} | 删除哭声记录 |
+| GET/POST | /api/sleep | 睡眠记录 CRUD |
+| GET/POST | /api/diaper | 排泄记录 CRUD |
+| GET/POST | /api/cry | 哭声记录 CRUD |
+| GET/POST | /api/feeding | 喂养记录 CRUD (v1.3.0) |
+| GET/POST | /api/growth | 生长发育记录 CRUD (v1.3.0) |
 
 ### 仪表盘与知识库
 | 方法 | 路径 | 描述 |
@@ -238,13 +278,44 @@ export default defineConfig({
 | GET | /api/knowledge/search | 搜索知识库 |
 | GET | /api/knowledge/status | 获取知识库状态 |
 
+### AI 功能 (v1.4.0)
+| 方法 | 路径 | 描述 |
+|------|------|------|
+| POST | /api/lab-report/parse | 化验单 AI 解析 |
+| POST | /api/lab-report/evaluate | 化验单指标评估 |
+| POST | /api/symptom/analyze | 症状分析 |
+| GET | /api/symptom/categories | 获取症状分类 |
+| GET/POST/DELETE | /api/chat/sessions | 对话历史管理 |
+
 ## ⚠️ 注意事项
 
 1. **跨域配置**：确保后端服务配置了 CORS，允许前端访问
 2. **后端依赖**：启动前端前请确保后端服务正在运行（http://localhost:8000）
 3. **图标导入**：使用 Ant Design 图标时需使用 Outlined 后缀形式（如 `UploadOutlined`）
+4. **国际化**：新组件使用 `useTranslation` hook，翻译键定义在 `src/i18n.js` 中
+5. **响应式**：使用 Ant Design 的 `Row`/`Col` 组件配合 `xs/sm/md/lg` 断点实现移动端适配
 
 ## 🔄 版本历史
+
+- **v1.4.0 (2026-05-21)** - AI 增强版本
+  - ✅ 添加化验单 AI 解析页面（LabReportParser）
+  - ✅ 添加症状自查页面（SymptomChecker）
+  - ✅ 添加对话历史页面（ChatHistory）
+  - ✅ 导航栏新增 3 个入口
+  - ✅ 全面国际化支持（中英文）
+  - ✅ 移动端响应式设计优化
+  - ✅ 移除无效 Tailwind CSS 类名
+  - ✅ 修复 Math.random() React key 不稳定问题
+  - ✅ 添加化验单行级颜色高亮样式
+
+- **v1.3.0 (2026-05-20)** - 成长管理版本
+  - ✅ 添加喂养记录管理页面（FeedingRecords）
+  - ✅ 添加生长发育记录页面（GrowthRecords）
+  - ✅ 添加 WHO 生长曲线图表（GrowthChart）
+  - ✅ 仪表盘集成喂养和生长发育数据
+  - ✅ dayjs 替换 moment.js（减少 ~300KB）
+  - ✅ 修复 EventSource 泄漏问题
+  - ✅ 修复 Ant Design 组件弃用警告
 
 - **v1.2.0 (2026-05-19)** - 完整功能版本
   - ✅ 添加今日汇总仪表盘（Dashboard）
