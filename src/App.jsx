@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Typography, Select } from 'antd';
-import { 
-  UploadOutlined, 
-  MessageOutlined, 
-  FileTextOutlined, 
-  UserOutlined, 
+import {
+  UploadOutlined,
+  MessageOutlined,
+  FileTextOutlined,
+  UserOutlined,
   GlobalOutlined,
   HomeOutlined,
   ClockCircleOutlined,
   FilterOutlined,
   AlertOutlined,
+  CoffeeOutlined,
+  MedicineBoxOutlined,
+  LineChartOutlined,
+  BellOutlined,
+  FileSearchOutlined,
+  HeartOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import UploadComponent from './components/Upload';
@@ -19,6 +26,13 @@ import Dashboard from './components/Dashboard';
 import SleepRecords from './components/SleepRecords';
 import DiaperRecords from './components/DiaperRecords';
 import CryRecords from './components/CryRecords';
+import FeedingRecords from './components/FeedingRecords';
+import GrowthRecords from './components/GrowthRecords';
+import GrowthChart from './components/GrowthChart';
+import ReminderCenter from './components/ReminderCenter';
+import LabReportParser from './components/LabReportParser';
+import SymptomChecker from './components/SymptomChecker';
+import ChatHistory from './components/ChatHistory';
 import './App.css';
 
 const { Header, Content, Footer } = Layout;
@@ -65,9 +79,44 @@ function App() {
       label: t('nav.cry') || '哭声记录',
     },
     {
+      key: 'feeding',
+      icon: <CoffeeOutlined />,
+      label: t('nav.feeding') || '喂养记录',
+    },
+    {
+      key: 'growth',
+      icon: <MedicineBoxOutlined />,
+      label: t('nav.growth') || '生长发育',
+    },
+    {
+      key: 'growth-chart',
+      icon: <LineChartOutlined />,
+      label: t('nav.growthChart') || '生长曲线',
+    },
+    {
+      key: 'reminder',
+      icon: <BellOutlined />,
+      label: t('nav.reminder') || '提醒中心',
+    },
+    {
       key: 'records',
       icon: <FileTextOutlined />,
       label: t('nav.records'),
+    },
+    {
+      key: 'lab-report',
+      icon: <FileSearchOutlined />,
+      label: '化验单解析',
+    },
+    {
+      key: 'symptom',
+      icon: <HeartOutlined />,
+      label: '症状自查',
+    },
+    {
+      key: 'chat-history',
+      icon: <HistoryOutlined />,
+      label: '对话历史',
     },
   ];
 
@@ -85,8 +134,22 @@ function App() {
         return <DiaperRecords />;
       case 'cry':
         return <CryRecords />;
+      case 'feeding':
+        return <FeedingRecords />;
+      case 'growth':
+        return <GrowthRecords />;
+      case 'growth-chart':
+        return <GrowthChart />;
+      case 'reminder':
+        return <ReminderCenter />;
       case 'records':
         return <RecordManagement />;
+      case 'lab-report':
+        return <LabReportParser />;
+      case 'symptom':
+        return <SymptomChecker />;
+      case 'chat-history':
+        return <ChatHistory />;
       default:
         return <Dashboard />;
     }

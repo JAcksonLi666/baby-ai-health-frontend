@@ -10,6 +10,35 @@ const apiClient = axios.create({
   },
 });
 
+// Unified error interceptor
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const detail = error.response?.data?.detail || error.response?.data?.message || '';
+
+    if (status === 401) {
+      console.error('认证失败: 未授权访问');
+    } else if (status === 403) {
+      console.error('权限不足: 禁止访问该资源');
+    } else if (status === 404) {
+      console.error('资源未找到:', detail || error.config?.url);
+    } else if (status === 422) {
+      console.error('请求参数校验失败:', detail);
+    } else if (status === 429) {
+      console.error('请求过于频繁，请稍后再试');
+    } else if (status && status >= 500) {
+      console.error('服务器错误 (HTTP ' + status + '):', detail || '请稍后重试');
+    } else if (error.code === 'ECONNABORTED') {
+      console.error('请求超时，请检查网络连接');
+    } else if (!error.response) {
+      console.error('网络错误: 无法连接到服务器，请检查后端服务是否运行');
+    }
+
+    return Promise.reject(error.response?.data || error);
+  }
+);
+
 export const uploadService = {
   async previewFile(file) {
     try {
@@ -468,6 +497,72 @@ export const growthService = {
   },
 };
 
+export const reminderService = {
+  async createRecord(data) {
+    try {
+      const response = await apiClient.post('/api/reminder', data);
+      return response.data;
+    } catch (error) {
+      console.error('创建提醒记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async listRecords(params = {}) {
+    try {
+      const response = await apiClient.get('/api/reminder', { params });
+      return response.data;
+    } catch (error) {
+      console.error('获取提醒记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getRecord(id) {
+    try {
+      const response = await apiClient.get(`/api/reminder/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('获取提醒记录详情失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async updateRecord(id, data) {
+    try {
+      const response = await apiClient.put(`/api/reminder/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('更新提醒记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async deleteRecord(id) {
+    try {
+      const response = await apiClient.delete(`/api/reminder/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('删除提醒记录失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getPending() {
+    try {
+      const response = await apiClient.get('/api/reminder/pending');
+      return response.data;
+    } catch (error) {
+      console.error('获取待处理提醒失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getToday() {
+    try {
+      const response = await apiClient.get('/api/reminder/today');
+      return response.data;
+    } catch (error) {
+      console.error('获取今日提醒失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
 export const knowledgeService = {
   async search(query, nResults = 3) {
     try {
@@ -486,6 +581,87 @@ export const knowledgeService = {
       return response.data;
     } catch (error) {
       console.error('获取知识库状态失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
+export const labReportService = {
+  async parse(data) {
+    try {
+      const response = await apiClient.post('/api/lab-report/parse', data);
+      return response.data;
+    } catch (error) {
+      console.error('化验单解析失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async evaluate(data) {
+    try {
+      const response = await apiClient.post('/api/lab-report/evaluate', data);
+      return response.data;
+    } catch (error) {
+      console.error('化验单评估失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
+export const symptomService = {
+  async analyze(data) {
+    try {
+      const response = await apiClient.post('/api/symptom/analyze', data);
+      return response.data;
+    } catch (error) {
+      console.error('症状分析失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getCategories() {
+    try {
+      const response = await apiClient.get('/api/symptom/categories');
+      return response.data;
+    } catch (error) {
+      console.error('获取症状分类失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+};
+
+export const chatHistoryService = {
+  async createSession(data) {
+    try {
+      const response = await apiClient.post('/api/chat/sessions', data);
+      return response.data;
+    } catch (error) {
+      console.error('创建对话会话失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async listSessions() {
+    try {
+      const response = await apiClient.get('/api/chat/sessions');
+      return response.data;
+    } catch (error) {
+      console.error('获取对话列表失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async getSessionMessages(sessionId) {
+    try {
+      const response = await apiClient.get(`/api/chat/sessions/${sessionId}/messages`);
+      return response.data;
+    } catch (error) {
+      console.error('获取对话消息失败:', error);
+      throw error.response?.data || error;
+    }
+  },
+  async deleteSession(sessionId) {
+    try {
+      const response = await apiClient.delete(`/api/chat/sessions/${sessionId}`);
+      return response.data;
+    } catch (error) {
+      console.error('删除对话会话失败:', error);
       throw error.response?.data || error;
     }
   },
