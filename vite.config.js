@@ -9,6 +9,17 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false
-  }
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-antd': ['antd', '@ant-design/icons'],
+          'vendor-chart': ['recharts'],
+          'vendor-i18n': ['react-i18next', 'i18next'],
+          'vendor-utils': ['axios', 'dayjs'],
+        },
+      },
+    },
+  },
 })
