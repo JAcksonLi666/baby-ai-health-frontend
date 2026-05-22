@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LineChart,
   Line,
@@ -15,28 +16,6 @@ import {
  * 支持年龄段：婴儿期(0-12月)、幼儿期(1-3岁)、学龄前期(3-6岁)、学龄期(6-12岁)
  * 数据来源：WHO 儿童生长标准 + 中国7岁以下儿童生长发育参照标准
  */
-
-// 年龄段定义
-const AGE_GROUPS = {
-  infant: { name: '婴儿期', minMonths: 0, maxMonths: 12, description: '0-12个月' },
-  toddler: { name: '幼儿期', minMonths: 12, maxMonths: 36, description: '1-3岁' },
-  preschool: { name: '学龄前期', minMonths: 36, maxMonths: 72, description: '3-6岁' },
-  school_age: { name: '学龄期', minMonths: 72, maxMonths: 144, description: '6-12岁' },
-};
-
-// 指标配置
-const METRICS = {
-  weight: { name: '体重', unit: 'kg', min: 0, max: 80 },
-  height: { name: '身高', unit: 'cm', min: 0, max: 180 },
-  bmi: { name: 'BMI', unit: 'kg/m²', min: 10, max: 30 },
-  head_circumference: { name: '头围', unit: 'cm', min: 30, max: 55 },
-};
-
-// 性别配置
-const GENDERS = {
-  boys: { name: '男', color: '#3b82f6' },
-  girls: { name: '女', color: '#ec4899' },
-};
 
 // WHO 婴儿期体重标准 (0-12月)
 const WHO_INFANT_WEIGHT = {
@@ -223,7 +202,6 @@ const getStandardData = (ageGroup, metric, gender) => {
     },
   };
 
-  // BMI 跨年龄段
   if (metric === 'bmi') {
     return WHO_BMI[gender];
   }
@@ -268,25 +246,48 @@ const calculatePercentile = (value, standardData) => {
   return Math.round(50 + ((value - medianP50) / (medianP97 - medianP50)) * 47);
 };
 
-// 评估百分位
-const evaluatePercentile = (percentile) => {
-  if (percentile < 3) return { text: '偏低', color: '#ef4444' };
-  if (percentile < 25) return { text: '偏矮/偏轻', color: '#f97316' };
-  if (percentile < 75) return { text: '正常', color: '#22c55e' };
-  if (percentile < 97) return { text: '偏高/偏重', color: '#3b82f6' };
-  return { text: '高/重', color: '#8b5cf6' };
-};
-
 const GrowthChart = ({
   childData = [],
   onDataPointClick,
   showPercentile = true,
 }) => {
+  const { t } = useTranslation();
+
+  // 年龄段定义
+  const AGE_GROUPS = {
+    infant: { name: t('growthChart.infant'), minMonths: 0, maxMonths: 12, description: '0-12' + t('growthChart.ageMonths') },
+    toddler: { name: t('growthChart.toddler'), minMonths: 12, maxMonths: 36, description: '1-3' + t('growthChart.ageYears') },
+    preschool: { name: t('growthChart.preschool'), minMonths: 36, maxMonths: 72, description: '3-6' + t('growthChart.ageYears') },
+    school_age: { name: t('growthChart.schoolAge'), minMonths: 72, maxMonths: 144, description: '6-12' + t('growthChart.ageYears') },
+  };
+
+  // 指标配置
+  const METRICS = {
+    weight: { name: t('growthChart.weight'), unit: t('growthChart.kg'), min: 0, max: 80 },
+    height: { name: t('growthChart.height'), unit: t('growthChart.cm'), min: 0, max: 180 },
+    bmi: { name: t('growthChart.bmi'), unit: t('growthChart.bmiUnit'), min: 10, max: 30 },
+    head_circumference: { name: t('growthChart.headCircumference'), unit: t('growthChart.cm'), min: 30, max: 55 },
+  };
+
+  // 性别配置
+  const GENDERS = {
+    boys: { name: t('growthChart.boys'), color: '#3b82f6' },
+    girls: { name: t('growthChart.girls'), color: '#ec4899' },
+  };
+
+  // 评估百分位
+  const evaluatePercentile = (percentile) => {
+    if (percentile < 3) return { text: t('growthChart.percentileLow'), color: '#ef4444' };
+    if (percentile < 25) return { text: t('growthChart.percentileBelowAverage'), color: '#f97316' };
+    if (percentile < 75) return { text: t('growthChart.percentileNormal'), color: '#22c55e' };
+    if (percentile < 97) return { text: t('growthChart.percentileAboveAverage'), color: '#3b82f6' };
+    return { text: t('growthChart.percentileHigh'), color: '#8b5cf6' };
+  };
+
   const [selectedAgeGroup, setSelectedAgeGroup] = useState('infant');
   const [selectedMetric, setSelectedMetric] = useState('weight');
   const [selectedGender, setSelectedGender] = useState('boys');
 
-  // 根据年龄段获取可用的指标
   const availableMetrics = useMemo(() => {
     const metrics = ['weight', 'height'];
     if (selectedAgeGroup === 'infant' || selectedAgeGroup === 'toddler') {
@@ -298,24 +299,20 @@ const GrowthChart = ({
     return metrics;
   }, [selectedAgeGroup]);
 
-  // 当切换年龄段时，如果当前指标不可用，切换到 weight
   useEffect(() => {
     if (!availableMetrics.includes(selectedMetric)) {
       setSelectedMetric('weight');
     }
   }, [selectedAgeGroup, availableMetrics, selectedMetric]);
 
-  // 获取标准数据
   const standardData = useMemo(() => {
     return getStandardData(selectedAgeGroup, selectedMetric, selectedGender);
   }, [selectedAgeGroup, selectedMetric, selectedGender]);
 
-  // 格式化图表数据
   const chartData = useMemo(() => {
     return formatChartData(standardData);
   }, [standardData]);
 
-  // 过滤并格式化孩子的数据
   const childChartData = useMemo(() => {
     if (!childData || childData.length === 0) return [];
 
@@ -330,7 +327,6 @@ const GrowthChart = ({
       }));
   }, [childData, selectedAgeGroup, standardData]);
 
-  // 计算最新数据的百分位
   const latestPercentile = useMemo(() => {
     if (childChartData.length === 0) return null;
     const latest = childChartData[childChartData.length - 1];
@@ -349,7 +345,7 @@ const GrowthChart = ({
         {/* 年龄段选择 */}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#374151' }}>
-            年龄段
+            {t('growthChart.ageGroup')}
           </label>
           <select
             value={selectedAgeGroup}
@@ -373,7 +369,7 @@ const GrowthChart = ({
         {/* 性别选择 */}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#374151' }}>
-            性别
+            {t('growthChart.gender')}
           </label>
           <div style={{ display: 'flex', gap: '8px' }}>
             {Object.entries(GENDERS).map(([key, gender]) => (
@@ -399,7 +395,7 @@ const GrowthChart = ({
         {/* 指标选择 */}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#374151' }}>
-            生长指标
+            {t('growthChart.metric')}
           </label>
           <select
             value={selectedMetric}
@@ -434,7 +430,7 @@ const GrowthChart = ({
             gap: '12px',
           }}
         >
-          <span style={{ fontWeight: 'bold', color: '#374151' }}>最新数据评估:</span>
+          <span style={{ fontWeight: 'bold', color: '#374151' }}>{t('growthChart.latestEvaluation')}:</span>
           <span style={{ color: evaluation.color, fontWeight: 'bold' }}>
             {evaluation.text} (P{latestPercentile})
           </span>
@@ -476,7 +472,7 @@ const GrowthChart = ({
               stroke="#ef4444"
               strokeWidth={2}
               dot={false}
-              name="P3 (偏低线)"
+              name={t('growthChart.p3')}
             />
             <Line
               type="monotone"
@@ -484,7 +480,7 @@ const GrowthChart = ({
               stroke="#22c55e"
               strokeWidth={2}
               dot={false}
-              name="P50 (中位数)"
+              name={t('growthChart.p50')}
             />
             <Line
               type="monotone"
@@ -492,7 +488,7 @@ const GrowthChart = ({
               stroke="#8b5cf6"
               strokeWidth={2}
               dot={false}
-              name="P97 (偏高线)"
+              name={t('growthChart.p97')}
             />
             {chartData[0]?.p85 && (
               <Line
@@ -502,7 +498,7 @@ const GrowthChart = ({
                 strokeWidth={1}
                 strokeDasharray="5 5"
                 dot={false}
-                name="P85 (超重线)"
+                name={t('growthChart.p85')}
               />
             )}
 
@@ -515,7 +511,7 @@ const GrowthChart = ({
                 stroke={genderConfig.color}
                 strokeWidth={3}
                 dot={{ r: 5, fill: genderConfig.color }}
-                name="孩子数据"
+                name={t('growthChart.childData')}
                 connectNulls
               />
             )}
@@ -535,14 +531,13 @@ const GrowthChart = ({
         }}
       >
         <p style={{ margin: '0 0 8px 0' }}>
-          <strong>数据来源:</strong>{' '}
+          <strong>{t('growthChart.dataSource')}:</strong>{' '}
           {selectedAgeGroup === 'infant' || selectedAgeGroup === 'toddler'
-            ? 'WHO 儿童生长标准 (2006)'
-            : '中国7岁以下儿童生长发育参照标准 (2009)'}
+            ? t('growthChart.whoStandard')
+            : t('growthChart.chinaStandard')}
         </p>
         <p style={{ margin: 0 }}>
-          <strong>说明:</strong> P3-P97 为正常范围，P50 为中位数。低于 P3 或高于 P97
-          建议咨询医生。
+          <strong>{t('growthChart.description')}</strong>
         </p>
       </div>
     </div>

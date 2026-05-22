@@ -1,0 +1,9 @@
+{
+  "appId": "com.babyhealth.app",
+  "appName": "宝宝健康",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Card, Input, Button, Select, Switch, message, Spin,
-  Avatar, Tag, Divider
+  Avatar, Tag
 } from 'antd';
 import {
   SendOutlined, SyncOutlined, RobotOutlined, UserOutlined, LikeOutlined, DislikeOutlined, MessageOutlined
@@ -49,48 +49,33 @@ const Chat = () => {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
-
-    const userMessage = {
-      id: Date.now(),
-      role: 'user',
-      content: inputMessage,
-      timestamp: dayjs().toISOString(),
+  const generateFollowUpQuestions = (question) => {
+    const followUpMap = {
+      [t('chat.quickQ1')]: [
+        t('chat.followUp1'),
+        t('chat.followUp2'),
+        t('chat.followUp3')
+      ],
+      [t('chat.quickQ2')]: [
+        t('chat.followUp1'),
+        t('chat.followUp2'),
+        t('chat.followUp3')
+      ],
+      [t('chat.quickQ3')]: [
+        t('chat.followUp1'),
+        t('chat.followUp2'),
+        t('chat.followUp3')
+      ],
     };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputMessage('');
-    setLoading(true);
-    setError(null);
-
-    if (useStream) {
-      handleStreamMessage(userMessage.id);
-    } else {
-      handleNormalMessage();
-    }
+    
+    return followUpMap[question] || [
+      t('chat.followUp1'),
+      t('chat.followUp2'),
+      t('chat.followUp3')
+    ];
   };
 
-  const handleQuickQuestion = (question) => {
-    const userMessage = {
-      id: Date.now(),
-      role: 'user',
-      content: question,
-      timestamp: dayjs().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setLoading(true);
-    setError(null);
-
-    if (useStream) {
-      handleStreamMessageDirect(question, userMessage.id);
-    } else {
-      handleNormalMessageDirect(question);
-    }
-  };
-
-  const handleStreamMessageDirect = async (question, userMessageId) => {
+  const handleStreamMessage = async (question, userMessageId) => {
     const assistantMessageId = Date.now() + 1;
     let fullResponse = '';
 
@@ -175,7 +160,7 @@ const Chat = () => {
     }
   };
 
-  const handleNormalMessageDirect = async (question) => {
+  const handleNormalMessage = async (question) => {
     try {
       const response = await chatService.askQuestion(question, useCloud, 3, selectedModel);
 
@@ -217,110 +202,34 @@ const Chat = () => {
     }
   };
 
-  const handleStreamMessage = async (userMessageId) => {
-    const assistantMessageId = Date.now() + 1;
-    let fullResponse = '';
-
-    const assistantMessage = {
-      id: assistantMessageId,
-      role: 'assistant',
-      content: '',
+  const sendMessage = (question) => {
+    const userMessage = {
+      id: Date.now(),
+      role: 'user',
+      content: question,
       timestamp: dayjs().toISOString(),
-      sources: [],
-      modelUsed: selectedModel === 'auto' ? autoModelDesc : selectedModel,
-      cloudUsed: useCloud,
-      isStreaming: true,
     };
 
-    setMessages((prev) => [...prev, assistantMessage]);
+    setMessages((prev) => [...prev, userMessage]);
+    setLoading(true);
+    setError(null);
 
-    try {
-      const eventSource = chatService.askQuestionStream(inputMessage, useCloud, 3, selectedModel);
-
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-
-          if (data.error) {
-            setError(data.error);
-            eventSource.close();
-            setLoading(false);
-            return;
-          }
-
-          if (data.done) {
-            eventSource.close();
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === assistantMessageId
-                  ? { ...msg, isStreaming: false, followUpQuestions: generateFollowUpQuestions(inputMessage) }
-                  : msg
-              )
-            );
-            setLoading(false);
-            return;
-          }
-
-          if (data.token) {
-            fullResponse += data.token;
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === assistantMessageId
-                  ? { ...msg, content: fullResponse }
-                  : msg
-              )
-            );
-          }
-        } catch (parseError) {
-          console.error('解析 SSE 数据失败:', parseError);
-        }
-      };
-
-      eventSource.onerror = (err) => {
-        console.error('SSE 连接错误:', err);
-        eventSource.close();
-        setError(t('chat.connectionError'));
-        setLoading(false);
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId
-              ? { ...msg, isStreaming: false }
-              : msg
-          )
-        );
-      };
-    } catch (err) {
-      setError(err.detail || t('chat.sendError'));
-      setLoading(false);
+    if (useStream) {
+      handleStreamMessage(question, userMessage.id);
+    } else {
+      handleNormalMessage(question);
     }
   };
 
-  const handleNormalMessage = async () => {
-    try {
-      const response = await chatService.askQuestion(inputMessage, useCloud, 3, selectedModel);
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) return;
+    const question = inputMessage;
+    setInputMessage('');
+    sendMessage(question);
+  };
 
-      if (response.success) {
-        const assistantMessage = {
-          id: Date.now() + 1,
-          role: 'assistant',
-          content: response.answer,
-          timestamp: dayjs().toISOString(),
-          sources: response.sources,
-          modelUsed: response.model_used,
-          cloudUsed: response.cloud_used,
-          isStreaming: false,
-          followUpQuestions: generateFollowUpQuestions(inputMessage),
-        };
-
-        setMessages((prev) => [...prev, assistantMessage]);
-      } else {
-        setError(t('chat.aiError'));
-      }
-    } catch (err) {
-      setError(err.detail || t('chat.sendError'));
-    } finally {
-      setLoading(false);
-    }
+  const handleQuickQuestion = (question) => {
+    sendMessage(question);
   };
 
   const handleKeyPress = (e) => {
@@ -352,50 +261,8 @@ const Chat = () => {
     }
   };
 
-  const generateFollowUpQuestions = (question) => {
-    const followUpMap = {
-      '宝宝的血红蛋白指标正常吗？': [
-        '正常的血红蛋白范围是多少？',
-        '血红蛋白偏低怎么办？',
-        '如何通过饮食改善血红蛋白水平？'
-      ],
-      '最近几个月的体重变化趋势如何？': [
-        '宝宝的体重增长是否正常？',
-        '如何帮助宝宝健康增重？',
-        '体重增长过快怎么办？'
-      ],
-      '白细胞偏高可能是什么原因？': [
-        '白细胞正常范围是多少？',
-        '白细胞偏高需要治疗吗？',
-        '如何预防白细胞异常？'
-      ],
-      'Is my baby\'s hemoglobin level normal?': [
-        'What is the normal hemoglobin range?',
-        'What to do if hemoglobin is low?',
-        'How to improve hemoglobin through diet?'
-      ],
-      'What is the weight change trend in recent months?': [
-        'Is my baby\'s weight gain normal?',
-        'How to help my baby gain weight healthily?',
-        'What to do if weight gain is too fast?'
-      ],
-      'What might cause high white blood cell count?': [
-        'What is the normal white blood cell range?',
-        'Does high white blood cell count need treatment?',
-        'How to prevent abnormal white blood cell count?'
-      ],
-    };
-    
-    return followUpMap[question] || [
-      t('chat.followUp1'),
-      t('chat.followUp2'),
-      t('chat.followUp3')
-    ];
-  };
-
   return (
     <Card className="chat-card" variant="outlined">
-      {/* 头部 */}
       <div className="chat-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <MessageOutlined style={{ fontSize: 24 }} />
@@ -437,7 +304,6 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* 消息区域 */}
       <div className="chat-messages">
         {messages.length === 0 && !loading && (
           <div className="welcome-message">
@@ -562,7 +428,6 @@ const Chat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 输入区域 */}
       {error && (
         <div className="error-message">
           {error}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Typography, Select } from 'antd';
 import {
   UploadOutlined,
@@ -19,6 +19,7 @@ import {
   HistoryOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import UploadComponent from './components/Upload';
 import Chat from './components/Chat';
 import RecordManagement from './components/RecordManagement';
@@ -39,120 +40,155 @@ const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 const { Option } = Select;
 
-function App() {
-  const [activeTab, setActiveTab] = useState('upload');
+// 路由配置
+const routes = [
+  { path: '/', element: <Dashboard /> },
+  { path: '/upload', element: <UploadComponent /> },
+  { path: '/chat', element: <Chat /> },
+  { path: '/records', element: <RecordManagement /> },
+  { path: '/sleep', element: <SleepRecords /> },
+  { path: '/diaper', element: <DiaperRecords /> },
+  { path: '/cry', element: <CryRecords /> },
+  { path: '/feeding', element: <FeedingRecords /> },
+  { path: '/growth', element: <GrowthRecords /> },
+  { path: '/growth-chart', element: <GrowthChart /> },
+  { path: '/reminder', element: <ReminderCenter /> },
+  { path: '/lab-report', element: <LabReportParser /> },
+  { path: '/symptom', element: <SymptomChecker /> },
+  { path: '/chat-history', element: <ChatHistory /> },
+];
+
+function AppContent() {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
+  const [openKeys, setOpenKeys] = useState([]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
 
+  useEffect(() => {
+    setOpenKeys(getOpenKeys());
+  }, [location.pathname]);
+
+  // 菜单项配置
   const menuItems = [
     {
-      key: 'dashboard',
+      key: '/',
       icon: <HomeOutlined />,
-      label: t('nav.dashboard') || '仪表盘',
+      label: <NavLink to="/" className="nav-link">{t('nav.dashboard')}</NavLink>,
     },
     {
-      key: 'upload',
-      icon: <UploadOutlined />,
-      label: t('nav.upload'),
-    },
-    {
-      key: 'chat',
-      icon: <MessageOutlined />,
-      label: t('nav.chat'),
-    },
-    {
-      key: 'sleep',
-      icon: <ClockCircleOutlined />,
-      label: t('nav.sleep') || '睡眠记录',
-    },
-    {
-      key: 'diaper',
-      icon: <FilterOutlined />,
-      label: t('nav.diaper') || '排泄记录',
-    },
-    {
-      key: 'cry',
-      icon: <AlertOutlined />,
-      label: t('nav.cry') || '哭声记录',
-    },
-    {
-      key: 'feeding',
-      icon: <CoffeeOutlined />,
-      label: t('nav.feeding') || '喂养记录',
-    },
-    {
-      key: 'growth',
-      icon: <MedicineBoxOutlined />,
-      label: t('nav.growth') || '生长发育',
-    },
-    {
-      key: 'growth-chart',
-      icon: <LineChartOutlined />,
-      label: t('nav.growthChart') || '生长曲线',
-    },
-    {
-      key: 'reminder',
-      icon: <BellOutlined />,
-      label: t('nav.reminder') || '提醒中心',
-    },
-    {
-      key: 'records',
+      key: 'records-group',
       icon: <FileTextOutlined />,
       label: t('nav.records'),
+      children: [
+        {
+          key: '/sleep',
+          icon: <ClockCircleOutlined />,
+          label: <NavLink to="/sleep" className="nav-link">{t('nav.sleep')}</NavLink>,
+        },
+        {
+          key: '/diaper',
+          icon: <FilterOutlined />,
+          label: <NavLink to="/diaper" className="nav-link">{t('nav.diaper')}</NavLink>,
+        },
+        {
+          key: '/cry',
+          icon: <AlertOutlined />,
+          label: <NavLink to="/cry" className="nav-link">{t('nav.cry')}</NavLink>,
+        },
+        {
+          key: '/feeding',
+          icon: <CoffeeOutlined />,
+          label: <NavLink to="/feeding" className="nav-link">{t('nav.feeding')}</NavLink>,
+        },
+        {
+          key: '/growth',
+          icon: <MedicineBoxOutlined />,
+          label: <NavLink to="/growth" className="nav-link">{t('nav.growth')}</NavLink>,
+        },
+        {
+          key: '/growth-chart',
+          icon: <LineChartOutlined />,
+          label: <NavLink to="/growth-chart" className="nav-link">{t('nav.growthChart')}</NavLink>,
+        },
+      ],
     },
     {
-      key: 'lab-report',
-      icon: <FileSearchOutlined />,
-      label: '化验单解析',
+      key: 'services-group',
+      icon: <MessageOutlined />,
+      label: t('nav.services'),
+      children: [
+        {
+          key: '/chat',
+          icon: <MessageOutlined />,
+          label: <NavLink to="/chat" className="nav-link">{t('nav.chat')}</NavLink>,
+        },
+        {
+          key: '/lab-report',
+          icon: <FileSearchOutlined />,
+          label: <NavLink to="/lab-report" className="nav-link">{t('nav.labReport')}</NavLink>,
+        },
+        {
+          key: '/symptom',
+          icon: <HeartOutlined />,
+          label: <NavLink to="/symptom" className="nav-link">{t('nav.symptom')}</NavLink>,
+        },
+        {
+          key: '/chat-history',
+          icon: <HistoryOutlined />,
+          label: <NavLink to="/chat-history" className="nav-link">{t('nav.chatHistory')}</NavLink>,
+        },
+      ],
     },
     {
-      key: 'symptom',
-      icon: <HeartOutlined />,
-      label: '症状自查',
-    },
-    {
-      key: 'chat-history',
-      icon: <HistoryOutlined />,
-      label: '对话历史',
+      key: 'system-group',
+      icon: <BellOutlined />,
+      label: t('nav.system'),
+      children: [
+        {
+          key: '/reminder',
+          icon: <BellOutlined />,
+          label: <NavLink to="/reminder" className="nav-link">{t('nav.reminder')}</NavLink>,
+        },
+        {
+          key: '/upload',
+          icon: <UploadOutlined />,
+          label: <NavLink to="/upload" className="nav-link">{t('nav.upload')}</NavLink>,
+        },
+      ],
     },
   ];
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'upload':
-        return <UploadComponent />;
-      case 'chat':
-        return <Chat />;
-      case 'sleep':
-        return <SleepRecords />;
-      case 'diaper':
-        return <DiaperRecords />;
-      case 'cry':
-        return <CryRecords />;
-      case 'feeding':
-        return <FeedingRecords />;
-      case 'growth':
-        return <GrowthRecords />;
-      case 'growth-chart':
-        return <GrowthChart />;
-      case 'reminder':
-        return <ReminderCenter />;
-      case 'records':
-        return <RecordManagement />;
-      case 'lab-report':
-        return <LabReportParser />;
-      case 'symptom':
-        return <SymptomChecker />;
-      case 'chat-history':
-        return <ChatHistory />;
-      default:
-        return <Dashboard />;
+  // 获取当前选中的菜单key
+  const getSelectedKey = () => {
+    const path = location.pathname;
+    // 精确匹配
+    const exactMatch = menuItems.find(item => item.key === path);
+    if (exactMatch) return [path];
+    
+    // 在子菜单中查找
+    for (const item of menuItems) {
+      if (item.children) {
+        const child = item.children.find(c => c.key === path);
+        if (child) return [path];
+      }
     }
+    return ['/'];
+  };
+
+  // 获取展开的菜单keys
+  const getOpenKeys = () => {
+    const path = location.pathname;
+    const openKeys = [];
+    for (const item of menuItems) {
+      if (item.children) {
+        const hasActiveChild = item.children.some(c => c.key === path);
+        if (hasActiveChild) openKeys.push(item.key);
+      }
+    }
+    return openKeys;
   };
 
   return (
@@ -165,9 +201,11 @@ function App() {
           </div>
           <Menu
             mode="horizontal"
+            theme="light"
+            selectedKeys={getSelectedKey()}
+            openKeys={openKeys}
+            onOpenChange={(keys) => setOpenKeys(keys)}
             items={menuItems}
-            selectedKeys={[activeTab]}
-            onClick={(e) => setActiveTab(e.key)}
             className="nav-menu"
           />
           <div className="language-selector">
@@ -185,12 +223,24 @@ function App() {
         </div>
       </Header>
       <Content className="app-content">
-        {renderContent()}
+        <Routes>
+          {routes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+        </Routes>
       </Content>
       <Footer className="app-footer">
         <p>{t('app.title')} ©2026 - {t('app.subtitle')}</p>
       </Footer>
     </Layout>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   );
 }
 
