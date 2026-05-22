@@ -36,16 +36,26 @@
 - 📱 **响应式设计**：移动端自适应布局
 - 🌍 **国际化完善**：新组件全面支持中英文切换
 
+### v1.5.0 新增
+- 📱 **Capacitor 移动端打包**：支持将 Web 应用打包为 Android APK
+- 🗂️ **树状导航菜单**：按功能分类组织的层级菜单结构（Dashboard、日常记录、健康管理、AI 助手）
+- 🚦 **React Router 路由控制**：前端路由统一管理，支持 URL 直接访问
+- 🌍 **国际化完善**：GrowthChart 组件和导航菜单支持中英文切换
+- 🔧 **PWA 配置**：vite-plugin-pwa 插件，支持"添加到主屏幕"功能
+
 ## 🛠️ 技术栈
 
 - **框架**: React 18
 - **构建工具**: Vite 6.5.0
 - **UI 组件**: Ant Design 5.x
+- **路由**: React Router v6
 - **日期处理**: dayjs
 - **图表**: Recharts
 - **HTTP 客户端**: Axios
 - **国际化**: react-i18next
 - **图标**: @ant-design/icons
+- **PWA**: vite-plugin-pwa
+- **移动打包**: Capacitor
 
 ## 📁 项目结构
 
@@ -89,7 +99,8 @@ frontend/
 │   └── vite.svg
 ├── index.html                  # HTML 模板
 ├── package.json                # 项目依赖
-├── vite.config.js              # Vite 配置
+├── vite.config.js              # Vite 配置（含 PWA 和 Capacitor）
+├── capacitor.config.json       # Capacitor 配置
 ├── .env.example                # 环境变量示例
 └── .gitignore                  # Git 忽略规则
 ```
@@ -296,6 +307,16 @@ npm run build
 5. **响应式**：使用 Ant Design 的 `Row`/`Col` 组件配合 `xs/sm/md/lg` 断点实现移动端适配
 
 ## 🔄 版本历史
+
+- **v1.5.0 (2026-05-22)** - 移动端版本
+  - ✅ Capacitor 移动端打包支持（Android APK）
+  - ✅ 树状导航菜单重构（按功能分类：Dashboard、日常记录、健康管理、AI 助手）
+  - ✅ React Router v6 路由集成
+  - ✅ GrowthChart 组件国际化支持
+  - ✅ 导航菜单国际化支持
+  - ✅ vite-plugin-pwa 插件配置
+  - ✅ 图标组件导入修复（AlertCircleOutlined、BabyOutlined、DropOutlined）
+  - ✅ Recharts 图表库安装与配置
 
 - **v1.4.0 (2026-05-21)** - AI 增强版本
   - ✅ 添加化验单 AI 解析页面（LabReportParser）
