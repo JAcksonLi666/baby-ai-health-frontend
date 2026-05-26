@@ -37,11 +37,13 @@
 - 🌍 **国际化完善**：新组件全面支持中英文切换
 
 ### v1.5.0 新增
-- 📱 **Capacitor 移动端打包**：支持将 Web 应用打包为 Android APK
+- 📱 **Capacitor 移动端打包**：支持将 Web 应用打包为 Android APK，已成功适配鸿蒙系统
 - 🗂️ **树状导航菜单**：按功能分类组织的层级菜单结构（Dashboard、日常记录、健康管理、AI 助手）
-- 🚦 **React Router 路由控制**：前端路由统一管理，支持 URL 直接访问
+- 🚦 **React Router v6 路由控制**：前端路由统一管理，支持 URL 直接访问
 - 🌍 **国际化完善**：GrowthChart 组件和导航菜单支持中英文切换
 - 🔧 **PWA 配置**：vite-plugin-pwa 插件，支持"添加到主屏幕"功能
+- 🔗 **局域网访问**：支持手机通过局域网连接电脑后端服务
+- 🔒 **APK 签名**：已配置 release.jks 密钥库，支持发布签名
 
 ## 🛠️ 技术栈
 
@@ -149,6 +151,48 @@ npm run build
 ```
 
 构建产物将输出到 `dist` 目录。
+
+### 构建 Android APK（移动端打包）
+
+```bash
+# 构建前端
+npm run build
+
+# 同步到 Android
+npx cap sync android
+
+# 构建 APK（release 版本）
+cd android
+.\gradlew assembleRelease
+```
+
+**APK 文件位置**：`android/app/build/outputs/apk/release/app-universal-release.apk`
+
+**签名说明**：
+- 密钥库文件：`android/app/release.jks`
+- 密钥别名：`release`
+- 密码：`android123`
+
+### 局域网访问配置（手机连接电脑后端）
+
+1. 获取电脑局域网 IP（Windows：`ipconfig`，Linux/Mac：`ifconfig`）
+2. 修改 `.env` 文件：
+   ```env
+   VITE_API_BASE_URL=http://你的电脑IP:8000
+   ```
+3. 手机和电脑连接到同一个 Wi-Fi 网络
+4. 重新构建并打包 APK
+
+### Capacitor 配置说明
+
+`capacitor.config.json` 关键配置：
+```json
+{
+  "server": {
+    "androidScheme": "http"  // 修复混合内容问题，允许 HTTP 请求
+  }
+}
+```
 
 ## 🧩 核心组件
 
@@ -308,7 +352,14 @@ npm run build
 
 ## 🔄 版本历史
 
-- **v1.5.0 (2026-05-22)** - 移动端版本
+- **v1.6.0 (2026-05-26)** - 移动端正式版本
+  - ✅ 鸿蒙系统适配（修复混合内容问题，androidScheme 改为 HTTP）
+  - ✅ 局域网访问支持（手机通过 Wi-Fi 连接电脑后端服务）
+  - ✅ APK 签名配置（release.jks 密钥库，支持发布签名）
+  - ✅ 响应式样式优化（移动端布局适配）
+  - ✅ 文档更新（完善移动端部署指南）
+
+- **v1.5.0 (2026-05-22)** - 移动端基础版本
   - ✅ Capacitor 移动端打包支持（Android APK）
   - ✅ 树状导航菜单重构（按功能分类：Dashboard、日常记录、健康管理、AI 助手）
   - ✅ React Router v6 路由集成
