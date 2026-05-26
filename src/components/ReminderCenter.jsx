@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import {
   Table,
   Button,
@@ -29,7 +29,7 @@ import {
   MedicineBoxOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { reminderService } from '../services/apiService';
+import { reminderService } from '../services';
 
 const REMINDER_TYPE_MAP = {
   vaccine: { label: '疫苗接种', color: 'blue', icon: <MedicineBoxOutlined /> },

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Upload, DatePicker, Select, Button, Card, message, Spin, Alert, Tag, Divider } from 'antd';
 import { UploadOutlined, EyeOutlined, CheckCircleOutlined, AlertOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import { uploadService } from '../services/apiService';
+import { uploadService } from '../services';
 import './Upload.css';
 
 const { Option } = Select;

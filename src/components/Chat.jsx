@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   Card, Input, Button, Select, Switch, message, Spin,
   Avatar, Tag
@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import { chatService, modelService } from '../services/apiService';
+import { chatService, modelService } from '../services';
 import './Chat.css';
 
 const { TextArea } = Input;

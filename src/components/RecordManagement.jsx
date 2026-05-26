@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Table, DatePicker, Select, Button, Card, message, Modal, Tag,
   Statistic, Row, Col, Input, Spin, Alert, Empty
@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import { recordService } from '../services/apiService';
+import { recordService } from '../services';
 import './RecordManagement.css';
 
 const { Option } = Select;

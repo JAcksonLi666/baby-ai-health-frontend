@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import {
   Table,
   Button,
@@ -24,7 +24,7 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { growthService } from '../services/apiService';
+import { growthService } from '../services';
 
 const GrowthRecords = () => {
   const [records, setRecords] = useState([]);

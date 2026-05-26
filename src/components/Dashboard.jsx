@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -19,7 +19,7 @@ import {
   InfoOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { dashboardService } from '../services/apiService';
+import { dashboardService } from '../services';
 import { REASON_MAP } from '../constants/cryConstants';
 import './Dashboard.css';
 

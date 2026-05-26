@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import {
   Table,
   Button,
@@ -22,7 +22,7 @@ import {
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { cryService } from '../services/apiService';
+import { cryService } from '../services';
 import { REASON_MAP, REASON_TAG_COLOR } from '../constants/cryConstants';
 
 const { TextArea } = Input;

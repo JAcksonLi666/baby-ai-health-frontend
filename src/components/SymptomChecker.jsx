@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+﻿import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Card,
@@ -21,7 +21,7 @@ import {
   SearchOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { symptomService } from '../services/apiService';
+import { symptomService } from '../services';
 
 const { Title, Text, Paragraph } = Typography;
 

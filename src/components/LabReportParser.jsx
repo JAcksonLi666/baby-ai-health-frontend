@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+﻿import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Card,
@@ -21,7 +21,7 @@ import {
   CheckCircleOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
-import { labReportService } from '../services/apiService';
+import { labReportService } from '../services';
 import './LabReportParser.css';
 
 const LabReportParser = () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Card,
@@ -24,7 +24,7 @@ import {
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
-import { chatHistoryService } from '../services/apiService';
+import { chatHistoryService } from '../services';
 
 // Initialize dayjs plugins
 dayjs.extend(relativeTime);
