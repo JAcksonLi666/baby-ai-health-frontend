@@ -1,0 +1,131 @@
+/* GrowthChart Component Styles */
+
+/* Main container */
+.growth-chart-container {
+  padding: var(--spacing-xl);
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-md);
+}
+
+/* Control panel */
+.growth-chart-controls {
+  margin-bottom: var(--spacing-xl);
+  display: flex;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.growth-chart-control-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.growth-chart-control-label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.growth-chart-gender-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.growth-chart-gender-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  transition: all var(--transition-fast);
+}
+
+.growth-chart-gender-btn:hover {
+  border-color: var(--color-primary);
+}
+
+.growth-chart-gender-btn--active {
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Percentile evaluation */
+.growth-chart-evaluation {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.growth-chart-evaluation-label {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.growth-chart-evaluation-value {
+  font-weight: 600;
+}
+
+/* Chart area */
+.growth-chart-area {
+  height: 400px;
+}
+
+/* Footer notes */
+.growth-chart-notes {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.growth-chart-notes p {
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.growth-chart-notes p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive: mobile */
+@media (max-width: 768px) {
+  .growth-chart-container {
+    padding: var(--spacing-md);
+  }
+
+  .growth-chart-controls {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .growth-chart-control-group {
+    width: 100%;
+  }
+
+  .growth-chart-area {
+    height: 280px;
+  }
+
+  .growth-chart-evaluation {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .growth-chart-gender-buttons {
+    width: 100%;
+  }
+
+  .growth-chart-gender-btn {
+    flex: 1;
+    text-align: center;
+  }
+}

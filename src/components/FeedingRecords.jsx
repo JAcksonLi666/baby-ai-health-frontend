@@ -218,16 +218,16 @@ const FeedingRecords = () => {
         }
       >
         <Row gutter={16} className="mb-4">
-          <Col span={6}>
+          <Col xs={12} sm={12} md={6}>
             <Statistic title="总记录" value={stats.total} prefix={<CalendarOutlined />} />
           </Col>
-          <Col span={6}>
+          <Col xs={12} sm={12} md={6}>
             <Statistic title="母乳" value={stats.breast} valueStyle={{ color: '#1890ff' }} />
           </Col>
-          <Col span={6}>
+          <Col xs={12} sm={12} md={6}>
             <Statistic title="配方奶" value={stats.formula} valueStyle={{ color: '#13c2c2' }} />
           </Col>
-          <Col span={6}>
+          <Col xs={12} sm={12} md={6}>
             <Statistic title="辅食" value={stats.solid} valueStyle={{ color: '#fa8c16' }} />
           </Col>
         </Row>
@@ -237,6 +237,7 @@ const FeedingRecords = () => {
             columns={columns}
             dataSource={records}
             rowKey="id"
+            scroll={{ x: 700 }}
             pagination={{
               total,
               pageSize: 10,
@@ -254,6 +255,7 @@ const FeedingRecords = () => {
         onCancel={() => setModalOpen(false)}
         footer={null}
         width={500}
+        styles={{ body: { maxHeight: '70vh', overflowY: 'auto' } }}
       >
         <Form
           form={form}
@@ -332,7 +334,7 @@ const FeedingRecords = () => {
             <Input.TextArea rows={3} placeholder="其他备注信息" />
           </Form.Item>
 
-          <Form.Item className="flex justify-end gap-2">
+          <Form.Item className="flex justify-end gap-sm">
             <Button onClick={() => setModalOpen(false)}>取消</Button>
             <Button type="primary" htmlType="submit">
               {editingRecord ? '更新' : '保存'}

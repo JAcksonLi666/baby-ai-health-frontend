@@ -205,28 +205,28 @@ const GrowthRecords = () => {
       >
         {latestRecord && (
           <Row gutter={16} className="mb-4">
-            <Col span={6}>
+            <Col xs={12} sm={12} md={6}>
               <Statistic
                 title="最新体重"
                 value={latestRecord.weight_kg ? `${latestRecord.weight_kg} kg` : '-'}
                 prefix={<CheckCircleOutlined />}
               />
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={12} md={6}>
               <Statistic
                 title="最新身高"
                 value={latestRecord.height_cm ? `${latestRecord.height_cm} cm` : '-'}
                 prefix={<CheckCircleOutlined />}
               />
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={12} md={6}>
               <Statistic
                 title="最新头围"
                 value={latestRecord.head_circumference_cm ? `${latestRecord.head_circumference_cm} cm` : '-'}
                 prefix={<CheckCircleOutlined />}
               />
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={12} md={6}>
               <Statistic
                 title="记录日期"
                 value={latestRecord.record_date || '-'}
@@ -241,6 +241,7 @@ const GrowthRecords = () => {
             columns={columns}
             dataSource={records}
             rowKey="id"
+            scroll={{ x: 700 }}
             pagination={{
               total,
               pageSize: 10,
@@ -273,12 +274,12 @@ const GrowthRecords = () => {
           </Form.Item>
 
           <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item label="体重(kg)" name="weight_kg">
                 <Input type="number" step="0.1" min={0} max={150} placeholder="请输入体重" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item label="身高(cm)" name="height_cm">
                 <Input type="number" step="0.1" min={0} max={250} placeholder="请输入身高" />
               </Form.Item>
@@ -286,12 +287,12 @@ const GrowthRecords = () => {
           </Row>
 
           <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item label="头围(cm)" name="head_circumference_cm">
                 <Input type="number" step="0.1" min={0} max={70} placeholder="请输入头围" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item label="体温(°C)" name="temperature_c">
                 <Input type="number" step="0.1" min={35} max={42} placeholder="请输入体温" />
               </Form.Item>
@@ -302,7 +303,7 @@ const GrowthRecords = () => {
             <Input.TextArea rows={3} placeholder="其他备注信息" />
           </Form.Item>
 
-          <Form.Item className="flex justify-end gap-2">
+          <Form.Item className="flex justify-end gap-sm">
             <Button onClick={() => setModalOpen(false)}>取消</Button>
             <Button type="primary" htmlType="submit">
               {editingRecord ? '更新' : '保存'}

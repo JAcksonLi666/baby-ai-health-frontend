@@ -1,8 +1,105 @@
+/* ==================== Dashboard Loading ==================== */
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 256px;
+}
+
+/* ==================== Dashboard Header ==================== */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xxl);
+}
+
+.dashboard-title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin: 0;
+}
+
+.dashboard-date {
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+  margin-bottom: 0;
+}
+
+/* ==================== Dashboard Card ==================== */
 .dashboard-card {
   transition: all 0.3s ease;
+  margin-bottom: var(--spacing-lg);
 }
 
 .dashboard-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* ==================== Dashboard Icon ==================== */
+.dashboard-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-lg);
+  font-size: 20px;
+}
+
+.dashboard-icon-sleep {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+
+.dashboard-icon-diaper {
+  background-color: #fff7ed;
+  color: #f97316;
+}
+
+.dashboard-icon-cry {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
+/* ==================== Dashboard Stat List ==================== */
+.dashboard-stat-list > * + * {
+  margin-top: var(--spacing-md);
+}
+
+.dashboard-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-color-tags {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* ==================== Dashboard Insights ==================== */
+.dashboard-insights {
+  margin-top: var(--spacing-xxl);
+}
+
+.dashboard-insight-icon {
+  color: #eab308;
+  margin-right: var(--spacing-sm);
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
 }

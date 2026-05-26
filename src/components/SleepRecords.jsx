@@ -14,6 +14,8 @@ import {
   Card,
   Space,
   Switch,
+  Row,
+  Col,
 } from 'antd';
 import {
   PlusOutlined,
@@ -34,6 +36,7 @@ const SleepRecords = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [form] = Form.useForm();
   const [ongoingSleep, setOngoingSleep] = useState(null);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const fetchRecords = useCallback(async () => {
     setLoading(true);
@@ -258,11 +261,11 @@ const SleepRecords = () => {
         }
       >
         {ongoingSleep && (
-          <div className="mb-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-            <div className="flex items-center justify-between">
+          <div className="sleep-ongoing-banner">
+            <div className="sleep-ongoing-content">
               <div>
-                <p className="font-medium text-yellow-800">宝宝正在睡觉</p>
-                <p className="text-sm text-yellow-600">
+                <p className="sleep-ongoing-title">宝宝正在睡觉</p>
+                <p className="sleep-ongoing-time">
                   开始时间：{ongoingSleep.start_time}
                 </p>
               </div>
@@ -284,12 +287,14 @@ const SleepRecords = () => {
             rowKey="id"
             pagination={{
               total,
-              pageSize: 10,
+              pageSize: pagination.pageSize,
+              current: pagination.current,
               showSizeChanger: true,
               showQuickJumper: true,
             }}
             variant="bordered"
             onChange={handleTableChange}
+            scroll={{ x: 600 }}
             rowClassName={(record) => (record.is_ongoing ? 'sleep-row-ongoing' : '')}
           />
         </Spin>
@@ -306,46 +311,56 @@ const SleepRecords = () => {
           layout="vertical"
           onFinish={handleSubmit}
         >
-          <Form.Item
-            label="开始时间"
-            name="start_time"
-            rules={[{ required: true, message: '请选择开始时间' }]}
-          >
-            <DatePicker
-              showTime
-              format="YYYY-MM-DD HH:mm"
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
+          <Row gutter={16}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="开始时间"
+                name="start_time"
+                rules={[{ required: true, message: '请选择开始时间' }]}
+              >
+                <DatePicker
+                  showTime
+                  format="YYYY-MM-DD HH:mm"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item label="结束时间" name="end_time">
+                <DatePicker
+                  showTime
+                  format="YYYY-MM-DD HH:mm"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          <Form.Item label="结束时间" name="end_time">
-            <DatePicker
-              showTime
-              format="YYYY-MM-DD HH:mm"
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="类型"
-            name="sleep_type"
-            rules={[{ required: true, message: '请选择类型' }]}
-          >
-            <Select style={{ width: '100%' }}>
-              <Select.Option value="night">夜间睡眠</Select.Option>
-              <Select.Option value="nap">小睡</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item label="是否进行中" name="is_ongoing" valuePropName="checked">
-            <Switch />
-          </Form.Item>
+          <Row gutter={16}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="类型"
+                name="sleep_type"
+                rules={[{ required: true, message: '请选择类型' }]}
+              >
+                <Select style={{ width: '100%' }}>
+                  <Select.Option value="night">夜间睡眠</Select.Option>
+                  <Select.Option value="nap">小睡</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item label="是否进行中" name="is_ongoing" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+            </Col>
+          </Row>
 
           <Form.Item label="备注" name="notes">
             <Input.TextArea rows={3} placeholder="其他备注信息" />
           </Form.Item>
 
-          <Form.Item className="flex justify-end gap-2">
+          <Form.Item className="sleep-form-actions">
             <Button onClick={() => setModalOpen(false)}>取消</Button>
             <Button type="primary" htmlType="submit">
               {editingRecord ? '更新' : '保存'}

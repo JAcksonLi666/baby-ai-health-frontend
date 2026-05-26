@@ -1,7 +1,52 @@
+/* ==================== Ongoing Sleep Banner ==================== */
+.sleep-ongoing-banner {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: #fffbeb;
+  border-radius: var(--radius-lg);
+  border: 1px solid #fef3c7;
+}
+
+.sleep-ongoing-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sleep-ongoing-title {
+  font-weight: 500;
+  color: #92400e;
+  margin-bottom: var(--spacing-xs);
+}
+
+.sleep-ongoing-time {
+  font-size: var(--font-size-sm);
+  color: #ca8a04;
+  margin: 0;
+}
+
+/* ==================== Form Actions ==================== */
+.sleep-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-bottom: 0;
+}
+
+/* ==================== Row Highlight ==================== */
 .sleep-row-ongoing {
   background-color: #fffbe6 !important;
 }
 
 .sleep-row-ongoing:hover > td {
   background-color: #fff1b8 !important;
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 768px) {
+  .sleep-ongoing-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
 }

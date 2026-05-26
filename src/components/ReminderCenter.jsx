@@ -244,7 +244,7 @@ const ReminderCenter = () => {
         }
       >
         <Row gutter={16} className="mb-4">
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8}>
             <Statistic
               title="待处理"
               value={pendingCount}
@@ -252,7 +252,7 @@ const ReminderCenter = () => {
               valueStyle={{ color: '#faad14' }}
             />
           </Col>
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8}>
             <Statistic
               title="已过期"
               value={overdueCount}
@@ -260,7 +260,7 @@ const ReminderCenter = () => {
               valueStyle={{ color: '#ff4d4f' }}
             />
           </Col>
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8}>
             <Statistic
               title="已完成"
               value={completedCount}
@@ -275,6 +275,7 @@ const ReminderCenter = () => {
             columns={columns}
             dataSource={records}
             rowKey="id"
+            scroll={{ x: 700 }}
             pagination={{ pageSize: 10, showSizeChanger: true }}
           />
         </Spin>
@@ -311,7 +312,7 @@ const ReminderCenter = () => {
           </Form.Item>
 
           <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 label="提醒日期"
                 name="reminder_date"
@@ -320,7 +321,7 @@ const ReminderCenter = () => {
                 <DatePicker style={{ width: '100%' }} />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item label="提醒时间" name="reminder_time">
                 <Input placeholder="例如：09:00" />
               </Form.Item>
@@ -351,7 +352,7 @@ const ReminderCenter = () => {
             <Input.TextArea rows={3} placeholder="其他备注信息" />
           </Form.Item>
 
-          <Form.Item className="flex justify-end gap-2">
+          <Form.Item className="flex justify-end gap-sm">
             <Button onClick={() => setModalOpen(false)}>取消</Button>
             <Button type="primary" htmlType="submit">
               {editingRecord ? '更新' : '保存'}

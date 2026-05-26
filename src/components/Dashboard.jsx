@@ -75,7 +75,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="dashboard-loading">
         <Spin size="large" />
       </div>
     );
@@ -83,7 +83,7 @@ const Dashboard = () => {
 
   if (!summary) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="dashboard-loading">
         <Text type="secondary">{t('dashboard.noData')}</Text>
       </div>
     );
@@ -91,10 +91,10 @@ const Dashboard = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="dashboard-header">
         <div>
-          <h2 className="text-xl font-bold">{t('dashboard.title')}</h2>
-          <p className="text-gray-500 mt-1">{date}</p>
+          <h2 className="dashboard-title">{t('dashboard.title')}</h2>
+          <p className="dashboard-date">{date}</p>
         </div>
         <Button icon={<SyncOutlined />} onClick={handleRefresh}>
           {t('dashboard.refresh')}
@@ -102,11 +102,11 @@ const Dashboard = () => {
       </div>
 
       <Row gutter={16}>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card className="dashboard-card" hoverable>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-blue-50 rounded-lg">
-                <ClockCircleOutlined className="text-blue-500" />
+            <div className="dashboard-card-header">
+              <div className="dashboard-icon dashboard-icon-sleep">
+                <ClockCircleOutlined />
               </div>
               <div>
                 <Title level={4}>{t('dashboard.sleep')}</Title>
@@ -115,20 +115,20 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
+            <div className="dashboard-stat-list">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.totalDuration')}</Text>
                 <Statistic value={summary.sleep?.total_display || '-'} />
               </div>
-              <div className="flex justify-between items-center">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.napCount')}</Text>
                 <Statistic value={summary.sleep?.nap_count || 0} suffix={t('dashboard.times')} />
               </div>
-              <div className="flex justify-between items-center">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.napMinutes')}</Text>
                 <Statistic value={summary.sleep?.nap_minutes || 0} suffix={t('dashboard.minutes')} />
               </div>
-              <div className="flex justify-between items-center">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.nightMinutes')}</Text>
                 <Statistic value={summary.sleep?.night_minutes || 0} suffix={t('dashboard.minutes')} />
               </div>
@@ -136,11 +136,11 @@ const Dashboard = () => {
           </Card>
         </Col>
 
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card className="dashboard-card" hoverable>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-orange-50 rounded-lg">
-                <FilterOutlined className="text-orange-500" />
+            <div className="dashboard-card-header">
+              <div className="dashboard-icon dashboard-icon-diaper">
+                <FilterOutlined />
               </div>
               <div>
                 <Title level={4}>{t('dashboard.diaper')}</Title>
@@ -149,22 +149,22 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
+            <div className="dashboard-stat-list">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.diaperCount')}</Text>
                 <Statistic value={summary.diaper?.total_count || 0} suffix={t('dashboard.times')} />
               </div>
-              <div className="flex justify-between items-center">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('diaper.typeOptions.wet')}</Text>
                 <Statistic value={summary.diaper?.pee_count || 0} suffix={t('dashboard.times')} />
               </div>
-              <div className="flex justify-between items-center">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('diaper.typeOptions.dirty')}</Text>
                 <Statistic value={summary.diaper?.poop_count || 0} suffix={t('dashboard.times')} />
               </div>
-              <div className="flex justify-between items-center">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.diaperColor')}：</Text>
-                <div className="flex gap-1">
+                <div className="dashboard-color-tags">
                   {(summary.diaper?.colors || []).map((color) => (
                     <Tag key={color} color={COLOR_TAG_COLOR[color] || 'default'}>
                       {COLOR_MAP[color] || color}
@@ -176,11 +176,11 @@ const Dashboard = () => {
           </Card>
         </Col>
 
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card className="dashboard-card" hoverable>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-red-50 rounded-lg">
-                <AlertOutlined className="text-red-500" />
+            <div className="dashboard-card-header">
+              <div className="dashboard-icon dashboard-icon-cry">
+                <AlertOutlined />
               </div>
               <div>
                 <Title level={4}>{t('dashboard.cry')}</Title>
@@ -189,16 +189,16 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
+            <div className="dashboard-stat-list">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.totalDuration')}</Text>
                 <Statistic value={summary.cry?.total_minutes || 0} suffix={t('dashboard.minutes')} />
               </div>
-              <div className="flex justify-between items-center">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.cryCount')}</Text>
                 <Statistic value={summary.cry?.total_count || 0} suffix={t('dashboard.times')} />
               </div>
-              <div className="flex justify-between items-center">
+              <div className="dashboard-stat-row">
                 <Text type="secondary">{t('dashboard.lastCry')}</Text>
                 <Tag color="orange">
                   {summary.cry?.top_reason
@@ -211,12 +211,12 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      <Card title={t('dashboard.insights')} className="mt-6">
+      <Card title={t('dashboard.insights')} className="dashboard-insights">
         <List
           dataSource={summary.insights || []}
           renderItem={(item, index) => (
             <List.Item key={index}>
-              <InfoOutlined className="text-yellow-500 mr-2" />
+              <InfoOutlined className="dashboard-insight-icon" />
               {item}
             </List.Item>
           )}

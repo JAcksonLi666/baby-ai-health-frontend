@@ -230,6 +230,7 @@ const DiaperRecords = () => {
             columns={columns}
             dataSource={records}
             rowKey="id"
+            scroll={{ x: 600 }}
             pagination={{
               total,
               pageSize: 10,
@@ -298,7 +299,7 @@ const DiaperRecords = () => {
             <Input.TextArea rows={3} placeholder="其他备注信息" />
           </Form.Item>
 
-          <Form.Item className="flex justify-end gap-2">
+          <Form.Item className="flex justify-end gap-sm">
             <Button onClick={() => setModalOpen(false)}>取消</Button>
             <Button type="primary" htmlType="submit">
               {editingRecord ? '更新' : '保存'}

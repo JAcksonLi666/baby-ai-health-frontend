@@ -1,5 +1,6 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Select, Button } from 'antd';
 import {
   LineChart,
   Line,
@@ -10,6 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import './GrowthChart.css';
 
 /**
  * 儿童生长发育图表组件
@@ -271,17 +273,17 @@ const GrowthChart = ({
 
   // 性别配置
   const GENDERS = {
-    boys: { name: t('growthChart.boys'), color: '#3b82f6' },
-    girls: { name: t('growthChart.girls'), color: '#ec4899' },
+    boys: { name: t('growthChart.boys'), color: 'var(--color-info)' },
+    girls: { name: t('growthChart.girls'), color: 'var(--color-error)' },
   };
 
   // 评估百分位
   const evaluatePercentile = (percentile) => {
-    if (percentile < 3) return { text: t('growthChart.percentileLow'), color: '#ef4444' };
-    if (percentile < 25) return { text: t('growthChart.percentileBelowAverage'), color: '#f97316' };
-    if (percentile < 75) return { text: t('growthChart.percentileNormal'), color: '#22c55e' };
-    if (percentile < 97) return { text: t('growthChart.percentileAboveAverage'), color: '#3b82f6' };
-    return { text: t('growthChart.percentileHigh'), color: '#8b5cf6' };
+    if (percentile < 3) return { text: t('growthChart.percentileLow'), color: 'var(--color-error)' };
+    if (percentile < 25) return { text: t('growthChart.percentileBelowAverage'), color: 'var(--color-warning)' };
+    if (percentile < 75) return { text: t('growthChart.percentileNormal'), color: 'var(--color-success)' };
+    if (percentile < 97) return { text: t('growthChart.percentileAboveAverage'), color: 'var(--color-info)' };
+    return { text: t('growthChart.percentileHigh'), color: 'var(--color-primary)' };
   };
 
   const [selectedAgeGroup, setSelectedAgeGroup] = useState('infant');
@@ -339,109 +341,84 @@ const GrowthChart = ({
   const genderConfig = GENDERS[selectedGender];
 
   return (
-    <div className="growth-chart-container" style={{ padding: '20px', background: '#fff', borderRadius: '8px' }}>
+    <div className="growth-chart-container">
       {/* 控制面板 */}
-      <div style={{ marginBottom: '20px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+      <div className="growth-chart-controls">
         {/* 年龄段选择 */}
-        <div>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#374151' }}>
+        <div className="growth-chart-control-group">
+          <label className="growth-chart-control-label">
             {t('growthChart.ageGroup')}
           </label>
-          <select
+          <Select
             value={selectedAgeGroup}
-            onChange={(e) => setSelectedAgeGroup(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              fontSize: '14px',
-              minWidth: '120px',
-            }}
+            onChange={(value) => setSelectedAgeGroup(value)}
+            style={{ minWidth: 120 }}
           >
             {Object.entries(AGE_GROUPS).map(([key, group]) => (
-              <option key={key} value={key}>
+              <Select.Option key={key} value={key}>
                 {group.name} ({group.description})
-              </option>
+              </Select.Option>
             ))}
-          </select>
+          </Select>
         </div>
 
         {/* 性别选择 */}
-        <div>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#374151' }}>
+        <div className="growth-chart-control-group">
+          <label className="growth-chart-control-label">
             {t('growthChart.gender')}
           </label>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="growth-chart-gender-buttons">
             {Object.entries(GENDERS).map(([key, gender]) => (
-              <button
+              <Button
                 key={key}
                 onClick={() => setSelectedGender(key)}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  border: '1px solid #d1d5db',
-                  background: selectedGender === key ? gender.color : '#fff',
-                  color: selectedGender === key ? '#fff' : '#374151',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                }}
+                className={`growth-chart-gender-btn${selectedGender === key ? ' growth-chart-gender-btn--active' : ''}`}
+                style={selectedGender === key ? {
+                  background: gender.color,
+                  borderColor: gender.color,
+                  color: '#fff',
+                } : undefined}
               >
                 {gender.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
 
         {/* 指标选择 */}
-        <div>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#374151' }}>
+        <div className="growth-chart-control-group">
+          <label className="growth-chart-control-label">
             {t('growthChart.metric')}
           </label>
-          <select
+          <Select
             value={selectedMetric}
-            onChange={(e) => setSelectedMetric(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              fontSize: '14px',
-              minWidth: '120px',
-            }}
+            onChange={(value) => setSelectedMetric(value)}
+            style={{ minWidth: 120 }}
           >
             {availableMetrics.map((metric) => (
-              <option key={metric} value={metric}>
+              <Select.Option key={metric} value={metric}>
                 {METRICS[metric].name} ({METRICS[metric].unit})
-              </option>
+              </Select.Option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
 
       {/* 百分位评估 */}
       {showPercentile && evaluation && (
-        <div
-          style={{
-            marginBottom: '20px',
-            padding: '12px 16px',
-            background: '#f3f4f6',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-          }}
-        >
-          <span style={{ fontWeight: 'bold', color: '#374151' }}>{t('growthChart.latestEvaluation')}:</span>
-          <span style={{ color: evaluation.color, fontWeight: 'bold' }}>
+        <div className="growth-chart-evaluation">
+          <span className="growth-chart-evaluation-label">{t('growthChart.latestEvaluation')}:</span>
+          <span className="growth-chart-evaluation-value" style={{ color: evaluation.color }}>
             {evaluation.text} (P{latestPercentile})
           </span>
         </div>
       )}
 
       {/* 图表 */}
-      <div style={{ height: '400px' }}>
+      <div className="growth-chart-area">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
             <XAxis
               dataKey="age"
               tick={{ fontSize: 12 }}
@@ -456,20 +433,14 @@ const GrowthChart = ({
                 position: 'insideLeft',
               }}
             />
-            <Tooltip
-              contentStyle={{
-                background: '#fff',
-                border: '1px solid #e5e7eb',
-                borderRadius: '6px',
-              }}
-            />
+            <Tooltip />
             <Legend />
 
             {/* 百分位参考线 */}
             <Line
               type="monotone"
               dataKey="p3"
-              stroke="#ef4444"
+              stroke="var(--color-error)"
               strokeWidth={2}
               dot={false}
               name={t('growthChart.p3')}
@@ -477,7 +448,7 @@ const GrowthChart = ({
             <Line
               type="monotone"
               dataKey="p50"
-              stroke="#22c55e"
+              stroke="var(--color-success)"
               strokeWidth={2}
               dot={false}
               name={t('growthChart.p50')}
@@ -485,7 +456,7 @@ const GrowthChart = ({
             <Line
               type="monotone"
               dataKey="p97"
-              stroke="#8b5cf6"
+              stroke="var(--color-primary)"
               strokeWidth={2}
               dot={false}
               name={t('growthChart.p97')}
@@ -494,7 +465,7 @@ const GrowthChart = ({
               <Line
                 type="monotone"
                 dataKey="p85"
-                stroke="#f97316"
+                stroke="var(--color-warning)"
                 strokeWidth={1}
                 strokeDasharray="5 5"
                 dot={false}
@@ -520,23 +491,14 @@ const GrowthChart = ({
       </div>
 
       {/* 说明 */}
-      <div
-        style={{
-          marginTop: '20px',
-          padding: '12px',
-          background: '#f9fafb',
-          borderRadius: '6px',
-          fontSize: '12px',
-          color: '#6b7280',
-        }}
-      >
-        <p style={{ margin: '0 0 8px 0' }}>
+      <div className="growth-chart-notes">
+        <p>
           <strong>{t('growthChart.dataSource')}:</strong>{' '}
           {selectedAgeGroup === 'infant' || selectedAgeGroup === 'toddler'
             ? t('growthChart.whoStandard')
             : t('growthChart.chinaStandard')}
         </p>
-        <p style={{ margin: 0 }}>
+        <p>
           <strong>{t('growthChart.description')}</strong>
         </p>
       </div>

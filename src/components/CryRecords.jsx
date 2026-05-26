@@ -250,7 +250,7 @@ const CryRecords = () => {
       key: 'action',
       width: 120,
       render: (_, record) => (
-        <div className="flex gap-2">
+        <div className="flex gap-sm">
           <Button
             type="text"
             icon={<EditOutlined />}
@@ -286,7 +286,7 @@ const CryRecords = () => {
       <Card
         title="哭声记录"
         extra={
-          <div className="flex gap-2">
+          <div className="flex gap-sm">
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -308,6 +308,7 @@ const CryRecords = () => {
             columns={columns}
             dataSource={records}
             rowKey="id"
+            scroll={{ x: 600 }}
             pagination={{
               total,
               pageSize: 10,
@@ -390,7 +391,7 @@ const CryRecords = () => {
             <TextArea rows={3} placeholder="其他备注信息" />
           </Form.Item>
 
-          <Form.Item className="flex justify-end gap-2">
+          <Form.Item className="flex justify-end gap-sm">
             <Button onClick={() => setModalOpen(false)}>取消</Button>
             <Button type="primary" htmlType="submit">
               {editingRecord ? '更新' : '保存'}
@@ -416,9 +417,9 @@ const CryRecords = () => {
                     {analyzeResult.suggested_reasons.map((item, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-light rounded-lg"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-md">
                           <span className="text-lg font-medium">
                             {REASON_MAP[item.reason] || item.reason}
                           </span>
@@ -429,20 +430,20 @@ const CryRecords = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                  <div className="mt-4 p-3 bg-info-light rounded-lg">
                     <h5 className="font-medium mb-1">分析依据</h5>
-                    <p className="text-sm text-gray-600">{analyzeResult.analysis_basis}</p>
+                    <p className="text-sm text-secondary">{analyzeResult.analysis_basis}</p>
                   </div>
-                  <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
-                    <p className="text-sm text-gray-600">{analyzeResult.note}</p>
+                  <div className="mt-3 p-3 bg-warning-light rounded-lg">
+                    <p className="text-sm text-secondary">{analyzeResult.note}</p>
                   </div>
                 </>
               ) : (
-                <p className="text-center text-gray-500 py-8">暂无分析结果</p>
+                <p className="text-center text-muted py-8">暂无分析结果</p>
               )}
             </div>
           ) : (
-            <p className="text-center text-gray-500 py-8">加载中...</p>
+            <p className="text-center text-muted py-8">加载中...</p>
           )}
         </Spin>
       </Modal>

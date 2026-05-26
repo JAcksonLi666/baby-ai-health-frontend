@@ -1,25 +1,25 @@
 /* Lab Report Parser - Table row highlighting for abnormal indicators */
 
-.lab-row-critical {
-  background-color: #fff1f0 !important;
+table tr.lab-row-critical td {
+  background-color: #fff1f0;
 }
 
-.lab-row-critical:hover {
-  background-color: #ffccc7 !important;
+table tr.lab-row-critical:hover td {
+  background-color: #ffccc7;
 }
 
-.lab-row-high {
-  background-color: #fff7e6 !important;
+table tr.lab-row-high td {
+  background-color: #fff7e6;
 }
 
-.lab-row-high:hover {
-  background-color: #ffe7ba !important;
+table tr.lab-row-high:hover td {
+  background-color: #ffe7ba;
 }
 
-.lab-row-low {
-  background-color: #e6f7ff !important;
+table tr.lab-row-low td {
+  background-color: #e6f7ff;
 }
 
-.lab-row-low:hover {
-  background-color: #bae7ff !important;
+table tr.lab-row-low:hover td {
+  background-color: #bae7ff;
 }

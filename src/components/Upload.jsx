@@ -23,7 +23,7 @@ const UploadComponent = () => {
 
   const handleFileChange = (info) => {
     const file = info.file.originFileObj || info.file;
-    
+
     if (file) {
       setSelectedFile(file);
       setError(null);
@@ -57,8 +57,8 @@ const UploadComponent = () => {
 
       if (response.success) {
         setExtractedText(response.extracted_text);
-        const dateToUse = response.detected_date 
-          ? dayjs(response.detected_date) 
+        const dateToUse = response.detected_date
+          ? dayjs(response.detected_date)
           : dayjs();
         setDetectedDate(response.detected_date);
         setRecordDate(dateToUse);
@@ -130,8 +130,8 @@ const UploadComponent = () => {
     <div className="upload-container">
       <Card
         title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <UploadOutlined style={{ fontSize: 24 }} />
+          <div className="upload-card-title">
+            <UploadOutlined className="upload-card-title-icon" />
             <span>{t('upload.title')}</span>
           </div>
         }
@@ -191,25 +191,21 @@ const UploadComponent = () => {
         {extractedText && !result && (
           <Card
             title={
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <EyeOutlined style={{ fontSize: 18 }} />
+              <div className="upload-card-title">
+                <EyeOutlined className="upload-card-title-icon-sm" />
                 <span>{t('upload.recognized')}</span>
               </div>
             }
             className="recognition-card"
           >
             <div className="date-section">
-              <div style={{ marginBottom: 8 }}>
-                <span style={{ fontWeight: 600 }}>{t('upload.recordDate')}</span>
+              <div className="date-label-row">
+                <span className="date-label-bold">{t('upload.recordDate')}</span>
                 {detectedDate && (
-                  <Tag color="green" style={{ marginLeft: 8 }}>
-                    {t('upload.detectedDate')} {detectedDate}
-                  </Tag>
+                  <Tag color="green" className="date-tag">{t('upload.detectedDate')} {detectedDate}</Tag>
                 )}
                 {!detectedDate && (
-                  <Tag color="gold" style={{ marginLeft: 8 }}>
-                    {t('upload.defaultDate')}
-                  </Tag>
+                  <Tag color="gold" className="date-tag">{t('upload.defaultDate')}</Tag>
                 )}
               </div>
               <DatePicker
@@ -219,7 +215,7 @@ const UploadComponent = () => {
                 style={{ width: '100%' }}
                 placeholder={t('upload.selectDate')}
               />
-              <div className="date-display" style={{ marginTop: 12 }}>
+              <div className="date-display">
                 <span className="date-label">{t('upload.currentSelection')}</span>
                 <span className="date-value">
                   {recordDate.isSame(dayjs(), 'day') ? t('upload.today') : recordDate.format('YYYY年MM月DD日')}
@@ -227,10 +223,10 @@ const UploadComponent = () => {
               </div>
             </div>
 
-            <Divider style={{ margin: '16px 0' }} />
+            <Divider className="upload-divider" />
 
             <div className="extracted-text-container">
-              <div style={{ fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div className="ocr-section-title">
                 <div className="ocr-section-line"></div>
                 <span>{t('upload.recognizedContent')}</span>
                 <div className="ocr-section-line"></div>
@@ -262,8 +258,8 @@ const UploadComponent = () => {
         {result && (
           <Card
             title={
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <CheckCircleOutlined style={{ fontSize: 18, color: '#52c41a' }} />
+              <div className="upload-card-title">
+                <CheckCircleOutlined className="upload-card-title-icon-success" />
                 <span>{t('upload.uploadSuccess')}</span>
               </div>
             }
@@ -275,13 +271,13 @@ const UploadComponent = () => {
               showIcon
             />
             {result.record_date && (
-              <div style={{ marginTop: 12 }}>
+              <div className="result-date-tag">
                 <Tag color="blue">{t('upload.recordDate')}: {result.record_date}</Tag>
               </div>
             )}
-            <Divider style={{ margin: '16px 0' }} />
+            <Divider className="upload-divider" />
             <div className="extracted-text-container">
-              <div style={{ fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div className="ocr-section-title">
                 <div className="ocr-section-line"></div>
                 <span>{t('upload.recognizedContent')}</span>
                 <div className="ocr-section-line"></div>
@@ -290,7 +286,7 @@ const UploadComponent = () => {
                 <pre className="ocr-text">{result.extracted_text}</pre>
               </div>
             </div>
-            <Button onClick={handleReset} block size="large" style={{ marginTop: 16 }}>
+            <Button onClick={handleReset} block size="large" className="continue-button">
               {t('upload.continue')}
             </Button>
           </Card>
@@ -298,7 +294,7 @@ const UploadComponent = () => {
 
         {error && (
           <Alert
-            message={<AlertOutlined style={{ marginRight: 8 }} />}
+            message={<AlertOutlined className="error-alert-icon" />}
             description={error}
             type="error"
             showIcon

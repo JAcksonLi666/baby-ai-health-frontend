@@ -245,8 +245,8 @@ function RecordManagement() {
   return (
     <div className="record-management">
       {/* 统计卡片 */}
-      <Row gutter={16} className="stats-row">
-        <Col span={6}>
+      <Row gutter={[16, 16]} className="stats-row">
+        <Col xs={12} sm={12} md={6}>
           <Card className="stat-card">
             <Statistic
               title="总记录数"
@@ -256,7 +256,7 @@ function RecordManagement() {
           </Card>
         </Col>
         {recordTypes.map((type) => (
-          <Col key={type.type} span={6}>
+          <Col key={type.type} xs={12} sm={12} md={6}>
             <Card className="stat-card">
               <Statistic
                 title={type.name}
@@ -270,12 +270,12 @@ function RecordManagement() {
 
       {/* 筛选区域 */}
       <Card className="filter-card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <FilterOutlined style={{ fontSize: 18 }} />
-          <span style={{ fontWeight: 600 }}>{t('records.filter')}</span>
+        <div className="filter-card-header">
+          <FilterOutlined className="filter-icon" />
+          <span className="filter-title">{t('records.filter')}</span>
         </div>
-        <Row gutter={16}>
-          <Col span={5}>
+        <Row gutter={[16, 12]}>
+          <Col xs={12} sm={8} md={5}>
             <Select
               value={filters.record_type}
               onChange={(value) => setFilters({ ...filters, record_type: value })}
@@ -288,7 +288,7 @@ function RecordManagement() {
               <Option value="general">{t('records.general')}</Option>
             </Select>
           </Col>
-          <Col span={5}>
+          <Col xs={12} sm={8} md={5}>
             <DatePicker
               value={filters.start_date}
               onChange={(date) => setFilters({ ...filters, start_date: date })}
@@ -296,7 +296,7 @@ function RecordManagement() {
               className="filter-date"
             />
           </Col>
-          <Col span={5}>
+          <Col xs={12} sm={8} md={5}>
             <DatePicker
               value={filters.end_date}
               onChange={(date) => setFilters({ ...filters, end_date: date })}
@@ -304,7 +304,7 @@ function RecordManagement() {
               className="filter-date"
             />
           </Col>
-          <Col span={5}>
+          <Col xs={12} sm={8} md={5}>
             <Input
               placeholder={t('records.keyword')}
               value={filters.keyword}
@@ -314,13 +314,13 @@ function RecordManagement() {
               className="filter-input"
             />
           </Col>
-          <Col span={4}>
+          <Col xs={24} sm={16} md={4}>
             <div className="filter-actions">
               <Button
                 type="primary"
                 icon={<SearchOutlined />}
                 onClick={handleFilter}
-                style={{ marginRight: 8 }}
+                className="search-btn"
               >
                 {t('records.search')}
               </Button>
@@ -344,7 +344,6 @@ function RecordManagement() {
                 value={editingRecord.editDate}
                 onChange={(date) => setEditingRecord({ ...editingRecord, editDate: date })}
                 placeholder={t('records.selectDate')}
-                style={{ width: '100%' }}
               />
             </Col>
             <Col span={12}>
@@ -352,7 +351,6 @@ function RecordManagement() {
                 value={editingRecord.editType}
                 onChange={(value) => setEditingRecord({ ...editingRecord, editType: value })}
                 placeholder={t('records.selectType')}
-                style={{ width: '100%' }}
               >
                 <Option value="blood_test">{t('records.bloodTest')}</Option>
                 <Option value="urine_test">{t('records.urineTest')}</Option>
