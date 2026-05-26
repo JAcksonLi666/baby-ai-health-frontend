@@ -9,12 +9,23 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  height: 64px;
+  line-height: 64px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -25,24 +36,40 @@
 .logo-title {
   color: white !important;
   margin: 0 !important;
+  font-size: 20px !important;
+  white-space: nowrap;
+}
+
+.desktop-nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .nav-menu {
   line-height: 64px;
   background: transparent !important;
+  border-bottom: none !important;
 }
 
-.nav-menu .ant-menu-item {
+.nav-menu .ant-menu-item,
+.nav-menu .ant-menu-submenu {
   color: white !important;
   background: transparent !important;
 }
 
-.nav-menu .ant-menu-item:hover {
+.nav-menu .ant-menu-item:hover,
+.nav-menu .ant-menu-submenu:hover {
   background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .nav-menu .ant-menu-item-selected {
   background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.nav-menu .ant-menu-submenu-title {
   color: white !important;
 }
 
@@ -54,6 +81,61 @@
 .nav-link:hover {
   color: inherit;
   text-decoration: none;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.language-selector .ant-select {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px;
+}
+
+.language-selector .ant-select-selector {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+}
+
+.language-selector .ant-select-arrow {
+  color: white !important;
+}
+
+.mobile-menu-btn {
+  display: none;
+  color: white !important;
+  font-size: 20px;
+  padding: 8px;
+}
+
+/* Mobile Drawer Styles */
+.mobile-drawer .ant-drawer-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: none;
+}
+
+.mobile-drawer .ant-drawer-title {
+  color: white !important;
+}
+
+.mobile-drawer .ant-drawer-close {
+  color: white !important;
+}
+
+.mobile-nav-menu {
+  border-right: none !important;
+}
+
+.mobile-nav-menu .ant-menu-item {
+  padding-left: 16px !important;
+}
+
+.mobile-nav-menu .ant-menu-submenu-title {
+  padding-left: 16px !important;
 }
 
 .app-content {
@@ -76,11 +158,33 @@
   font-size: 14px;
 }
 
+/* 平板端适配 */
+@media (max-width: 1024px) {
+  .desktop-nav {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .app-header {
+    padding: 0 16px;
+  }
+  
+  .logo-title {
+    font-size: 18px !important;
+  }
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
   .app-header {
     padding: 0 12px;
     height: 56px;
+    line-height: 56px;
   }
   
   .logo {
@@ -95,12 +199,12 @@
     font-size: 16px !important;
   }
   
-  .nav-menu {
-    line-height: 56px;
+  .language-selector .ant-select {
+    width: 80px !important;
   }
   
   .app-content {
-    padding: 8px;
+    padding: 12px;
     margin: 0;
     width: 100%;
   }
@@ -125,6 +229,21 @@
   }
   
   .app-content {
-    padding: 4px;
+    padding: 8px;
   }
+  
+  .header-actions {
+    gap: 8px;
+  }
+}
+
+/* 修复下拉菜单样式 */
+.ant-dropdown-menu {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.ant-menu-submenu-popup {
+  max-height: 80vh;
+  overflow-y: auto;
 }
