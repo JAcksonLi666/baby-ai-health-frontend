@@ -14,7 +14,7 @@ import {
   HeartOutlined,
   HistoryOutlined,
 } from '@ant-design/icons';
-import { routeKeys } from './routes';
+import { routeKeys } from './routes.jsx';
 
 export const menuConfig = [
   {

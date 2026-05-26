@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { menuConfig } from '../config/menu';
+import { menuConfig } from '../config/menu.jsx';
 
 export const useMenu = () => {
   const location = useLocation();
