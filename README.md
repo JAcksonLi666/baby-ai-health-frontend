@@ -45,7 +45,9 @@
 - 🔗 **局域网访问**：支持手机通过局域网连接电脑后端服务
 - 🔒 **APK 签名**：已配置 release.jks 密钥库，支持发布签名
 
-### v1.7.0 新增
+### v1.7.0 系统鲁棒性优化
+
+#### v1.7.1 - UI 全面优化
 - 🎨 **全局设计变量**：统一颜色、间距、阴影、字体 CSS 变量
 - 🧹 **清除 Tailwind 残留**：替换约 60 处无效 Tailwind 类名为 CSS 工具类
 - 📱 **全面移动端响应式**：10 个组件添加 xs/sm/md 断点适配
@@ -55,14 +57,16 @@
 - 📦 **Vite 分包优化**：manualChunks 拆分 vendor 包（react/antd/chart/i18n/utils）
 - 🔧 **ESLint 配置**：新增 eslint.config.js（flat config）
 
-### v1.8.0 新增
+#### v1.7.2 - 类型安全
 - 📘 **TypeScript 迁移**：全部 .jsx/.js 文件迁移为 .tsx/.ts
 - 📐 **类型定义**：~20 个接口定义（SleepRecord, DiaperRecord, CryRecord 等）
 - ⚙️ **构建配置**：tsconfig.json + vite-env.d.ts 类型声明
+- 🐛 **Bug 修复**：onKeyPress → onKeyDown，修复缺失的 pagination 状态
 
-### v1.9.0 新增
+#### v1.7.3 - 代码质量
 - 🧪 **单元测试**：92 个 Vitest 测试用例（工具函数/hook/组件）
 - 🔧 **测试基础设施**：Vitest + React Testing Library + jsdom
+- 📊 **测试脚本**：npm test / test:watch / test:coverage
 
 ## 🛠️ 技术栈
 
@@ -399,26 +403,25 @@ cd android
 
 ## 🔄 版本历史
 
-- **v1.9.0 (2026-05-27)** - 质量保障版本
-  - ✅ 添加 92 个 Vitest 单元测试（工具函数/hook/组件）
-  - ✅ Vitest + React Testing Library + jsdom 测试基础设施
-  - ✅ 测试脚本（npm test / test:watch / test:coverage）
-
-- **v1.8.0 (2026-05-27)** - TypeScript 迁移
-  - ✅ 全部 .jsx/.js 文件迁移为 .tsx/.ts
-  - ✅ ~20 个接口类型定义（SleepRecord, DiaperRecord 等）
-  - ✅ tsconfig.json + vite-env.d.ts 类型声明
-  - ✅ 修复 Chat 组件废弃 API（onKeyPress → onKeyDown）
-  - ✅ 修复 SleepRecords 缺失 pagination 状态
-
-- **v1.7.0 (2026-05-27)** - UI 全面优化
-  - ✅ 全局设计变量（CSS 变量 + 工具类替代 Tailwind）
-  - ✅ 清除 ~60 处无效 Tailwind 类名
-  - ✅ 10 个组件移动端响应式适配
-  - ✅ GrowthChart 重构（Ant Design 组件 + CSS 提取）
-  - ✅ CSS 清理（删除 ~220 行未使用代码，消除 ~20 处 !important）
-  - ✅ Vite 分包优化（manualChunks）
-  - ✅ ESLint flat config 配置
+- **v1.7.0 (2026-05-27)** - 系统鲁棒性优化
+  - #### v1.7.1 - UI 全面优化
+    - ✅ 全局设计变量（CSS 变量 + 工具类替代 Tailwind）
+    - ✅ 清除 ~60 处无效 Tailwind 类名
+    - ✅ 10 个组件移动端响应式适配
+    - ✅ GrowthChart 重构（Ant Design 组件 + CSS 提取）
+    - ✅ CSS 清理（删除 ~220 行未使用代码，消除 ~20 处 !important）
+    - ✅ Vite 分包优化（manualChunks）
+    - ✅ ESLint flat config 配置
+  - #### v1.7.2 - 类型安全
+    - ✅ 全部 .jsx/.js 文件迁移为 .tsx/.ts
+    - ✅ ~20 个接口类型定义
+    - ✅ tsconfig.json + vite-env.d.ts 类型声明
+    - ✅ 修复 Chat 组件废弃 API（onKeyPress → onKeyDown）
+    - ✅ 修复 SleepRecords 缺失 pagination 状态
+  - #### v1.7.3 - 代码质量
+    - ✅ 添加 92 个 Vitest 单元测试
+    - ✅ Vitest + React Testing Library + jsdom 测试基础设施
+    - ✅ 测试脚本（npm test / test:watch / test:coverage）
 
 - **v1.6.0 (2026-05-26)** - 移动端正式版本
   - ✅ 鸿蒙系统适配（修复混合内容问题，androidScheme 改为 HTTP）
