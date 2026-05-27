@@ -24,28 +24,31 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { feedingService } from '../services';
 
-const FEEDING_TYPE_MAP: Record<string, { label: string; color: string }> = {
-  breast: { label: '母乳', color: 'blue' },
-  formula: { label: '配方奶', color: 'cyan' },
-  solid: { label: '辅食', color: 'orange' },
-  water: { label: '喝水', color: 'green' },
-};
-
-interface FeedingRecord {
-  id: string;
-  time: string;
-  feeding_type: string;
-  duration_minutes?: number;
-  amount_ml?: number;
-  breast_side?: string;
-  solid_food?: string;
-  water_amount_ml?: number;
-  notes?: string;
-}
-
 const FeedingRecords = () => {
+  const { t } = useTranslation();
+
+  const FEEDING_TYPE_MAP: Record<string, { label: string; color: string }> = {
+    breast: { label: t('feedingRecords.breast'), color: 'blue' },
+    formula: { label: t('feedingRecords.formula'), color: 'cyan' },
+    solid: { label: t('feedingRecords.solid'), color: 'orange' },
+    water: { label: t('feedingRecords.water'), color: 'green' },
+  };
+
+  interface FeedingRecord {
+    id: string;
+    time: string;
+    feeding_type: string;
+    duration_minutes?: number;
+    amount_ml?: number;
+    breast_side?: string;
+    solid_food?: string;
+    water_amount_ml?: number;
+    notes?: string;
+  }
+
   const [records, setRecords] = useState<FeedingRecord[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -61,14 +64,14 @@ const FeedingRecords = () => {
         setRecords(res.records || []);
         setTotal(res.total || (res.records || []).length);
       } else {
-        message.error(res.message || '获取记录失败');
+        message.error(res.message || t('feedingRecords.fetchError'));
       }
     } catch (error) {
-      message.error('获取喂养记录失败');
+      message.error(t('feedingRecords.fetchFailed'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchRecords();
@@ -99,13 +102,13 @@ const FeedingRecords = () => {
     try {
       const res = await feedingService.deleteRecord(id);
       if (res.success) {
-        message.success('删除成功');
+        message.success(t('feedingRecords.deleteSuccess'));
         fetchRecords();
       } else {
-        message.error(res.message || '删除失败');
+        message.error(res.message || t('feedingRecords.deleteFailed'));
       }
     } catch (err) {
-      message.error('删除失败');
+      message.error(t('feedingRecords.deleteFailed'));
     }
   };
 
@@ -124,27 +127,27 @@ const FeedingRecords = () => {
     try {
       if (editingRecord) {
         await feedingService.updateRecord(editingRecord.id, payload);
-        message.success('更新成功');
+        message.success(t('feedingRecords.updateSuccess'));
       } else {
         await feedingService.createRecord(payload);
-        message.success('记录成功');
+        message.success(t('feedingRecords.createSuccess'));
       }
       setModalOpen(false);
       fetchRecords();
     } catch (error) {
-      message.error(editingRecord ? '更新失败' : '记录失败');
+      message.error(editingRecord ? t('feedingRecords.updateFailed') : t('feedingRecords.createFailed'));
     }
   };
 
   const columns = [
     {
-      title: '时间',
+      title: t('feedingRecords.time'),
       dataIndex: 'time',
       key: 'time',
       width: 150,
     },
     {
-      title: '类型',
+      title: t('feedingRecords.feedingType'),
       dataIndex: 'feeding_type',
       key: 'feeding_type',
       width: 100,
@@ -154,38 +157,38 @@ const FeedingRecords = () => {
       },
     },
     {
-      title: '详情',
+      title: t('feedingRecords.duration'),
       key: 'details',
       width: 200,
       render: (_: any, record: FeedingRecord) => {
         const details: string[] = [];
         if (record.duration_minutes) {
-          details.push(`${record.duration_minutes}分钟`);
+          details.push(`${record.duration_minutes}${t('sleepRecords.minutesUnit')}`);
         }
         if (record.amount_ml) {
           details.push(`${record.amount_ml}ml`);
         }
         if (record.breast_side) {
-          details.push(`侧边: ${record.breast_side === 'left' ? '左侧' : record.breast_side === 'right' ? '右侧' : '双侧'}`);
+          details.push(`${t('feedingRecords.sideLabel')}: ${record.breast_side === 'left' ? t('feedingRecords.left') : record.breast_side === 'right' ? t('feedingRecords.right') : t('feedingRecords.both')}`);
         }
         if (record.solid_food) {
-          details.push(`辅食: ${record.solid_food}`);
+          details.push(`${t('feedingRecords.solid')}: ${record.solid_food}`);
         }
         if (record.water_amount_ml) {
-          details.push(`水: ${record.water_amount_ml}ml`);
+          details.push(`${t('feedingRecords.water')}: ${record.water_amount_ml}ml`);
         }
         return details.length > 0 ? details.join(', ') : '-';
       },
     },
     {
-      title: '备注',
+      title: t('feedingRecords.notes'),
       dataIndex: 'notes',
       key: 'notes',
       width: 150,
       render: (text: string) => text || '-',
     },
     {
-      title: '操作',
+      title: t('feedingRecords.edit'),
       key: 'action',
       width: 180,
       render: (_: any, record: FeedingRecord) => (
@@ -195,14 +198,14 @@ const FeedingRecords = () => {
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            编辑
+            {t('feedingRecords.edit')}
           </Button>
           <Popconfirm
-            title="确定删除该记录？"
+            title={t('feedingRecords.deleteConfirm')}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />}>
-              删除
+              {t('feedingRecords.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -222,25 +225,25 @@ const FeedingRecords = () => {
   return (
     <div>
       <Card
-        title="喂养记录"
+        title={t('feedingRecords.title')}
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            添加记录
+            {t('feedingRecords.addRecord')}
           </Button>
         }
       >
         <Row gutter={16} className="mb-4">
           <Col xs={12} sm={12} md={6}>
-            <Statistic title="总记录" value={stats.total} prefix={<CalendarOutlined />} />
+            <Statistic title={t('feedingRecords.totalRecords')} value={stats.total} prefix={<CalendarOutlined />} />
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Statistic title="母乳" value={stats.breast} valueStyle={{ color: '#1890ff' }} />
+            <Statistic title={t('feedingRecords.breast')} value={stats.breast} valueStyle={{ color: '#1890ff' }} />
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Statistic title="配方奶" value={stats.formula} valueStyle={{ color: '#13c2c2' }} />
+            <Statistic title={t('feedingRecords.formula')} value={stats.formula} valueStyle={{ color: '#13c2c2' }} />
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Statistic title="辅食" value={stats.solid} valueStyle={{ color: '#fa8c16' }} />
+            <Statistic title={t('feedingRecords.solid')} value={stats.solid} valueStyle={{ color: '#fa8c16' }} />
           </Col>
         </Row>
 
@@ -262,7 +265,7 @@ const FeedingRecords = () => {
       </Card>
 
       <Modal
-        title={editingRecord ? '编辑喂养记录' : '添加喂养记录'}
+        title={editingRecord ? t('feedingRecords.editRecord') : t('feedingRecords.addRecord')}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -275,9 +278,9 @@ const FeedingRecords = () => {
           onFinish={handleSubmit}
         >
           <Form.Item
-            label="时间"
+            label={t('feedingRecords.time')}
             name="time"
-            rules={[{ required: true, message: '请选择时间' }]}
+            rules={[{ required: true, message: t('feedingRecords.selectTime') }]}
           >
             <DatePicker
               showTime
@@ -287,15 +290,15 @@ const FeedingRecords = () => {
           </Form.Item>
 
           <Form.Item
-            label="喂养类型"
+            label={t('feedingRecords.feedingType')}
             name="feeding_type"
-            rules={[{ required: true, message: '请选择类型' }]}
+            rules={[{ required: true, message: t('feedingRecords.selectType') }]}
           >
             <Select style={{ width: '100%' }}>
-              <Select.Option value="breast">母乳</Select.Option>
-              <Select.Option value="formula">配方奶</Select.Option>
-              <Select.Option value="solid">辅食</Select.Option>
-              <Select.Option value="water">喝水</Select.Option>
+              <Select.Option value="breast">{t('feedingRecords.breast')}</Select.Option>
+              <Select.Option value="formula">{t('feedingRecords.formula')}</Select.Option>
+              <Select.Option value="solid">{t('feedingRecords.solid')}</Select.Option>
+              <Select.Option value="water">{t('feedingRecords.water')}</Select.Option>
             </Select>
           </Form.Item>
 
@@ -305,36 +308,36 @@ const FeedingRecords = () => {
               return (
                 <>
                   {(type === 'breast') && (
-                    <Form.Item label="喂奶侧边" name="breast_side">
+                    <Form.Item label={t('feedingRecords.breastSide')} name="breast_side">
                       <Select style={{ width: '100%' }}>
-                        <Select.Option value="left">左侧</Select.Option>
-                        <Select.Option value="right">右侧</Select.Option>
-                        <Select.Option value="both">双侧</Select.Option>
+                        <Select.Option value="left">{t('feedingRecords.left')}</Select.Option>
+                        <Select.Option value="right">{t('feedingRecords.right')}</Select.Option>
+                        <Select.Option value="both">{t('feedingRecords.both')}</Select.Option>
                       </Select>
                     </Form.Item>
                   )}
 
                   {(type === 'breast') && (
-                    <Form.Item label="喂奶时长(分钟)" name="duration_minutes">
-                      <Input type="number" min={0} placeholder="请输入时长" />
+                    <Form.Item label={t('feedingRecords.durationLabel')} name="duration_minutes">
+                      <Input type="number" min={0} placeholder={t('feedingRecords.durationPlaceholder')} />
                     </Form.Item>
                   )}
 
                   {(type === 'formula') && (
-                    <Form.Item label="奶量(ml)" name="amount_ml">
-                      <Input type="number" min={0} placeholder="请输入奶量" />
+                    <Form.Item label={t('feedingRecords.amountLabel')} name="amount_ml">
+                      <Input type="number" min={0} placeholder={t('feedingRecords.amountPlaceholder')} />
                     </Form.Item>
                   )}
 
                   {(type === 'solid') && (
-                    <Form.Item label="辅食名称" name="solid_food">
-                      <Input placeholder="请输入辅食名称" />
+                    <Form.Item label={t('feedingRecords.solidFood')} name="solid_food">
+                      <Input placeholder={t('feedingRecords.solidPlaceholder')} />
                     </Form.Item>
                   )}
 
                   {(type === 'water') && (
-                    <Form.Item label="喝水量(ml)" name="water_amount_ml">
-                      <Input type="number" min={0} placeholder="请输入喝水量" />
+                    <Form.Item label={t('feedingRecords.waterAmount')} name="water_amount_ml">
+                      <Input type="number" min={0} placeholder={t('feedingRecords.waterPlaceholder')} />
                     </Form.Item>
                   )}
                 </>
@@ -342,14 +345,14 @@ const FeedingRecords = () => {
             }}
           </Form.Item>
 
-          <Form.Item label="备注" name="notes">
-            <Input.TextArea rows={3} placeholder="其他备注信息" />
+          <Form.Item label={t('feedingRecords.notes')} name="notes">
+            <Input.TextArea rows={3} placeholder={t('feedingRecords.notesPlaceholder')} />
           </Form.Item>
 
           <Form.Item className="flex justify-end gap-sm">
-            <Button onClick={() => setModalOpen(false)}>取消</Button>
+            <Button onClick={() => setModalOpen(false)}>{t('feedingRecords.cancel')}</Button>
             <Button type="primary" htmlType="submit">
-              {editingRecord ? '更新' : '保存'}
+              {editingRecord ? t('feedingRecords.update') : t('feedingRecords.save')}
             </Button>
           </Form.Item>
         </Form>

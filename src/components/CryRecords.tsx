@@ -22,6 +22,7 @@ import {
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { cryService } from '../services';
 import { REASON_MAP, REASON_TAG_COLOR } from '../constants/cryConstants';
 
@@ -39,6 +40,7 @@ interface CryRecord {
 }
 
 const CryRecords = () => {
+  const { t } = useTranslation();
   const [records, setRecords] = useState<CryRecord[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -59,14 +61,14 @@ const CryRecords = () => {
         setRecords(res.records || []);
         setTotal(res.total || (res.records || []).length);
       } else {
-        message.error(res.message || '获取记录失败');
+        message.error(res.message || t('cryRecords.fetchError'));
       }
     } catch (error) {
-      message.error('获取哭声记录失败');
+      message.error(t('cryRecords.fetchFailed'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const fetchOngoingCry = useCallback(async () => {
     try {
@@ -112,13 +114,13 @@ const CryRecords = () => {
     try {
       const res = await cryService.deleteRecord(id);
       if (res.success) {
-        message.success('删除成功');
+        message.success(t('cryRecords.deleteSuccess'));
         fetchRecords();
       } else {
-        message.error(res.message || '删除失败');
+        message.error(res.message || t('cryRecords.deleteFailed'));
       }
     } catch (err) {
-      message.error('删除失败');
+      message.error(t('cryRecords.deleteFailed'));
     }
   };
 
@@ -136,15 +138,15 @@ const CryRecords = () => {
     try {
       if (editingRecord) {
         await cryService.updateRecord(editingRecord.id, payload);
-        message.success('更新成功');
+        message.success(t('cryRecords.updateSuccess'));
       } else {
         await cryService.createRecord(payload);
-        message.success('记录成功');
+        message.success(t('cryRecords.createSuccess'));
       }
       setModalOpen(false);
       fetchRecords();
     } catch (error) {
-      message.error(editingRecord ? '更新失败' : '记录失败');
+      message.error(editingRecord ? t('cryRecords.updateFailed') : t('cryRecords.createFailed'));
     }
   };
 
@@ -156,10 +158,10 @@ const CryRecords = () => {
       if (res.success) {
         setAnalyzeResult(res);
       } else {
-        message.error(res.message || '分析失败');
+        message.error(res.message || t('cryRecords.analyzeError'));
       }
     } catch (error) {
-      message.error('分析哭声原因失败');
+      message.error(t('cryRecords.analyzeFailed'));
     } finally {
       setAnalyzeLoading(false);
     }
@@ -171,11 +173,11 @@ const CryRecords = () => {
       const startDate = dayjs(start);
       const endDate = dayjs(end);
       const minutes = endDate.diff(startDate, 'minute');
-      if (minutes <= 0) return '0分钟';
-      if (minutes < 60) return `${minutes}分钟`;
+      if (minutes <= 0) return `0${t('sleepRecords.minutesUnit')}`;
+      if (minutes < 60) return `${minutes}${t('sleepRecords.minutesUnit')}`;
       const hours = Math.floor(minutes / 60);
       const remainingMinutes = minutes % 60;
-      return remainingMinutes > 0 ? `${hours}小时${remainingMinutes}分钟` : `${hours}小时`;
+      return remainingMinutes > 0 ? `${hours}${t('sleepRecords.hoursUnit')}${remainingMinutes}${t('sleepRecords.minutesUnit')}` : `${hours}${t('sleepRecords.hoursUnit')}`;
     } catch {
       return '-';
     }
@@ -183,27 +185,27 @@ const CryRecords = () => {
 
   const columns = [
     {
-      title: '开始时间',
+      title: t('cryRecords.startTime'),
       dataIndex: 'start_time',
       key: 'start_time',
       width: 150,
     },
     {
-      title: '结束时间',
+      title: t('cryRecords.endTime'),
       dataIndex: 'end_time',
       key: 'end_time',
       width: 150,
       render: (text: string) => text || '-',
     },
     {
-      title: '时长',
+      title: t('cryRecords.duration'),
       dataIndex: 'duration',
       key: 'duration',
       width: 100,
       render: (_: any, record: CryRecord) => getDuration(record.start_time, record.end_time || ''),
     },
     {
-      title: '原因',
+      title: t('cryRecords.reason'),
       dataIndex: 'reason',
       key: 'reason',
       width: 100,
@@ -214,7 +216,7 @@ const CryRecords = () => {
       ),
     },
     {
-      title: '强度',
+      title: t('cryRecords.intensity'),
       dataIndex: 'intensity',
       key: 'intensity',
       width: 80,
@@ -235,28 +237,28 @@ const CryRecords = () => {
       ),
     },
     {
-      title: '安抚方式',
+      title: t('cryRecords.soothingMethod'),
       dataIndex: 'soothing_method',
       key: 'soothing_method',
       width: 100,
       render: (text: string) => text || '-',
     },
     {
-      title: '音频',
+      title: t('cryRecords.audio'),
       dataIndex: 'has_audio',
       key: 'has_audio',
       width: 60,
-      render: (has_audio: boolean) => (has_audio ? '是' : '否'),
+      render: (has_audio: boolean) => (has_audio ? t('cryRecords.yes') : t('cryRecords.no')),
     },
     {
-      title: '备注',
+      title: t('cryRecords.notes'),
       dataIndex: 'notes',
       key: 'notes',
       width: 120,
       render: (text: string) => text || '-',
     },
     {
-      title: '操作',
+      title: t('cryRecords.edit'),
       key: 'action',
       width: 120,
       render: (_: any, record: CryRecord) => (
@@ -266,14 +268,14 @@ const CryRecords = () => {
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            编辑
+            {t('cryRecords.edit')}
           </Button>
           <Popconfirm
-            title="确定删除该记录？"
+            title={t('cryRecords.deleteConfirm')}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />}>
-              删除
+              {t('cryRecords.delete')}
             </Button>
           </Popconfirm>
         </div>
@@ -285,8 +287,8 @@ const CryRecords = () => {
     <div>
       {ongoingCry && (
         <Alert
-          message="宝宝正在哭闹"
-          description={`开始时间：${ongoingCry.start_time}`}
+          message={t('cryRecords.ongoing')}
+          description={`${t('cryRecords.ongoingStart')}：${ongoingCry.start_time}`}
           type="warning"
           showIcon
           style={{ marginBottom: 16 }}
@@ -294,7 +296,7 @@ const CryRecords = () => {
       )}
 
       <Card
-        title="哭声记录"
+        title={t('cryRecords.title')}
         extra={
           <div className="flex gap-sm">
             <Button
@@ -302,13 +304,13 @@ const CryRecords = () => {
               icon={<PlusOutlined />}
               onClick={handleAdd}
             >
-              记录哭闹
+              {t('cryRecords.addRecord')}
             </Button>
             <Button
               icon={<ExclamationCircleOutlined />}
               onClick={handleAnalyze}
             >
-              分析哭声原因
+              {t('cryRecords.analyze')}
             </Button>
           </div>
         }
@@ -331,7 +333,7 @@ const CryRecords = () => {
       </Card>
 
       <Modal
-        title={editingRecord ? '编辑哭声记录' : '记录哭闹'}
+        title={editingRecord ? t('cryRecords.editRecord') : t('cryRecords.addRecord')}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -342,9 +344,9 @@ const CryRecords = () => {
           onFinish={handleSubmit}
         >
           <Form.Item
-            label="开始时间"
+            label={t('cryRecords.startTime')}
             name="start_time"
-            rules={[{ required: true, message: '请选择开始时间' }]}
+            rules={[{ required: true, message: t('cryRecords.selectStartTime') }]}
           >
             <DatePicker
               showTime
@@ -353,7 +355,7 @@ const CryRecords = () => {
             />
           </Form.Item>
 
-          <Form.Item label="结束时间" name="end_time">
+          <Form.Item label={t('cryRecords.endTime')} name="end_time">
             <DatePicker
               showTime
               format="YYYY-MM-DD HH:mm"
@@ -362,9 +364,9 @@ const CryRecords = () => {
           </Form.Item>
 
           <Form.Item
-            label="原因"
+            label={t('cryRecords.reason')}
             name="reason"
-            rules={[{ required: true, message: '请选择原因' }]}
+            rules={[{ required: true, message: t('cryRecords.selectReason') }]}
           >
             <Select style={{ width: '100%' }}>
               {Object.entries(REASON_MAP).map(([key, value]) => (
@@ -376,42 +378,42 @@ const CryRecords = () => {
           </Form.Item>
 
           <Form.Item
-            label="强度"
+            label={t('cryRecords.intensity')}
             name="intensity"
-            rules={[{ required: true, message: '请选择强度' }]}
+            rules={[{ required: true, message: t('cryRecords.selectIntensity') }]}
           >
             <Select style={{ width: '100%' }}>
               {[1, 2, 3, 4, 5].map((i) => (
                 <Select.Option key={i} value={i.toString()}>
-                  {i} 星 {i === 1 ? '轻微' : i === 5 ? '剧烈' : ''}
+                  {i} {t('cryRecords.star')} {i === 1 ? t('cryRecords.mild') : i === 5 ? t('cryRecords.severe') : ''}
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
 
-          <Form.Item label="安抚方式" name="soothing_method">
-            <Input placeholder="如：喂奶、抱哄、换尿布等" />
+          <Form.Item label={t('cryRecords.soothingMethod')} name="soothing_method">
+            <Input placeholder={t('cryRecords.soothingPlaceholder')} />
           </Form.Item>
 
-          <Form.Item label="是否保存音频" name="has_audio" valuePropName="checked">
+          <Form.Item label={t('cryRecords.saveAudio')} name="has_audio" valuePropName="checked">
             <Input.Checkbox />
           </Form.Item>
 
-          <Form.Item label="备注" name="notes">
-            <TextArea rows={3} placeholder="其他备注信息" />
+          <Form.Item label={t('cryRecords.notes')} name="notes">
+            <TextArea rows={3} placeholder={t('cryRecords.notesPlaceholder')} />
           </Form.Item>
 
           <Form.Item className="flex justify-end gap-sm">
-            <Button onClick={() => setModalOpen(false)}>取消</Button>
+            <Button onClick={() => setModalOpen(false)}>{t('cryRecords.cancel')}</Button>
             <Button type="primary" htmlType="submit">
-              {editingRecord ? '更新' : '保存'}
+              {editingRecord ? t('cryRecords.update') : t('cryRecords.save')}
             </Button>
           </Form.Item>
         </Form>
       </Modal>
 
       <Modal
-        title="哭声原因分析"
+        title={t('cryRecords.analysisTitle')}
         open={analyzeModalOpen}
         onCancel={() => setAnalyzeModalOpen(false)}
         footer={null}
@@ -422,7 +424,7 @@ const CryRecords = () => {
             <div>
               {analyzeResult.suggested_reasons && analyzeResult.suggested_reasons.length > 0 ? (
                 <>
-                  <h4 className="mb-3">可能的原因</h4>
+                  <h4 className="mb-3">{t('cryRecords.possibleReasons')}</h4>
                   <div className="space-y-3">
                     {analyzeResult.suggested_reasons.map((item: any, index: number) => (
                       <div
@@ -434,14 +436,14 @@ const CryRecords = () => {
                             {REASON_MAP[item.reason] || item.reason}
                           </span>
                           <Tag color={REASON_TAG_COLOR[item.reason] || 'default'}>
-                            置信度 {Math.round(item.confidence * 100)}%
+                            {t('cryRecords.confidence')} {Math.round(item.confidence * 100)}%
                           </Tag>
                         </div>
                       </div>
                     ))}
                   </div>
                   <div className="mt-4 p-3 bg-info-light rounded-lg">
-                    <h5 className="font-medium mb-1">分析依据</h5>
+                    <h5 className="font-medium mb-1">{t('cryRecords.analysisBasis')}</h5>
                     <p className="text-sm text-secondary">{analyzeResult.analysis_basis}</p>
                   </div>
                   <div className="mt-3 p-3 bg-warning-light rounded-lg">
@@ -449,11 +451,11 @@ const CryRecords = () => {
                   </div>
                 </>
               ) : (
-                <p className="text-center text-muted py-8">暂无分析结果</p>
+                <p className="text-center text-muted py-8">{t('cryRecords.emptyText')}</p>
               )}
             </div>
           ) : (
-            <p className="text-center text-muted py-8">加载中...</p>
+            <p className="text-center text-muted py-8">{t('cryRecords.loading')}</p>
           )}
         </Spin>
       </Modal>

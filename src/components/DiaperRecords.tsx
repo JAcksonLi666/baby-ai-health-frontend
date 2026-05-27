@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Table,
   Button,
@@ -21,37 +21,40 @@ import {
   CameraOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { diaperService } from '../services';
 
-const COLOR_MAP: Record<string, string> = {
-  yellow: '黄色',
-  green: '绿色',
-  brown: '棕色',
-  black: '黑色',
-  red: '红色',
-  white: '白色',
-};
-
-const COLOR_TAG_COLOR: Record<string, string> = {
-  yellow: 'gold',
-  green: 'green',
-  brown: 'brown',
-  black: 'black',
-  red: 'red',
-  white: 'default',
-};
-
-interface DiaperRecord {
-  id: string;
-  time: string;
-  type: string;
-  pee: boolean;
-  poop: boolean;
-  color?: string;
-  notes?: string;
-}
-
 const DiaperRecords = () => {
+  const { t } = useTranslation();
+
+  const COLOR_MAP: Record<string, string> = {
+    yellow: t('diaperRecords.colorYellow') || '黄色',
+    green: t('diaperRecords.colorGreen') || '绿色',
+    brown: t('diaperRecords.colorBrown') || '棕色',
+    black: t('diaperRecords.colorBlack') || '黑色',
+    red: t('diaperRecords.colorRed') || '红色',
+    white: t('diaperRecords.colorWhite') || '白色',
+  };
+
+  const COLOR_TAG_COLOR: Record<string, string> = {
+    yellow: 'gold',
+    green: 'green',
+    brown: 'brown',
+    black: 'black',
+    red: 'red',
+    white: 'default',
+  };
+
+  interface DiaperRecord {
+    id: string;
+    time: string;
+    type: string;
+    pee: boolean;
+    poop: boolean;
+    color?: string;
+    notes?: string;
+  }
+
   const [records, setRecords] = useState<DiaperRecord[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -78,14 +81,14 @@ const DiaperRecords = () => {
         setRecords(filtered);
         setTotal(filtered.length);
       } else {
-        message.error(res.message || '获取记录失败');
+        message.error(res.message || t('diaperRecords.fetchError'));
       }
     } catch (error) {
-      message.error('获取排泄记录失败');
+      message.error(t('diaperRecords.fetchFailed'));
     } finally {
       setLoading(false);
     }
-  }, [dateRange]);
+  }, [dateRange, t]);
 
   useEffect(() => {
     fetchRecords();
@@ -114,13 +117,13 @@ const DiaperRecords = () => {
     try {
       const res = await diaperService.deleteRecord(id);
       if (res.success) {
-        message.success('删除成功');
+        message.success(t('diaperRecords.deleteSuccess'));
         fetchRecords();
       } else {
-        message.error(res.message || '删除失败');
+        message.error(res.message || t('diaperRecords.deleteFailed'));
       }
     } catch (err) {
-      message.error('删除失败');
+      message.error(t('diaperRecords.deleteFailed'));
     }
   };
 
@@ -137,52 +140,52 @@ const DiaperRecords = () => {
     try {
       if (editingRecord) {
         await diaperService.updateRecord(editingRecord.id, payload);
-        message.success('更新成功');
+        message.success(t('diaperRecords.updateSuccess'));
       } else {
         await diaperService.createRecord(payload);
-        message.success('记录成功');
+        message.success(t('diaperRecords.createSuccess'));
       }
       setModalOpen(false);
       fetchRecords();
     } catch (error) {
-      message.error(editingRecord ? '更新失败' : '记录失败');
+      message.error(editingRecord ? t('diaperRecords.updateFailed') : t('diaperRecords.createFailed'));
     }
   };
 
   const columns = [
     {
-      title: '时间',
+      title: t('diaperRecords.time'),
       dataIndex: 'time',
       key: 'time',
       width: 150,
     },
     {
-      title: '类型',
+      title: t('diaperRecords.type'),
       dataIndex: 'type',
       key: 'type',
       width: 100,
       render: (type: string) => (
         <Tag color={type === 'pee' ? 'blue' : type === 'poop' ? 'green' : 'purple'}>
-          {type === 'pee' ? '小便' : type === 'poop' ? '大便' : '两者都有'}
+          {type === 'pee' ? t('diaperRecords.pee') : type === 'poop' ? t('diaperRecords.poop') : t('diaperRecords.both')}
         </Tag>
       ),
     },
     {
-      title: '小便',
+      title: t('diaperRecords.pee'),
       dataIndex: 'pee',
       key: 'pee',
       width: 60,
-      render: (pee: boolean) => (pee ? '是' : '否'),
+      render: (pee: boolean) => (pee ? t('cryRecords.yes') : t('cryRecords.no')),
     },
     {
-      title: '大便',
+      title: t('diaperRecords.poop'),
       dataIndex: 'poop',
       key: 'poop',
       width: 60,
-      render: (poop: boolean) => (poop ? '是' : '否'),
+      render: (poop: boolean) => (poop ? t('cryRecords.yes') : t('cryRecords.no')),
     },
     {
-      title: '颜色',
+      title: t('diaperRecords.color'),
       dataIndex: 'color',
       key: 'color',
       width: 80,
@@ -193,14 +196,14 @@ const DiaperRecords = () => {
       ),
     },
     {
-      title: '备注',
+      title: t('diaperRecords.notes'),
       dataIndex: 'notes',
       key: 'notes',
       width: 150,
       render: (text: string) => text || '-',
     },
     {
-      title: '操作',
+      title: t('diaperRecords.edit'),
       key: 'action',
       width: 120,
       render: (_: any, record: DiaperRecord) => (
@@ -210,14 +213,14 @@ const DiaperRecords = () => {
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            编辑
+            {t('diaperRecords.edit')}
           </Button>
           <Popconfirm
-            title="确定删除该记录？"
+            title={t('diaperRecords.deleteConfirm')}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />}>
-              删除
+              {t('diaperRecords.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -228,10 +231,10 @@ const DiaperRecords = () => {
   return (
     <div>
       <Card
-        title="排泄记录"
+        title={t('diaperRecords.title')}
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            添加记录
+            {t('diaperRecords.addRecord')}
           </Button>
         }
       >
@@ -253,7 +256,7 @@ const DiaperRecords = () => {
       </Card>
 
       <Modal
-        title={editingRecord ? '编辑排泄记录' : '添加排泄记录'}
+        title={editingRecord ? t('diaperRecords.editRecord') : t('diaperRecords.addRecord')}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -264,9 +267,9 @@ const DiaperRecords = () => {
           onFinish={handleSubmit}
         >
           <Form.Item
-            label="时间"
+            label={t('diaperRecords.time')}
             name="time"
-            rules={[{ required: true, message: '请选择时间' }]}
+            rules={[{ required: true, message: t('diaperRecords.selectTime') }]}
           >
             <DatePicker
               showTime
@@ -276,26 +279,26 @@ const DiaperRecords = () => {
           </Form.Item>
 
           <Form.Item
-            label="类型"
+            label={t('diaperRecords.type')}
             name="type"
-            rules={[{ required: true, message: '请选择类型' }]}
+            rules={[{ required: true, message: t('diaperRecords.selectType') }]}
           >
             <Select style={{ width: '100%' }}>
-              <Select.Option value="pee">小便</Select.Option>
-              <Select.Option value="poop">大便</Select.Option>
-              <Select.Option value="both">两者都有</Select.Option>
+              <Select.Option value="pee">{t('diaperRecords.pee')}</Select.Option>
+              <Select.Option value="poop">{t('diaperRecords.poop')}</Select.Option>
+              <Select.Option value="both">{t('diaperRecords.both')}</Select.Option>
             </Select>
           </Form.Item>
 
-          <Form.Item label="小便" name="pee" valuePropName="checked">
+          <Form.Item label={t('diaperRecords.pee')} name="pee" valuePropName="checked">
             <Input.Checkbox />
           </Form.Item>
 
-          <Form.Item label="大便" name="poop" valuePropName="checked">
+          <Form.Item label={t('diaperRecords.poop')} name="poop" valuePropName="checked">
             <Input.Checkbox />
           </Form.Item>
 
-          <Form.Item label="颜色" name="color">
+          <Form.Item label={t('diaperRecords.color')} name="color">
             <Select style={{ width: '100%' }}>
               {Object.entries(COLOR_MAP).map(([key, value]) => (
                 <Select.Option key={key} value={key}>
@@ -305,14 +308,14 @@ const DiaperRecords = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item label="备注" name="notes">
-            <Input.TextArea rows={3} placeholder="其他备注信息" />
+          <Form.Item label={t('diaperRecords.notes')} name="notes">
+            <Input.TextArea rows={3} placeholder={t('diaperRecords.notesPlaceholder')} />
           </Form.Item>
 
           <Form.Item className="flex justify-end gap-sm">
-            <Button onClick={() => setModalOpen(false)}>取消</Button>
+            <Button onClick={() => setModalOpen(false)}>{t('diaperRecords.cancel')}</Button>
             <Button type="primary" htmlType="submit">
-              {editingRecord ? '更新' : '保存'}
+              {editingRecord ? t('diaperRecords.update') : t('diaperRecords.save')}
             </Button>
           </Form.Item>
         </Form>

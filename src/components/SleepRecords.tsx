@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Table,
   Button,
@@ -25,6 +25,7 @@ import {
   PauseCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { sleepService } from '../services';
 import './SleepRecords.css';
 
@@ -38,6 +39,7 @@ interface SleepRecord {
 }
 
 const SleepRecords = () => {
+  const { t } = useTranslation();
   const [records, setRecords] = useState<SleepRecord[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -55,14 +57,14 @@ const SleepRecords = () => {
         setRecords(res.records || []);
         setTotal(res.total || (res.records || []).length);
       } else {
-        message.error(res.message || '获取记录失败');
+        message.error(res.message || t('sleepRecords.fetchError'));
       }
     } catch (error) {
-      message.error('获取睡眠记录失败');
+      message.error(t('sleepRecords.fetchFailed'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const fetchOngoingSleep = useCallback(async () => {
     try {
@@ -104,13 +106,13 @@ const SleepRecords = () => {
     try {
       const res = await sleepService.deleteRecord(id);
       if (res.success) {
-        message.success('删除成功');
+        message.success(t('sleepRecords.deleteSuccess'));
         fetchRecords();
       } else {
-        message.error(res.message || '删除失败');
+        message.error(res.message || t('sleepRecords.deleteFailed'));
       }
     } catch (err) {
-      message.error('删除失败');
+      message.error(t('sleepRecords.deleteFailed'));
     }
   };
 
@@ -126,16 +128,16 @@ const SleepRecords = () => {
     try {
       if (editingRecord) {
         await sleepService.updateRecord(editingRecord.id, payload);
-        message.success('更新成功');
+        message.success(t('sleepRecords.updateSuccess'));
       } else {
         await sleepService.createRecord(payload);
-        message.success('记录成功');
+        message.success(t('sleepRecords.createSuccess'));
       }
       setModalOpen(false);
       fetchRecords();
       fetchOngoingSleep();
     } catch (error) {
-      message.error(editingRecord ? '更新失败' : '记录失败');
+      message.error(editingRecord ? t('sleepRecords.updateFailed') : t('sleepRecords.createFailed'));
     }
   };
 
@@ -146,26 +148,26 @@ const SleepRecords = () => {
         ? { is_ongoing: false, end_time: now }
         : { is_ongoing: true, end_time: null };
       await sleepService.updateRecord(record.id, payload);
-      message.success(record.is_ongoing ? '睡眠已结束' : '睡眠已开始');
+      message.success(record.is_ongoing ? t('sleepRecords.sleepEnded') : t('sleepRecords.sleepStarted'));
       fetchRecords();
       fetchOngoingSleep();
     } catch (error) {
-      message.error('操作失败');
+      message.error(t('sleepRecords.operationFailed'));
     }
   };
 
   const getDuration = (start: string, end?: string) => {
     if (!start) return '-';
-    if (!end) return '进行中';
+    if (!end) return t('sleepRecords.ongoingDuration');
     try {
       const startDate = dayjs(start);
       const endDate = dayjs(end);
       const minutes = endDate.diff(startDate, 'minute');
-      if (minutes <= 0) return '0分钟';
-      if (minutes < 60) return `${minutes}分钟`;
+      if (minutes <= 0) return `0${t('sleepRecords.minutesUnit')}`;
+      if (minutes < 60) return `${minutes}${t('sleepRecords.minutesUnit')}`;
       const hours = Math.floor(minutes / 60);
       const remainingMinutes = minutes % 60;
-      return remainingMinutes > 0 ? `${hours}小时${remainingMinutes}分钟` : `${hours}小时`;
+      return remainingMinutes > 0 ? `${hours}${t('sleepRecords.hoursUnit')}${remainingMinutes}${t('sleepRecords.minutesUnit')}` : `${hours}${t('sleepRecords.hoursUnit')}`;
     } catch {
       return '-';
     }
@@ -173,56 +175,56 @@ const SleepRecords = () => {
 
   const columns = [
     {
-      title: '开始时间',
+      title: t('sleepRecords.startTime'),
       dataIndex: 'start_time',
       key: 'start_time',
       width: 150,
     },
     {
-      title: '结束时间',
+      title: t('sleepRecords.endTime'),
       dataIndex: 'end_time',
       key: 'end_time',
       width: 150,
       render: (text: string) => text || '-',
     },
     {
-      title: '时长',
+      title: t('sleepRecords.duration'),
       dataIndex: 'duration',
       key: 'duration',
       width: 120,
       render: (_: any, record: SleepRecord) => getDuration(record.start_time, record.end_time),
     },
     {
-      title: '类型',
+      title: t('sleepRecords.sleepType'),
       dataIndex: 'sleep_type',
       key: 'sleep_type',
       width: 100,
       render: (type: string) => (
         <Tag color={type === 'night' ? 'purple' : 'blue'}>
-          {type === 'night' ? '夜间睡眠' : '小睡'}
+          {type === 'night' ? t('sleepRecords.night') : t('sleepRecords.nap')}
         </Tag>
       ),
     },
     {
-      title: '状态',
+      title: t('sleepRecords.status'),
       dataIndex: 'is_ongoing',
       key: 'is_ongoing',
       width: 100,
       render: (isOngoing: boolean) => (
         <Tag color={isOngoing ? 'green' : 'default'}>
-          {isOngoing ? '进行中' : '已结束'}
+          {isOngoing ? t('sleepRecords.ongoing') : t('sleepRecords.ended')}
         </Tag>
       ),
     },
     {
-      title: '备注',
+      title: t('sleepRecords.notes'),
       dataIndex: 'notes',
       key: 'notes',
       width: 150,
       render: (text: string) => text || '-',
     },
     {
-      title: '操作',
+      title: t('sleepRecords.edit'),
       key: 'action',
       width: 180,
       render: (_: any, record: SleepRecord) => (
@@ -233,21 +235,21 @@ const SleepRecords = () => {
             onClick={() => handleOngoingToggle(record)}
             size="small"
           >
-            {record.is_ongoing ? '结束' : '开始'}
+            {record.is_ongoing ? t('sleepRecords.endBtn') : t('sleepRecords.startBtn')}
           </Button>
           <Button
             type="text"
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            编辑
+            {t('sleepRecords.edit')}
           </Button>
           <Popconfirm
-            title="确定删除该记录？"
+            title={t('sleepRecords.deleteConfirm')}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />}>
-              删除
+              {t('sleepRecords.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -262,10 +264,10 @@ const SleepRecords = () => {
   return (
     <div>
       <Card
-        title="睡眠记录"
+        title={t('sleepRecords.title')}
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            添加记录
+            {t('sleepRecords.addRecord')}
           </Button>
         }
       >
@@ -273,9 +275,9 @@ const SleepRecords = () => {
           <div className="sleep-ongoing-banner">
             <div className="sleep-ongoing-content">
               <div>
-                <p className="sleep-ongoing-title">宝宝正在睡觉</p>
+                <p className="sleep-ongoing-title">{t('sleepRecords.babySleeping')}</p>
                 <p className="sleep-ongoing-time">
-                  开始时间：{ongoingSleep.start_time}
+                  {t('sleepRecords.startTime')}：{ongoingSleep.start_time}
                 </p>
               </div>
               <Button
@@ -283,7 +285,7 @@ const SleepRecords = () => {
                 danger
                 onClick={() => handleOngoingToggle(ongoingSleep)}
               >
-                结束睡眠
+                {t('sleepRecords.stopSleep')}
               </Button>
             </div>
           </div>
@@ -310,7 +312,7 @@ const SleepRecords = () => {
       </Card>
 
       <Modal
-        title={editingRecord ? '编辑睡眠记录' : '添加睡眠记录'}
+        title={editingRecord ? t('sleepRecords.editRecord') : t('sleepRecords.addRecord')}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -323,9 +325,9 @@ const SleepRecords = () => {
           <Row gutter={16}>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="开始时间"
+                label={t('sleepRecords.startTime')}
                 name="start_time"
-                rules={[{ required: true, message: '请选择开始时间' }]}
+                rules={[{ required: true, message: t('sleepRecords.selectStartTime') }]}
               >
                 <DatePicker
                   showTime
@@ -335,7 +337,7 @@ const SleepRecords = () => {
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
-              <Form.Item label="结束时间" name="end_time">
+              <Form.Item label={t('sleepRecords.endTime')} name="end_time">
                 <DatePicker
                   showTime
                   format="YYYY-MM-DD HH:mm"
@@ -348,31 +350,31 @@ const SleepRecords = () => {
           <Row gutter={16}>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="类型"
+                label={t('sleepRecords.sleepType')}
                 name="sleep_type"
-                rules={[{ required: true, message: '请选择类型' }]}
+                rules={[{ required: true, message: t('sleepRecords.selectType') }]}
               >
                 <Select style={{ width: '100%' }}>
-                  <Select.Option value="night">夜间睡眠</Select.Option>
-                  <Select.Option value="nap">小睡</Select.Option>
+                  <Select.Option value="night">{t('sleepRecords.night')}</Select.Option>
+                  <Select.Option value="nap">{t('sleepRecords.nap')}</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
-              <Form.Item label="是否进行中" name="is_ongoing" valuePropName="checked">
+              <Form.Item label={t('sleepRecords.isOngoing')} name="is_ongoing" valuePropName="checked">
                 <Switch />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item label="备注" name="notes">
-            <Input.TextArea rows={3} placeholder="其他备注信息" />
+          <Form.Item label={t('sleepRecords.notes')} name="notes">
+            <Input.TextArea rows={3} placeholder={t('sleepRecords.notesPlaceholder')} />
           </Form.Item>
 
           <Form.Item className="sleep-form-actions">
-            <Button onClick={() => setModalOpen(false)}>取消</Button>
+            <Button onClick={() => setModalOpen(false)}>{t('sleepRecords.cancel')}</Button>
             <Button type="primary" htmlType="submit">
-              {editingRecord ? '更新' : '保存'}
+              {editingRecord ? t('sleepRecords.update') : t('sleepRecords.save')}
             </Button>
           </Form.Item>
         </Form>
