@@ -45,9 +45,28 @@
 - 🔗 **局域网访问**：支持手机通过局域网连接电脑后端服务
 - 🔒 **APK 签名**：已配置 release.jks 密钥库，支持发布签名
 
+### v1.7.0 新增
+- 🎨 **全局设计变量**：统一颜色、间距、阴影、字体 CSS 变量
+- 🧹 **清除 Tailwind 残留**：替换约 60 处无效 Tailwind 类名为 CSS 工具类
+- 📱 **全面移动端响应式**：10 个组件添加 xs/sm/md 断点适配
+- 📊 **Table 横向滚动**：所有数据表格添加 scroll.x 配置
+- 🧩 **GrowthChart 重构**：原生 HTML 替换为 Ant Design 组件，提取 CSS 文件
+- 🧹 **CSS 清理**：删除约 220 行未使用 CSS，消除 ~20 处 !important
+- 📦 **Vite 分包优化**：manualChunks 拆分 vendor 包（react/antd/chart/i18n/utils）
+- 🔧 **ESLint 配置**：新增 eslint.config.js（flat config）
+
+### v1.8.0 新增
+- 📘 **TypeScript 迁移**：全部 .jsx/.js 文件迁移为 .tsx/.ts
+- 📐 **类型定义**：~20 个接口定义（SleepRecord, DiaperRecord, CryRecord 等）
+- ⚙️ **构建配置**：tsconfig.json + vite-env.d.ts 类型声明
+
+### v1.9.0 新增
+- 🧪 **单元测试**：92 个 Vitest 测试用例（工具函数/hook/组件）
+- 🔧 **测试基础设施**：Vitest + React Testing Library + jsdom
+
 ## 🛠️ 技术栈
 
-- **框架**: React 18
+- **框架**: React 18 (TypeScript)
 - **构建工具**: Vite 6.5.0
 - **UI 组件**: Ant Design 5.x
 - **路由**: React Router v6
@@ -58,6 +77,8 @@
 - **图标**: @ant-design/icons
 - **PWA**: vite-plugin-pwa
 - **移动打包**: Capacitor
+- **测试**: Vitest + React Testing Library
+- **代码规范**: ESLint (flat config)
 
 ## 📁 项目结构
 
@@ -65,43 +86,69 @@
 frontend/
 ├── src/
 │   ├── components/              # React 组件
-│   │   ├── Dashboard.jsx            # 今日汇总仪表盘
+│   │   ├── Dashboard.tsx            # 今日汇总仪表盘
 │   │   ├── Dashboard.css            # 仪表盘样式
-│   │   ├── SleepRecords.jsx         # 睡眠记录管理
+│   │   ├── SleepRecords.tsx         # 睡眠记录管理
 │   │   ├── SleepRecords.css         # 睡眠记录样式
-│   │   ├── DiaperRecords.jsx        # 排泄记录管理
+│   │   ├── DiaperRecords.tsx        # 排泄记录管理
 │   │   ├── DiaperRecords.css        # 排泄记录样式
-│   │   ├── CryRecords.jsx           # 哭声记录管理
+│   │   ├── CryRecords.tsx           # 哭声记录管理
 │   │   ├── CryRecords.css           # 哭声记录样式
-│   │   ├── FeedingRecords.jsx       # 喂养记录管理 (v1.3.0)
+│   │   ├── FeedingRecords.tsx       # 喂养记录管理
 │   │   ├── FeedingRecords.css       # 喂养记录样式
-│   │   ├── GrowthRecords.jsx        # 生长发育记录 (v1.3.0)
+│   │   ├── GrowthRecords.tsx        # 生长发育记录
 │   │   ├── GrowthRecords.css        # 生长发育记录样式
-│   │   ├── GrowthChart.jsx          # WHO 生长曲线图表 (v1.3.0)
-│   │   ├── LabReportParser.jsx      # 化验单 AI 解析 (v1.4.0)
-│   │   ├── LabReportParser.css      # 化验单解析样式 (v1.4.0)
-│   │   ├── SymptomChecker.jsx       # 症状自查 (v1.4.0)
-│   │   ├── ChatHistory.jsx          # 对话历史 (v1.4.0)
-│   │   ├── Upload.jsx               # 化验单上传组件
+│   │   ├── GrowthChart.tsx          # WHO 生长曲线图表
+│   │   ├── GrowthChart.css          # 生长曲线图表样式
+│   │   ├── LabReportParser.tsx      # 化验单 AI 解析
+│   │   ├── LabReportParser.css      # 化验单解析样式
+│   │   ├── SymptomChecker.tsx       # 症状自查
+│   │   ├── ChatHistory.tsx          # 对话历史
+│   │   ├── ReminderCenter.tsx       # 提醒中心
+│   │   ├── Upload.tsx               # 化验单上传组件
 │   │   ├── Upload.css               # 上传组件样式
-│   │   ├── Chat.jsx                 # 智能问答组件
+│   │   ├── Chat.tsx                 # 智能问答组件
 │   │   ├── Chat.css                 # 问答组件样式
-│   │   ├── RecordManagement.jsx     # 档案管理组件
+│   │   ├── RecordManagement.tsx     # 档案管理组件
 │   │   └── RecordManagement.css     # 档案管理样式
+│   ├── config/                 # 配置
+│   │   ├── routes.tsx               # 路由配置
+│   │   └── menu.tsx                 # 菜单配置
 │   ├── constants/              # 常量配置
-│   │   └── cryConstants.js          # 哭声常量定义
+│   │   └── cryConstants.ts          # 哭声常量定义
+│   ├── hooks/                  # 自定义 Hooks
+│   │   ├── useMenu.ts               # 菜单状态管理
+│   │   └── useTranslationEnhanced.ts # 增强翻译 Hook
 │   ├── services/               # API 服务
-│   │   └── apiService.js            # 后端 API 封装
-│   ├── i18n.js                 # 国际化配置（中英文）
-│   ├── App.jsx                 # 主应用组件（导航 + 路由）
+│   │   ├── apiClient.ts             # Axios 实例与拦截器
+│   │   ├── chat.ts                  # 聊天服务
+│   │   ├── daily.ts                 # 日常记录服务
+│   │   ├── health.ts                # 健康服务
+│   │   ├── records.ts               # 档案服务
+│   │   ├── ai.ts                    # AI 服务
+│   │   └── index.ts                 # 服务导出
+│   ├── styles/                 # 全局样式
+│   │   └── variables.css            # 设计变量与工具类
+│   ├── utils/                  # 工具函数
+│   │   ├── format.ts                # 格式化工具
+│   │   ├── helpers.ts               # 通用工具
+│   │   ├── storage.ts               # 本地存储
+│   │   └── validation.ts            # 验证工具
+│   ├── test/                   # 测试
+│   │   ├── setup.ts                 # 测试环境配置
+│   │   └── mocks/                   # Mock 数据
+│   ├── i18n.ts                 # 国际化配置
+│   ├── App.tsx                 # 主应用组件
 │   ├── App.css                 # 应用全局样式
-│   ├── main.jsx                # 入口文件
+│   ├── main.tsx                # 入口文件
 │   └── index.css               # 全局基础样式
+├── tests/                     # 测试目录（后端 CI）
 ├── public/                     # 静态资源
-│   └── vite.svg
 ├── index.html                  # HTML 模板
 ├── package.json                # 项目依赖
-├── vite.config.js              # Vite 配置（含 PWA 和 Capacitor）
+├── tsconfig.json               # TypeScript 配置
+├── vite.config.ts              # Vite 配置（含 Vitest）
+├── eslint.config.js            # ESLint 配置
 ├── capacitor.config.json       # Capacitor 配置
 ├── .env.example                # 环境变量示例
 └── .gitignore                  # Git 忽略规则
@@ -351,6 +398,27 @@ cd android
 5. **响应式**：使用 Ant Design 的 `Row`/`Col` 组件配合 `xs/sm/md/lg` 断点实现移动端适配
 
 ## 🔄 版本历史
+
+- **v1.9.0 (2026-05-27)** - 质量保障版本
+  - ✅ 添加 92 个 Vitest 单元测试（工具函数/hook/组件）
+  - ✅ Vitest + React Testing Library + jsdom 测试基础设施
+  - ✅ 测试脚本（npm test / test:watch / test:coverage）
+
+- **v1.8.0 (2026-05-27)** - TypeScript 迁移
+  - ✅ 全部 .jsx/.js 文件迁移为 .tsx/.ts
+  - ✅ ~20 个接口类型定义（SleepRecord, DiaperRecord 等）
+  - ✅ tsconfig.json + vite-env.d.ts 类型声明
+  - ✅ 修复 Chat 组件废弃 API（onKeyPress → onKeyDown）
+  - ✅ 修复 SleepRecords 缺失 pagination 状态
+
+- **v1.7.0 (2026-05-27)** - UI 全面优化
+  - ✅ 全局设计变量（CSS 变量 + 工具类替代 Tailwind）
+  - ✅ 清除 ~60 处无效 Tailwind 类名
+  - ✅ 10 个组件移动端响应式适配
+  - ✅ GrowthChart 重构（Ant Design 组件 + CSS 提取）
+  - ✅ CSS 清理（删除 ~220 行未使用代码，消除 ~20 处 !important）
+  - ✅ Vite 分包优化（manualChunks）
+  - ✅ ESLint flat config 配置
 
 - **v1.6.0 (2026-05-26)** - 移动端正式版本
   - ✅ 鸿蒙系统适配（修复混合内容问题，androidScheme 改为 HTTP）
