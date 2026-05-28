@@ -68,6 +68,13 @@
 - 🔧 **测试基础设施**：Vitest + React Testing Library + jsdom
 - 📊 **测试脚本**：npm test / test:watch / test:coverage
 
+### v1.8.0 新增
+- 🗄️ **SQLite 数据库支持**：后端数据存储迁移到 SQLite
+- 📊 **数据导入导出**：支持 Excel (.xlsx) 和 CSV (.csv) 格式导入导出
+- 💉 **疫苗接种计划**：中国国家免疫规划疫苗时间表，自动生成接种提醒
+- 📈 **性能监控**：API 请求耗时统计、错误率追踪
+- 🌍 **国际化完善**：6 个组件硬编码中文全部替换为 i18n
+
 ## 🛠️ 技术栈
 
 - **框架**: React 18 (TypeScript)

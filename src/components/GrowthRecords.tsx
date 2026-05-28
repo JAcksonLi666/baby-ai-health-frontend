@@ -24,6 +24,7 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { growthService } from '../services';
 
 interface GrowthRecord {
@@ -37,6 +38,7 @@ interface GrowthRecord {
 }
 
 const GrowthRecords = () => {
+  const { t } = useTranslation();
   const [records, setRecords] = useState<GrowthRecord[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -52,14 +54,14 @@ const GrowthRecords = () => {
         setRecords(res.records || []);
         setTotal(res.total || (res.records || []).length);
       } else {
-        message.error(res.message || '获取记录失败');
+        message.error(res.message || t('growthRecords.fetchError'));
       }
     } catch (error) {
-      message.error('获取生长发育记录失败');
+      message.error(t('growthRecords.fetchFailed'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchRecords();
@@ -89,13 +91,13 @@ const GrowthRecords = () => {
     try {
       const res = await growthService.deleteRecord(id);
       if (res.success) {
-        message.success('删除成功');
+        message.success(t('growthRecords.deleteSuccess'));
         fetchRecords();
       } else {
-        message.error(res.message || '删除失败');
+        message.error(res.message || t('growthRecords.deleteFailed'));
       }
     } catch (err) {
-      message.error('删除失败');
+      message.error(t('growthRecords.deleteFailed'));
     }
   };
 
@@ -112,48 +114,48 @@ const GrowthRecords = () => {
     try {
       if (editingRecord) {
         await growthService.updateRecord(editingRecord.id, payload);
-        message.success('更新成功');
+        message.success(t('growthRecords.updateSuccess'));
       } else {
         await growthService.createRecord(payload);
-        message.success('记录成功');
+        message.success(t('growthRecords.createSuccess'));
       }
       setModalOpen(false);
       fetchRecords();
     } catch (error) {
-      message.error(editingRecord ? '更新失败' : '记录失败');
+      message.error(editingRecord ? t('growthRecords.updateFailed') : t('growthRecords.createFailed'));
     }
   };
 
   const columns = [
     {
-      title: '日期',
+      title: t('growthRecords.date'),
       dataIndex: 'record_date',
       key: 'record_date',
       width: 120,
     },
     {
-      title: '体重',
+      title: t('growthRecords.weight'),
       dataIndex: 'weight_kg',
       key: 'weight_kg',
       width: 100,
       render: (value: number) => value ? `${value} kg` : '-',
     },
     {
-      title: '身高',
+      title: t('growthRecords.height'),
       dataIndex: 'height_cm',
       key: 'height_cm',
       width: 100,
       render: (value: number) => value ? `${value} cm` : '-',
     },
     {
-      title: '头围',
+      title: t('growthRecords.headCircumference'),
       dataIndex: 'head_circumference_cm',
       key: 'head_circumference_cm',
       width: 100,
       render: (value: number) => value ? `${value} cm` : '-',
     },
     {
-      title: '体温',
+      title: t('growthRecords.temperature'),
       dataIndex: 'temperature_c',
       key: 'temperature_c',
       width: 100,
@@ -168,14 +170,14 @@ const GrowthRecords = () => {
       },
     },
     {
-      title: '备注',
+      title: t('growthRecords.notes'),
       dataIndex: 'notes',
       key: 'notes',
       width: 150,
       render: (text: string) => text || '-',
     },
     {
-      title: '操作',
+      title: t('growthRecords.edit'),
       key: 'action',
       width: 180,
       render: (_: any, record: GrowthRecord) => (
@@ -185,14 +187,14 @@ const GrowthRecords = () => {
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            编辑
+            {t('growthRecords.edit')}
           </Button>
           <Popconfirm
-            title="确定删除该记录？"
+            title={t('growthRecords.deleteConfirm')}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />}>
-              删除
+              {t('growthRecords.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -206,10 +208,10 @@ const GrowthRecords = () => {
   return (
     <div>
       <Card
-        title="生长发育记录"
+        title={t('growthRecords.title')}
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            添加记录
+            {t('growthRecords.addRecord')}
           </Button>
         }
       >
@@ -217,28 +219,28 @@ const GrowthRecords = () => {
           <Row gutter={16} className="mb-4">
             <Col xs={12} sm={12} md={6}>
               <Statistic
-                title="最新体重"
+                title={t('growthRecords.latestWeight')}
                 value={latestRecord.weight_kg ? `${latestRecord.weight_kg} kg` : '-'}
                 prefix={<CheckCircleOutlined />}
               />
             </Col>
             <Col xs={12} sm={12} md={6}>
               <Statistic
-                title="最新身高"
+                title={t('growthRecords.latestHeight')}
                 value={latestRecord.height_cm ? `${latestRecord.height_cm} cm` : '-'}
                 prefix={<CheckCircleOutlined />}
               />
             </Col>
             <Col xs={12} sm={12} md={6}>
               <Statistic
-                title="最新头围"
+                title={t('growthRecords.latestHead')}
                 value={latestRecord.head_circumference_cm ? `${latestRecord.head_circumference_cm} cm` : '-'}
                 prefix={<CheckCircleOutlined />}
               />
             </Col>
             <Col xs={12} sm={12} md={6}>
               <Statistic
-                title="记录日期"
+                title={t('growthRecords.recordDate')}
                 value={latestRecord.record_date || '-'}
                 prefix={<CalendarOutlined />}
               />
@@ -264,7 +266,7 @@ const GrowthRecords = () => {
       </Card>
 
       <Modal
-        title={editingRecord ? '编辑生长发育记录' : '添加生长发育记录'}
+        title={editingRecord ? t('growthRecords.editRecord') : t('growthRecords.addRecord')}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -276,47 +278,47 @@ const GrowthRecords = () => {
           onFinish={handleSubmit}
         >
           <Form.Item
-            label="记录日期"
+            label={t('growthRecords.recordDate')}
             name="record_date"
-            rules={[{ required: true, message: '请选择日期' }]}
+            rules={[{ required: true, message: t('growthRecords.selectDate') }]}
           >
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-              <Form.Item label="体重(kg)" name="weight_kg">
-                <Input type="number" step="0.1" min={0} max={150} placeholder="请输入体重" />
+              <Form.Item label={`${t('growthRecords.weight')}(kg)`} name="weight_kg">
+                <Input type="number" step="0.1" min={0} max={150} placeholder={t('growthRecords.weightPlaceholder')} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
-              <Form.Item label="身高(cm)" name="height_cm">
-                <Input type="number" step="0.1" min={0} max={250} placeholder="请输入身高" />
+              <Form.Item label={`${t('growthRecords.height')}(cm)`} name="height_cm">
+                <Input type="number" step="0.1" min={0} max={250} placeholder={t('growthRecords.heightPlaceholder')} />
               </Form.Item>
             </Col>
           </Row>
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-              <Form.Item label="头围(cm)" name="head_circumference_cm">
-                <Input type="number" step="0.1" min={0} max={70} placeholder="请输入头围" />
+              <Form.Item label={`${t('growthRecords.headCircumference')}(cm)`} name="head_circumference_cm">
+                <Input type="number" step="0.1" min={0} max={70} placeholder={t('growthRecords.headPlaceholder')} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
-              <Form.Item label="体温(°C)" name="temperature_c">
-                <Input type="number" step="0.1" min={35} max={42} placeholder="请输入体温" />
+              <Form.Item label={`${t('growthRecords.temperature')}(°C)`} name="temperature_c">
+                <Input type="number" step="0.1" min={35} max={42} placeholder={t('growthRecords.tempPlaceholder')} />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item label="备注" name="notes">
-            <Input.TextArea rows={3} placeholder="其他备注信息" />
+          <Form.Item label={t('growthRecords.notes')} name="notes">
+            <Input.TextArea rows={3} placeholder={t('growthRecords.notesPlaceholder')} />
           </Form.Item>
 
           <Form.Item className="flex justify-end gap-sm">
-            <Button onClick={() => setModalOpen(false)}>取消</Button>
+            <Button onClick={() => setModalOpen(false)}>{t('growthRecords.cancel')}</Button>
             <Button type="primary" htmlType="submit">
-              {editingRecord ? '更新' : '保存'}
+              {editingRecord ? t('growthRecords.update') : t('growthRecords.save')}
             </Button>
           </Form.Item>
         </Form>

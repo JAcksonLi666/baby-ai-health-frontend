@@ -29,6 +29,7 @@ import {
   MedicineBoxOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { reminderService } from '../services';
 
 interface ReminderRecord {
@@ -42,22 +43,31 @@ interface ReminderRecord {
   notes?: string;
 }
 
-const REMINDER_TYPE_MAP: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  vaccine: { label: '疫苗接种', color: 'blue', icon: <MedicineBoxOutlined /> },
-  checkup: { label: '体检', color: 'green', icon: <CheckCircleOutlined /> },
-  feeding: { label: '喂养提醒', color: 'orange', icon: <ClockCircleOutlined /> },
-  medicine: { label: '用药提醒', color: 'red', icon: <ExclamationCircleOutlined /> },
-  other: { label: '其他', color: 'default', icon: <BellOutlined /> },
-};
-
-const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  pending: { label: '待处理', color: 'warning' },
-  completed: { label: '已完成', color: 'success' },
-  overdue: { label: '已过期', color: 'error' },
-  cancelled: { label: '已取消', color: 'default' },
-};
-
 const ReminderCenter = () => {
+  const { t } = useTranslation();
+
+  const REMINDER_TYPE_MAP: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+    vaccine: { label: t('reminderCenter.vaccine'), color: 'blue', icon: <MedicineBoxOutlined /> },
+    checkup: { label: t('reminderCenter.checkup'), color: 'green', icon: <CheckCircleOutlined /> },
+    feeding: { label: t('reminderCenter.feeding'), color: 'orange', icon: <ClockCircleOutlined /> },
+    medicine: { label: t('reminderCenter.medicine'), color: 'red', icon: <ExclamationCircleOutlined /> },
+    other: { label: t('reminderCenter.other'), color: 'default', icon: <BellOutlined /> },
+  };
+
+  const STATUS_MAP: Record<string, { label: string; color: string }> = {
+    pending: { label: t('reminderCenter.pending'), color: 'warning' },
+    completed: { label: t('reminderCenter.completed'), color: 'success' },
+    overdue: { label: t('reminderCenter.overdue'), color: 'error' },
+    cancelled: { label: t('reminderCenter.cancelled'), color: 'default' },
+  };
+
+  const REPEAT_MAP: Record<string, string> = {
+    none: t('reminderCenter.none'),
+    daily: t('reminderCenter.daily'),
+    weekly: t('reminderCenter.weekly'),
+    monthly: t('reminderCenter.monthly'),
+  };
+
   const [records, setRecords] = useState<ReminderRecord[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -73,14 +83,14 @@ const ReminderCenter = () => {
         setRecords(res.records || []);
         setTotal(res.total || (res.records || []).length);
       } else {
-        message.error(res.message || '获取记录失败');
+        message.error(res.message || t('reminderCenter.fetchError'));
       }
     } catch (error) {
-      message.error('获取提醒记录失败');
+      message.error(t('reminderCenter.fetchFailed'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchRecords();
@@ -112,11 +122,11 @@ const ReminderCenter = () => {
     try {
       const res = await reminderService.updateRecord(record.id, { status: 'completed' });
       if (res.success || res.id) {
-        message.success('已标记完成');
+        message.success(t('reminderCenter.markCompleted'));
         fetchRecords();
       }
     } catch (err) {
-      message.error('操作失败');
+      message.error(t('reminderCenter.operationFailed'));
     }
   };
 
@@ -124,11 +134,11 @@ const ReminderCenter = () => {
     try {
       const res = await reminderService.deleteRecord(id);
       if (res.success) {
-        message.success('删除成功');
+        message.success(t('reminderCenter.deleteSuccess'));
         fetchRecords();
       }
     } catch (err) {
-      message.error('删除失败');
+      message.error(t('reminderCenter.deleteFailed'));
     }
   };
 
@@ -146,27 +156,27 @@ const ReminderCenter = () => {
     try {
       if (editingRecord) {
         await reminderService.updateRecord(editingRecord.id, payload);
-        message.success('更新成功');
+        message.success(t('reminderCenter.updateSuccess'));
       } else {
         await reminderService.createRecord(payload);
-        message.success('创建成功');
+        message.success(t('reminderCenter.createSuccess'));
       }
       setModalOpen(false);
       fetchRecords();
     } catch (error) {
-      message.error(editingRecord ? '更新失败' : '创建失败');
+      message.error(editingRecord ? t('reminderCenter.updateFailed') : t('reminderCenter.createFailed'));
     }
   };
 
   const columns = [
     {
-      title: '提醒内容',
+      title: t('reminderCenter.content'),
       dataIndex: 'title',
       key: 'title',
       width: 200,
     },
     {
-      title: '类型',
+      title: t('reminderCenter.reminderType'),
       dataIndex: 'reminder_type',
       key: 'reminder_type',
       width: 100,
@@ -176,30 +186,29 @@ const ReminderCenter = () => {
       },
     },
     {
-      title: '提醒日期',
+      title: t('reminderCenter.reminderDate'),
       dataIndex: 'reminder_date',
       key: 'reminder_date',
       width: 120,
     },
     {
-      title: '提醒时间',
+      title: t('reminderCenter.reminderTime'),
       dataIndex: 'reminder_time',
       key: 'reminder_time',
       width: 100,
       render: (text: string) => text || '-',
     },
     {
-      title: '重复',
+      title: t('reminderCenter.repeatType'),
       dataIndex: 'repeat_type',
       key: 'repeat_type',
       width: 80,
       render: (text: string) => {
-        const map: Record<string, string> = { none: '不重复', daily: '每天', weekly: '每周', monthly: '每月' };
-        return map[text] || text || '-';
+        return REPEAT_MAP[text] || text || '-';
       },
     },
     {
-      title: '状态',
+      title: t('reminderCenter.status'),
       dataIndex: 'status',
       key: 'status',
       width: 90,
@@ -209,7 +218,7 @@ const ReminderCenter = () => {
       },
     },
     {
-      title: '操作',
+      title: t('reminderCenter.edit'),
       key: 'action',
       width: 200,
       render: (_: any, record: ReminderRecord) => (
@@ -221,13 +230,13 @@ const ReminderCenter = () => {
               onClick={() => handleComplete(record)}
               style={{ color: '#52c41a' }}
             >
-              完成
+              {t('reminderCenter.complete')}
             </Button>
           )}
           <Button type="text" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
-            编辑
+            {t('reminderCenter.edit')}
           </Button>
-          <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title={t('reminderCenter.deleteConfirm')} onConfirm={() => handleDelete(record.id)}>
             <Button type="text" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
@@ -245,19 +254,19 @@ const ReminderCenter = () => {
         title={
           <Space>
             <BellOutlined />
-            <span>提醒中心</span>
+            <span>{t('reminderCenter.title')}</span>
           </Space>
         }
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            添加提醒
+            {t('reminderCenter.addReminder')}
           </Button>
         }
       >
         <Row gutter={16} className="mb-4">
           <Col xs={24} sm={12} md={8}>
             <Statistic
-              title="待处理"
+              title={t('reminderCenter.pending')}
               value={pendingCount}
               prefix={<ClockCircleOutlined />}
               valueStyle={{ color: '#faad14' }}
@@ -265,7 +274,7 @@ const ReminderCenter = () => {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <Statistic
-              title="已过期"
+              title={t('reminderCenter.overdue')}
               value={overdueCount}
               prefix={<ExclamationCircleOutlined />}
               valueStyle={{ color: '#ff4d4f' }}
@@ -273,7 +282,7 @@ const ReminderCenter = () => {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <Statistic
-              title="已完成"
+              title={t('reminderCenter.completed')}
               value={completedCount}
               prefix={<CheckCircleOutlined />}
               valueStyle={{ color: '#52c41a' }}
@@ -293,7 +302,7 @@ const ReminderCenter = () => {
       </Card>
 
       <Modal
-        title={editingRecord ? '编辑提醒' : '添加提醒'}
+        title={editingRecord ? t('reminderCenter.editReminder') : t('reminderCenter.addReminder')}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -301,72 +310,72 @@ const ReminderCenter = () => {
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
-            label="提醒内容"
+            label={t('reminderCenter.content')}
             name="title"
-            rules={[{ required: true, message: '请输入提醒内容' }]}
+            rules={[{ required: true, message: t('reminderCenter.selectContent') }]}
           >
-            <Input placeholder="例如：乙肝疫苗第二针" />
+            <Input placeholder={t('reminderCenter.contentPlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="提醒类型"
+            label={t('reminderCenter.reminderType')}
             name="reminder_type"
-            rules={[{ required: true, message: '请选择类型' }]}
+            rules={[{ required: true, message: t('reminderCenter.selectType') }]}
           >
             <Select>
-              <Select.Option value="vaccine">疫苗接种</Select.Option>
-              <Select.Option value="checkup">体检</Select.Option>
-              <Select.Option value="feeding">喂养提醒</Select.Option>
-              <Select.Option value="medicine">用药提醒</Select.Option>
-              <Select.Option value="other">其他</Select.Option>
+              <Select.Option value="vaccine">{t('reminderCenter.vaccine')}</Select.Option>
+              <Select.Option value="checkup">{t('reminderCenter.checkup')}</Select.Option>
+              <Select.Option value="feeding">{t('reminderCenter.feeding')}</Select.Option>
+              <Select.Option value="medicine">{t('reminderCenter.medicine')}</Select.Option>
+              <Select.Option value="other">{t('reminderCenter.other')}</Select.Option>
             </Select>
           </Form.Item>
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="提醒日期"
+                label={t('reminderCenter.reminderDate')}
                 name="reminder_date"
-                rules={[{ required: true, message: '请选择日期' }]}
+                rules={[{ required: true, message: t('reminderCenter.selectDate') }]}
               >
                 <DatePicker style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
-              <Form.Item label="提醒时间" name="reminder_time">
-                <Input placeholder="例如：09:00" />
+              <Form.Item label={t('reminderCenter.reminderTime')} name="reminder_time">
+                <Input placeholder={t('reminderCenter.timePlaceholder')} />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item label="重复" name="repeat_type">
+          <Form.Item label={t('reminderCenter.repeatType')} name="repeat_type">
             <Select>
-              <Select.Option value="none">不重复</Select.Option>
-              <Select.Option value="daily">每天</Select.Option>
-              <Select.Option value="weekly">每周</Select.Option>
-              <Select.Option value="monthly">每月</Select.Option>
+              <Select.Option value="none">{t('reminderCenter.none')}</Select.Option>
+              <Select.Option value="daily">{t('reminderCenter.daily')}</Select.Option>
+              <Select.Option value="weekly">{t('reminderCenter.weekly')}</Select.Option>
+              <Select.Option value="monthly">{t('reminderCenter.monthly')}</Select.Option>
             </Select>
           </Form.Item>
 
           {editingRecord && (
-            <Form.Item label="状态" name="status">
+            <Form.Item label={t('reminderCenter.status')} name="status">
               <Select>
-                <Select.Option value="pending">待处理</Select.Option>
-                <Select.Option value="completed">已完成</Select.Option>
-                <Select.Option value="overdue">已过期</Select.Option>
-                <Select.Option value="cancelled">已取消</Select.Option>
+                <Select.Option value="pending">{t('reminderCenter.pending')}</Select.Option>
+                <Select.Option value="completed">{t('reminderCenter.completed')}</Select.Option>
+                <Select.Option value="overdue">{t('reminderCenter.overdue')}</Select.Option>
+                <Select.Option value="cancelled">{t('reminderCenter.cancelled')}</Select.Option>
               </Select>
             </Form.Item>
           )}
 
-          <Form.Item label="备注" name="notes">
-            <Input.TextArea rows={3} placeholder="其他备注信息" />
+          <Form.Item label={t('reminderCenter.notes')} name="notes">
+            <Input.TextArea rows={3} placeholder={t('reminderCenter.notesPlaceholder')} />
           </Form.Item>
 
           <Form.Item className="flex justify-end gap-sm">
-            <Button onClick={() => setModalOpen(false)}>取消</Button>
+            <Button onClick={() => setModalOpen(false)}>{t('reminderCenter.cancel')}</Button>
             <Button type="primary" htmlType="submit">
-              {editingRecord ? '更新' : '保存'}
+              {editingRecord ? t('reminderCenter.update') : t('reminderCenter.save')}
             </Button>
           </Form.Item>
         </Form>
