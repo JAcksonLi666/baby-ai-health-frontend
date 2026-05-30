@@ -69,11 +69,17 @@
 - 📊 **测试脚本**：npm test / test:watch / test:coverage
 
 ### v1.8.0 新增
-- 🗄️ **SQLite 数据库支持**：后端数据存储迁移到 SQLite
+- 🗄️ **SQLite 数据库支持**：后端数据存储迁移到 SQLite（对话历史、知识库）
 - 📊 **数据导入导出**：支持 Excel (.xlsx) 和 CSV (.csv) 格式导入导出
 - 💉 **疫苗接种计划**：中国国家免疫规划疫苗时间表，自动生成接种提醒
 - 📈 **性能监控**：API 请求耗时统计、错误率追踪
 - 🌍 **国际化完善**：6 个组件硬编码中文全部替换为 i18n
+
+### v1.8.1 自洽性修复（2026-05-30）
+- 🐛 **3 项前端对接漏洞修复**：
+  - SymptomChecker 症状数据格式修正（对象数组 → 字符串数组）+ 参数名 (`month_age` → `age_months`)
+  - Dashboard 数据字段匹配修复（后端补齐 `total_display`/`pee_count`/`poop_count` 等）
+  - 化验单评估接口请求格式修正（匹配后端 `LabReportEvaluateRequest` 模型）
 
 ## 🛠️ 技术栈
 
@@ -289,7 +295,7 @@ cd android
 - 行级颜色高亮（正常/偏低/偏高/危急）
 - 统计摘要（总指标数/正常/异常/危急）
 
-### 5. SymptomChecker.jsx - 症状自查 (v1.4.0)
+### 5. SymptomChecker.tsx - 症状自查 (v1.4.0)
 
 功能：
 - 8 大症状分类（发热/呼吸/消化/皮肤/睡眠/口腔/眼部/耳部）
@@ -298,6 +304,7 @@ cd android
 - AI 分析可能原因和严重程度
 - 常见原因标签和注意事项列表
 - 免责声明提示
+- 数据格式：发送症状名称字符串数组 `["咳嗽", "发热"]` + `age_months` 参数
 
 ### 6. ChatHistory.jsx - 对话历史 (v1.4.0)
 
@@ -409,6 +416,13 @@ cd android
 5. **响应式**：使用 Ant Design 的 `Row`/`Col` 组件配合 `xs/sm/md/lg` 断点实现移动端适配
 
 ## 🔄 版本历史
+
+- **v1.8.1 (2026-05-30)** - 自洽性修复
+  - ✅ SymptomChecker 症状格式修正（对象数组 → 字符串数组）+ 参数名修正 (`month_age` → `age_months`)
+  - ✅ Dashboard 数据展示修复（后端补齐 `total_display`/`pee_count`/`poop_count` 等缺失字段）
+  - ✅ 化验单评估接口请求格式修正（匹配后端 `LabReportEvaluateRequest` 模型）
+  - ✅ `crypto is not defined` 错误修复（serialize-javascript 版本降级）
+  - ✅ Node.js 内存溢出修复（`--max-old-space-size=4096`）
 
 - **v1.7.0 (2026-05-27)** - 系统鲁棒性优化
   - #### v1.7.1 - UI 全面优化
