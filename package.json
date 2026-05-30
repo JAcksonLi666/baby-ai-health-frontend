@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "overrides": {
+    "serialize-javascript": "6.0.2"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -29,7 +32,8 @@
     "react-dom": "^18.2.0",
     "react-i18next": "^17.0.8",
     "react-router-dom": "^7.15.1",
-    "recharts": "^3.8.1"
+    "recharts": "^3.8.1",
+    "serialize-javascript": "^6.0.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Card,
@@ -217,12 +217,8 @@ const SymptomChecker = () => {
     try {
       const selectedLabels = getSelectedSymptomLabels();
       const payload = {
-        symptoms: selectedLabels.map((s) => ({
-          key: s.key,
-          category: s.category,
-          name: s.symptom,
-        })),
-        month_age: monthAge,
+        symptoms: selectedLabels.map((s) => s.symptom || s.key),
+        age_months: monthAge,
       };
 
       const res = await symptomService.analyze(payload);
